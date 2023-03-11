@@ -1,0 +1,13 @@
+<?php
+
+class user
+{
+
+    /*
+     * User Profile Content
+     *
+     */
+
+    public static function getConnection(){
+        $servername = "localhost";
+        $username = "root";

@@ -1,0 +1,92 @@
+[
+{
+    "type": "header",
+    "version": "4.9.5deb2",
+    "comment": "Export to JSON plugin for PHPMyAdmin"
+},
+{
+    "type": "database",
+    "name": "omulimisa"
+},
+{
+    "type": "table",
+    "name": "farmers",
+    "database": "omulimisa",
+    "data": 
+[
+{
+    "id": "1",
+    "photo": null,
+    "group_id": "1",
+    "role_in_group": "member",
+    "code": "907443",
+    "organisation_id": null,
+    "keyword_id": "1",
+    "education_level_id": null,
+    "nin_number": "cf254132",
+    "first_name": "Judith",
+    "last_name": "nabakoba",
+    "full_name": "Judith nabakoba",
+    "dob": "1990",
+    "gender": "Female",
+    "telephone": "256785418961",
+    "is_your_telephone": "1",
+    "is_mm_registered": "1",
+    "farming_scale": "Small",
+    "other_economic_activity": null,
+    "district_id": "1",
+    "subcounty_id": "1",
+    "parish": "biina",
+    "village": "biina",
+    "location": null,
+    "longitude": null,
+    "latitude": null,
+    "land_holding": "3.0000",
+    "farming_land": "3.0000",
+    "received_insurance": "0",
+    "received_mfi_credit": "0",
+    "user_id": "8",
+    "created_by": "7",
+    "created_at": "2020-06-18 10:55:11",
+    "updated_at": "2020-06-18 10:55:11"
+},
+{
+    "id": "2",
+    "photo": null,
+    "group_id": "1",
+    "role_in_group": "chairperson",
+    "code": "817832",
+    "organisation_id": null,
+    "keyword_id": "1",
+    "education_level_id": null,
+    "nin_number": "cf45874555",
+    "first_name": "Jane",
+    "last_name": "Akulo",
+    "full_name": "Jane Akulo",
+    "dob": "1980",
+    "gender": "Female",
+    "telephone": "256785963258",
+    "is_your_telephone": "1",
+    "is_mm_registered": "1",
+    "farming_scale": "Small",
+    "other_economic_activity": null,
+    "district_id": "1",
+    "subcounty_id": "1",
+    "parish": "biina",
+    "village": "biina",
+    "location": null,
+    "longitude": null,
+    "latitude": null,
+    "land_holding": "1.0000",
+    "farming_land": "1.0000",
+    "received_insurance": "0",
+    "received_mfi_credit": "0",
+    "user_id": "9",
+    "created_by": "7",
+    "created_at": "2020-06-18 12:04:55",
+    "updated_at": "2020-06-18 12:04:55"
+}
+]
+
+}
+]

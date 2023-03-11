@@ -1,0 +1,54 @@
+ALTER TABLE `district` 
+CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`), 
+ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `id`,
+ADD `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`; 
+
+
+php artisan migrate
+php artisan make:migration create_ext_area_annual_outputs_table 
+php artisan make:migration create_annual_output_has_activities_table 
+php artisan make:migration create_departments_table 
+php artisan make:migration create_annual_workplans_table 
+  
+php artisan admin:make AnnualOutputController --model=App\Models\AnnualOutput
+php artisan admin:make QuaterlyOutputController --model=App\Models\QuaterlyOutput
+php artisan admin:make DailyActivityController --model=App\Models\DailyActivity
+php artisan admin:make EvaluationController --model=App\Models\QuaterlyOutput
+php artisan admin:make AreaProfileController --model=App\Models\AreaProfile
+php artisan admin:make PopularCommodityController --model=App\Models\PopularCommodity
+php artisan admin:make FarmerController --model=App\Models\Farmer
+php artisan admin:make FarmerGroupController --model=App\Models\FarmerGroup
+php artisan admin:make FarmerQuestionController --model=App\Models\FarmerQuestion
+php artisan admin:make AdvisoryAlertController --model=App\Models\AdvisoryAlert
+php artisan admin:make GrivanceController --model=App\Models\Grivance
+php artisan admin:make MeetingController --model=App\Models\Meeting
+php artisan admin:make ActivityController --model=App\Models\Activity
+php artisan admin:make ActivityCategoryController --model=App\Models\ActivityCategory
+php artisan admin:make DepartmentController --model=App\Models\Department
+php artisan admin:make AnnualWorkplanController --model=App\Models\AnnualWorkplan
+php artisan admin:make DistrictController --model=App\Models\District
+
+ 
+php artisan make:model AuaterlyOutput
+php artisan make:model QuaterlyOutput
+php artisan make:model DailyActivity
+php artisan make:model AreaProfile
+php artisan make:model PopularCommodity
+php artisan make:model PotenialCommodity
+php artisan make:model FarmerGroup
+php artisan make:model FarmerQuestion
+php artisan make:model AdvisoryAlert
+php artisan make:model Grivance
+php artisan make:model Meeting
+php artisan make:model Activities
+php artisan make:model ActivityCategory
+php artisan make:model Department
+php artisan make:model AnnualOutputHasActivity
+php artisan make:model AnnualWorkplan
+php artisan make:model District
+php artisan make:model ActivityCategory
+
+ext_activity_category
+
+
+ext_area_quaterly_activity
