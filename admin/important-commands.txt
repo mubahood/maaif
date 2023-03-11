@@ -27,6 +27,7 @@ php artisan admin:make ActivityCategoryController --model=App\Models\ActivityCat
 php artisan admin:make DepartmentController --model=App\Models\Department
 php artisan admin:make AnnualWorkplanController --model=App\Models\AnnualWorkplan
 php artisan admin:make DistrictController --model=App\Models\District
+php artisan admin:make MemberController --model=App\Models\User
 
  
 php artisan make:model AuaterlyOutput

@@ -58,7 +58,6 @@ class QuaterlyOutputController extends AdminController
             ->display(function ($x) {
 
                 if ($this->output == null) {
-                    dd($this->output); 
                     return $x;
                 }
                 return $this->output->activities_text; 

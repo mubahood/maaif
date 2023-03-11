@@ -37,7 +37,6 @@ class QuaterlyOutput extends Model
     public function output()
     {
         $y = AnnualOutput::find($this->annual_id);
-        dd($y);
         if (
             $y == null 
         ) {

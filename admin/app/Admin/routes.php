@@ -33,6 +33,8 @@ Route::group([
     $router->resource('departments', DepartmentController::class); 
     $router->resource('annual-workplans', AnnualWorkplanController::class); 
 
+    $router->resource('members-new', MemberController::class);
+
     /* =============NEW=============== */
     $router->resource('service-providers', ServiceProviderController::class);
     $router->resource('groups', GroupController::class);
