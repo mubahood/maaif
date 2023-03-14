@@ -10,6 +10,12 @@ class QuaterlyOutput extends Model
     protected $table = 'ext_area_quaterly_activity';
     use HasFactory;
 
+    
+    function output_activities()
+    {
+        return $this->belongsToMany(QuaterlyOutputActivity::class, 'quaterly_output_id'); 
+    }  
+ 
     public function getTopicAttribute($vals)
     {
         $arr = explode(',', $vals);
@@ -34,14 +40,16 @@ class QuaterlyOutput extends Model
         return $texts;
     }
 
+    public function work_plan(){
+        return $this->belongsTo(AnnualWorkplan::class,'annual_id');
+    }
     public function output()
     {
-        $y = AnnualOutput::find($this->annual_id);
+       /*  $y = AnnualOutput::find($this->annual_id);
         if (
             $y == null 
         ) {
-
-
+ 
             $outs = [];
             foreach (AnnualOutput::where([
                 'user_id' => $this->user_id
@@ -56,8 +64,8 @@ class QuaterlyOutput extends Model
                 $this->annual_id = 1;
                 $this->save();
             }
-        }
-        return $this->belongsTo(AnnualOutput::class, $this->annual_id);
+        } */
+        return $this->belongsTo(AnnualOutputHasActivity::class, 'key_output_id'); 
     }
     public function user()
     {

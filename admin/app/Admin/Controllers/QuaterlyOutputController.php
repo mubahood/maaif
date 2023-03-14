@@ -4,10 +4,12 @@ namespace App\Admin\Controllers;
 
 use App\Models\Activity;
 use App\Models\AnnualOutput;
+use App\Models\AnnualOutputHasActivity;
 use App\Models\AnnualWorkplan;
 use App\Models\QuaterlyOutput;
 use App\Models\User;
 use App\Models\Utils;
+use content;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -31,6 +33,29 @@ class QuaterlyOutputController extends AdminController
      */
     protected function grid()
     {
+
+        /*   $years = [1, 2, 3, 4, 5, 8, 9];
+        foreach (QuaterlyOutput::all() as $key => $v) {
+            $v->annual_id = shuffle($years);
+            $v->save();
+            echo $v->id . " <hr> ";
+            continue;
+            $years[rand(0, 5)];
+            dd($v);
+            $u = User::find($v->user_id);
+            if ($u == null) {
+                continue;
+            }
+            if (in_array($u->year_working, $years)) {
+                continue;
+            }
+            $years[] = $u->year_working;
+            echo $u->year_working . "<hr>";
+            continue;
+            dd($u->year_working);
+            dd($v);
+        }
+        die('save'); */
         $grid = new Grid(new QuaterlyOutput());
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
@@ -60,7 +85,7 @@ class QuaterlyOutputController extends AdminController
                 if ($this->output == null) {
                     return $x;
                 }
-                return $this->output->activities_text; 
+                return $this->output->activities_text;
             })->sortable();
         $grid->column('quarter', __('Quarter'))->sortable();
         $grid->column('user_id', __('Officer'))->display(function ($x) {
@@ -110,6 +135,24 @@ class QuaterlyOutputController extends AdminController
      */
     protected function form()
     {
+        /* foreach (QuaterlyOutput::all() as $key => $v) {
+            //dd($v); 
+
+            if($v->output!= null){
+                continue; 
+            }
+
+            $ans = AnnualOutputHasActivity::where([
+                'annual_output_id' => $v->work_plan->id
+            ])->get();
+
+            $v->key_output_id = $ans[rand(0, count($ans))]->id;
+            $v->save();
+        
+            echo $v->id."<br>";
+            die();
+        }
+        die("done"); */
         $form = new Form(new QuaterlyOutput());
         $ajax_url = url(
             '/api/ajax?'
@@ -131,44 +174,65 @@ class QuaterlyOutputController extends AdminController
             ->ajax($ajax_url)->rules('required');
 
 
-        $form->select('annual_workplan_id', __('Annual workplan'))->options(
-            AnnualWorkplan::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id')
-        )->rules('required');
-
 
         $ajax_url = url(
-            '/api/ajax?'
+            '/api/ajax/AnnualOutputHasActivity?'
                 . "search_by_1=year"
                 . "&search_by_2=id"
                 . "&model=AnnualOutput"
         );
-        $form->multipleSelect('annual_id', "Outputs")
+
+        $form->select('annual_id', __('Annual workplan'))->options(
+            AnnualWorkplan::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id')
+        )->load('key_output_id', $ajax_url)->rules('required'); 
+
+
+        /*  $outs = []; 
+        foreach (AnnualOutputHasActivity::where([])->orderBy('id', 'desc')->limit(200)->get() as $value) {
+            $outs[$value->id] = $value->name_text;
+        }
+  */
+        $form->select('key_output_id', __('Key annual actvity'));
+
+        $form->textarea('activities', __('Quarterly Activities'))->required();
+
+
+
+        /* annual_output_has_activity_id */
+        /* 
+        $form->listbox('output_activities', 'Select Activities')
+            ->options([])
+            ->help("Select offences involded in this case")
+            ->rules('required');
+ */
+        /*   $form->multipleSelect('topic', "Outputs")
             ->options(function ($id) {
                 $a = AnnualOutput::find($id);
                 if ($a) {
                     return [$a->id => "#" . $a->id . " - " . $a->name];
                 }
             })
-            ->ajax($ajax_url)->rules('required');
+            ->ajax($ajax_url)->rules('required'); */
 
-        $form->text('topic', __('Outputs to Fullfill'))
+        /*    $form->text('topic', __('Outputs to Fullfill'))
             ->options(AnnualOutput::getArray(Auth::user()->id))
-            ->rules('required');
+            ->rules('required'); */
 
-
-
-        $form->text('key_output_id', __('key_output_id'));
-        $form->text('entreprizes', __('Entreprizes'));
-        $form->number('num_planned', __('Num planned'));
-        $form->number('num_target_ben', __('Num target ben'));
-        $form->number('num_carried_out', __('Num carried out'));
-        $form->number('num_reached_ben', __('Num reached ben'));
-        $form->textarea('remarks', __('Remarks'));
-        $form->textarea('lessons', __('Lessons'));
-        $form->textarea('recommendations', __('Recommendations'));
-        $form->number('budget', __('Budget'));
-
-        $form->number('quarter', __('Quarter'));
+        $form->decimal('budget', __('Budget'))->help('in UGX')->required();
+        $form->radio('quarter', __('Select Quarter'))->options([
+            1 => '1st quarter',
+            2 => '2nd quarter',
+            3 => '3nd quarter',
+            4 => '4th quarter',
+        ])->required();
+        /*  $form->text('entreprizes', __('Entreprizes')); */
+        $form->decimal('num_planned', __('Number planned'))->required();
+        $form->decimal('num_target_ben', __('Number target'))->required();
+        $form->decimal('num_carried_out', __('Number carried'))->required();
+        $form->decimal('num_reached_ben', __('Num reached'))->required();
+        $form->text('remarks', __('Remarks'))->required();
+        $form->text('lessons', __('Lessons'))->required();
+        $form->textarea('recommendations', __('Recommendations'))->required();
 
         return $form;
     }
