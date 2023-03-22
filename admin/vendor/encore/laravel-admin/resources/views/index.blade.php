@@ -2,14 +2,16 @@
 <html lang="{{ config('app.locale') }}">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="renderer" content="webkit">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ Admin::title() }} @if($header) | {{ $header }}@endif</title> 
+    <title>{{ Admin::title() }} @if($header) | {{ $header }}@endif</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-    <link rel="shortcut icon" href="{{ url('assets/images/logo.jpg') }}"> 
+    @if(!is_null($favicon = Admin::favicon()))
+    <link rel="shortcut icon" href="{{$favicon}}">
+    @endif
 
     {!! Admin::css() !!}
 

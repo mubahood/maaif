@@ -176,7 +176,7 @@ class Editable extends AbstractDisplayer
      */
     public function display()
     {
-        $this->options['name'] = $column = $this->getName();
+        $this->options['name'] = $column = $this->column->getName();
 
         $class = 'grid-editable-'.str_replace(['.', '#', '[', ']'], '-', $column);
 
@@ -198,7 +198,7 @@ STR;
 
         Admin::script("$('.$class').editable($options);");
 
-        $this->value = htmlentities($this->value ?? '');
+        $this->value = htmlentities($this->value);
 
         $attributes = [
             'href'       => '#',

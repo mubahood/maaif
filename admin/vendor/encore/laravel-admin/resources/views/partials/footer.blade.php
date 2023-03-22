@@ -14,9 +14,5 @@
 
     </div>
     <!-- Default to the left -->
-    <p class="nav d-block    text-md-start pb-2 pb-lg-0 mb-0">
-        All Rights Reserved. Designed and Developed by
-        <a class="nav-link d-inline-block p-0" href="https://agriculture.co.ug/" target="_blank"
-            rel="noopener">MAAIF Uganda</a>
-    </p>
+    <strong>Powered by <a href="https://github.com/z-song/laravel-admin" target="_blank">laravel-admin</a></strong>
 </footer>

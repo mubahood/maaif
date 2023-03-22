@@ -6,7 +6,6 @@ use Encore\Admin\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Form\Field;
 use Encore\Admin\Form\NestedForm;
-use Encore\Admin\Widgets\Form as WidgetForm;
 use Illuminate\Database\Eloquent\Relations\HasMany as Relation;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
@@ -330,11 +329,7 @@ class HasMany extends Field
     {
         $form = new Form\NestedForm($column, $model);
 
-        if ($this->form instanceof WidgetForm) {
-            $form->setWidgetForm($this->form);
-        } else {
-            $form->setForm($this->form);
-        }
+        $form->setForm($this->form);
 
         call_user_func($builder, $form);
 
@@ -667,7 +662,7 @@ EOT;
 
         $this->setupScript($script);
 
-        return parent::fieldRender([
+        return parent::render()->with([
             'forms'        => $this->buildRelatedForms(),
             'template'     => $template,
             'relationName' => $this->relationName,
@@ -724,7 +719,7 @@ EOT;
         // specify a view to render.
         $this->view = $this->views[$this->viewMode];
 
-        return parent::fieldRender([
+        return parent::render()->with([
             'headers'      => $headers,
             'forms'        => $this->buildRelatedForms(),
             'template'     => $template,

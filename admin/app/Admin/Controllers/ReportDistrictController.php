@@ -2,7 +2,6 @@
 
 namespace App\Admin\Controllers;
 
-
 use App\Models\District;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -41,7 +40,7 @@ class ReportDistrictController extends AdminController
         $grid->column('region_id', __('Region id'));
         $grid->column('subregion_id', __('Subregion id'));
         $grid->column('map_id', __('Map id'));
-        $grid->column('zone_id', __('Zone id'));
+        $grid->column('zone_id', __('Zone id')); 
         $grid->column('land_type_id', __('Land type id'));
         $grid->column('user_id', __('User id'));
 

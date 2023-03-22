@@ -2,19 +2,14 @@
 
 namespace Encore\Admin\Controllers;
 
-use App\Models\Campus;
-use App\Models\Utils;
-use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -33,7 +28,7 @@ class AuthController extends Controller
         if ($this->guard()->check()) {
             return redirect($this->redirectPath());
         }
- 
+
         return view($this->loginView);
     }
 
@@ -49,41 +44,8 @@ class AuthController extends Controller
         $this->loginValidator($request->all())->validate();
 
         $credentials = $request->only([$this->username(), 'password']);
-        $remember = $request->get('remember', true);
+        $remember = $request->get('remember', false);
 
-        if ($this->guard()->attempt($credentials, $remember)) {
-            return $this->sendLoginResponse($request);
-        }
-
-        $phone_num = Utils::prepare_phone_number($request->username);
-        $credentials = [
-            'phone_number_1' => $phone_num,
-            'password' => $request->password,
-        ];
-
-        if ($this->guard()->attempt($credentials, $remember)) {
-            return $this->sendLoginResponse($request);
-        }
-
-
-        $credentials = [
-            'username' => $phone_num,
-            'password' => $request->password,
-        ];
-
-        if ($this->guard()->attempt($credentials, $remember)) {
-            return $this->sendLoginResponse($request);
-        }
-
-        $credentials = [
-            'email' => $request->username,
-            'password' => $request->password,
-        ];
-
-        if ($this->guard()->attempt($credentials, $remember)) {
-            return $this->sendLoginResponse($request);
-        }
- 
         if ($this->guard()->attempt($credentials, $remember)) {
             return $this->sendLoginResponse($request);
         }
@@ -92,7 +54,6 @@ class AuthController extends Controller
             $this->username() => $this->getFailedLoginMessage(),
         ]);
     }
-
 
     /**
      * Get a validator for an incoming login request.
@@ -142,7 +103,7 @@ class AuthController extends Controller
         );
 
         return $content
-            ->title('My profile')
+            ->title(trans('admin.user_setting'))
             ->body($form->edit(Admin::user()->id));
     }
 
@@ -165,56 +126,24 @@ class AuthController extends Controller
     {
         $class = config('admin.database.users_model');
 
-        Utils::checkEventRegustration();
-
-        $form = new Form(new $class()); 
-
-        $form->divider('Bio information');
- 
-
-        $form->text('first_name', 'First name')->rules('required');
-        $form->text('last_name', 'Last name')->rules('required');
-        $form->radio('gender', 'Sex')->options(['M' => 'Male', 'F' => 'Female'])->rules('required');
-     
- 
-        $form->image('avatar', 'Porfile photo');
-      
-        $form->text('phone', 'Phone number');
-
-
- 
-
-
-        $form->divider('System account information');
-
+        $form = new Form(new $class());
 
         $form->display('username', trans('admin.username'));
-        $form->display('email', 'Email address');
-
-        $form->radio('change_password', 'Do you want to change password?')->options(['No' => 'No', 'Yes' => 'Yes'])
-            ->when('Yes', function ($form) {
-
-
-
-                $form->password('password', trans('admin.password'))->rules('confirmed|required');
-                $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
-                    ->default(function ($form) {
-                        return $form->model()->password;
-                    });
-
-
-                $form->ignore(['password_confirmation']);
-                $form->ignore(['change_password']);
-            })
-            ->default('No');
+        $form->text('name', trans('admin.name'))->rules('required');
+        $form->image('avatar', trans('admin.avatar'));
+        $form->password('password', trans('admin.password'))->rules('confirmed|required');
+        $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+            ->default(function ($form) {
+                return $form->model()->password;
+            });
 
         $form->setAction(admin_url('auth/setting'));
+
         $form->ignore(['password_confirmation']);
-        $form->ignore(['change_password']);
 
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
-                $form->password = Hash::make($form->password);
+                $form->password = bcrypt($form->password);
             }
         });
 
@@ -256,7 +185,7 @@ class AuthController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\Response
      */
     protected function sendLoginResponse(Request $request)
     {

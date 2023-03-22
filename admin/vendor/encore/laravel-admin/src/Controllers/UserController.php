@@ -2,11 +2,9 @@
 
 namespace Encore\Admin\Controllers;
 
-use App\Models\District;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends AdminController
 {
@@ -15,7 +13,7 @@ class UserController extends AdminController
      */
     protected function title()
     {
-        return 'Users';
+        return trans('admin.administrator');
     }
 
     /**
@@ -29,61 +27,12 @@ class UserController extends AdminController
 
         $grid = new Grid(new $userModel());
 
-        $grid->filter(function ($filter) {
-            // Remove the default id filter
-
-            $ajax_url = url(
-                '/api/ajax?'
-                    . "search_by_1=name"
-                    . "&search_by_2=id"
-                    . "&model=District"
-            );
-            $filter->equal('district_id', 'Filter by district')
-                ->select(function ($id) {
-                    $a = District::find($id);
-                    if ($a) {
-                        return [$a->id => "#" . $a->id . " - " . $a->name];
-                    }
-                })->ajax($ajax_url);
-        });
-
-
-
-
-        $grid->disableBatchActions();
-        $grid->quickSearch('name')->placeholder('Search by name...');
-        $grid->model()->orderBy('id', 'desc');
-
         $grid->column('id', 'ID')->sortable();
-        $grid->column('username', trans('admin.username'))->hide();
-        $grid->column('name', trans('admin.name'))->sortable();
-        $grid->column('gender', 'Sex')->using([
-            'M' => 'Male',
-            'F' => 'Female',
-        ], '-')
-        ->filter([
-            'M' => 'Male',
-            'F' => 'Female',
-        ])
-        ->sortable();
-        $grid->column('email', 'Email address')->sortable();
-        $grid->column('education', 'Education')
-        ->filter([
-            'Primary' => 'Primary',
-            'Secondary' => 'Secondary',
-            'Tertiary' => 'Tertiary',
-        ])
-        ->sortable();
-        $grid->column('district_id', 'District')
-            ->display(function ($x) {
-                if ($this->district == null) {
-                    return "-";
-                }
-                return $this->district->name;
-            })
-            ->sortable();
+        $grid->column('username', trans('admin.username'));
+        $grid->column('name', trans('admin.name'));
         $grid->column('roles', trans('admin.roles'))->pluck('name')->label();
-        $grid->column('created_at', 'Joined')->sortable();
+        $grid->column('created_at', trans('admin.created_at'));
+        $grid->column('updated_at', trans('admin.updated_at'));
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             if ($actions->getKey() == 1) {
@@ -167,7 +116,7 @@ class UserController extends AdminController
 
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
-                $form->password = Hash::make($form->password);
+                $form->password = bcrypt($form->password);
             }
         });
 

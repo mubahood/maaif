@@ -41,8 +41,7 @@ use PHPUnit\Framework\CodeCoverageException;
 use PHPUnit\Framework\ExecutionOrderDependency;
 use PHPUnit\Framework\InvalidCoversTargetException;
 use PHPUnit\Framework\SelfDescribing;
-use Tests\TestCase;
-
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Warning;
 use PHPUnit\Runner\Version;
 use PHPUnit\Util\Annotation\Registry;
@@ -332,7 +331,7 @@ final class Test
     /**
      * @psalm-param class-string $className
      */
-    public static function parseTestMethodAnnotations(string $className, ?string $methodName = ''): array
+    public static function parseTestMethodAnnotations(string $className, ?string $methodName = null): array
     {
         $registry = Registry::getInstance();
 

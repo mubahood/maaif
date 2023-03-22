@@ -25,7 +25,7 @@ class Admin
      *
      * @var string
      */
-    const VERSION = '1.8.17';
+    const VERSION = '1.8.0';
 
     /**
      * @var Navbar
@@ -226,7 +226,7 @@ class Admin
      *
      * @return string|void
      */
-    public static function favicon($favicon = null)
+    public function favicon($favicon = null)
     {
         if (is_null($favicon)) {
             return static::$favicon;

@@ -526,9 +526,7 @@ class Form extends Interactor
         Object.assign(data, {$parameters});
         {$this->action->actionScript()}
         $('#'+modalId).modal('show');
-        $(':submit', '#'+modalId).button('reset');
         $('#'+modalId+' form').off('submit').on('submit', function (e) {
-            $(':submit', e.target).button('loading');
             e.preventDefault();
             var form = this;
             {$this->buildActionPromise()}
@@ -617,7 +615,6 @@ PROMISE;
                     if (data.status === true) {
                         $('#'+modalId).modal('hide');
                     }
-                    $(':submit', '#'+modalId).button('reset');
                 },
                 error:function(request){
                     reject(request);

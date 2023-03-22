@@ -143,11 +143,7 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
                 d.text = d.$textField;
                 return d;
             })
-        });
-        if (target.data('value')) {
-            $(target).val(target.data('value'));
-        }
-        $(target).trigger('change');
+        }).trigger('change');
     });
 });
 EOT;
@@ -294,7 +290,7 @@ $.ajax($ajaxOptions).done(function(data) {
       var value = $(element).data('value') + '';
       if (value) {
         value = value.split(',');
-        $(element).val(value).trigger("change");
+        $(element).select2('val', value);
       }
   });
 });
@@ -397,7 +393,7 @@ $("form select").on("select2:opening", function (e) {
 $(document).ready(function(){
     $('select').each(function(){
         if($(this).is('[readonly]')){
-            $(this).closest('.form-group').find('span.select2-selection__choice__remove').remove();
+            $(this).closest('.form-group').find('span.select2-selection__choice__remove').first().remove();
             $(this).closest('.form-group').find('li.select2-search').first().remove();
             $(this).closest('.form-group').find('span.select2-selection__clear').first().remove();
         }
