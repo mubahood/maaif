@@ -13,7 +13,7 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('districts', DistrictController::class);
-    
+
 
     $router->resource('annual-outputs', AnnualOutputController::class);
     $router->resource('quaterly-outputs', QuaterlyOutputController::class);
@@ -26,14 +26,20 @@ Route::group([
     $router->resource('farmer-groups', FarmerGroupController::class);
     $router->resource('farmer-questions', FarmerQuestionController::class);
     $router->resource('advisory-alerts', AdvisoryAlertController::class);
-    $router->resource('grievances', GrivanceController::class); 
-    $router->resource('meetings', MeetingController::class); 
+    $router->resource('grievances', GrivanceController::class);
+    $router->resource('meetings', MeetingController::class);
     $router->resource('activities', ActivityController::class);
     $router->resource('activity-categories', ActivityCategoryController::class);
-    $router->resource('departments', DepartmentController::class); 
-    $router->resource('annual-workplans', AnnualWorkplanController::class); 
+    $router->resource('departments', DepartmentController::class);
+    $router->resource('annual-workplans', AnnualWorkplanController::class);
+    $router->resource('ext-topics', ExtTopicController::class);
+    $router->resource('my-members', MyMemberController::class);
 
-    $router->resource('members-new', MemberController::class);
+
+    $router->resource('report-annual-workplans', ReportAnnualWorkplanController::class);
+    $router->resource('report-departments', ReportDepartmentController::class);
+    $router->resource('report-districts', ReportDistrictController::class);
+    $router->resource('report-members', ReportMemberController::class); 
 
     /* =============NEW=============== */
     $router->resource('service-providers', ServiceProviderController::class);

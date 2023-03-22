@@ -12,6 +12,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\App;
 
 class MainController extends BaseController
 {
@@ -21,7 +22,7 @@ class MainController extends BaseController
     public function index()
     {
 
-    /*     die("<h1>Something really cool is coming soon! 🥰</h1>"); */
+        /*     die("<h1>Something really cool is coming soon! 🥰</h1>"); */
         $members = Administrator::where([])->orderBy('updated_at', 'desc')->limit(8)->get();
         $profiles = [];
         $_profiles = [];
@@ -280,5 +281,19 @@ status
         echo "<pre>";
         print_r($_data);
         die("");
+    }
+
+    public function report_annual_workplans_print()
+    {
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(view('reports/print', []));
+        return $pdf->stream();
+
+       /*  $id = (int)(trim($_GET['id']));
+        $m =  Movement::find($id);
+        if ($m == null) {
+            dd("Movement not found.");
+        } */
     }
 }

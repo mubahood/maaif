@@ -136,6 +136,7 @@ return array(
     'App\\Models\\Product' => $baseDir . '/app/Models/Product.php',
     'App\\Models\\ProductOrder' => $baseDir . '/app/Models/ProductOrder.php',
     'App\\Models\\QuaterlyOutput' => $baseDir . '/app/Models/QuaterlyOutput.php',
+    'App\\Models\\QuaterlyOutputActivity' => $baseDir . '/app/Models/QuaterlyOutputActivity.php',
     'App\\Models\\ServiceProvider' => $baseDir . '/app/Models/ServiceProvider.php',
     'App\\Models\\TrafficRecord' => $baseDir . '/app/Models/TrafficRecord.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
