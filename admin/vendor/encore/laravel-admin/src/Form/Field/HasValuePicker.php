@@ -41,11 +41,13 @@ trait HasValuePicker
     }
 
     /**
+     * @param \Closure|null $callback
+     *
      * @return $this
      */
-    protected function mountPicker()
+    protected function mountPicker(\Closure $callback = null)
     {
-        $this->picker && $this->picker->mount($this);
+        $this->picker && $this->picker->mount($this, $callback);
 
         return $this;
     }
@@ -72,14 +74,13 @@ trait HasValuePicker
             ->attribute('type', 'text')
             ->attribute('id', $this->id)
             ->attribute('name', $this->elementName ?: $this->formatName($this->column))
-            ->attribute('value', $this->value())
+            ->attribute('value', old($this->elementName ?: $this->column, $this->value()))
             ->attribute('class', 'form-control '.$this->getElementClassString())
             ->attribute('placeholder', $this->getPlaceholder())
             ->addVariables([
-                'picker'  => $this->picker,
                 'preview' => $this->picker->getPreview(get_called_class()),
             ]);
 
-        return Admin::view('admin::form.filepicker', $this->variables());
+        return Admin::component('admin::form.filepicker', $this->variables());
     }
 }

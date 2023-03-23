@@ -4,10 +4,13 @@ namespace Encore\Admin\Form\Field;
 
 class Color extends Text
 {
-    /**
-     * @var string
-     */
-    protected $view = 'admin::form.color';
+    protected static $css = [
+        '/vendor/laravel-admin/AdminLTE/plugins/colorpicker/bootstrap-colorpicker.min.css',
+    ];
+
+    protected static $js = [
+        '/vendor/laravel-admin/AdminLTE/plugins/colorpicker/bootstrap-colorpicker.min.js',
+    ];
 
     /**
      * Use `hex` format.
@@ -46,9 +49,12 @@ class Color extends Text
      */
     public function render()
     {
-        $this->attribute('autocomplete', 'off');
+        $options = json_encode($this->options);
 
-        $this->addVariables(['options' => $this->options]);
+        $this->script = "$('{$this->getElementClassSelector()}').parent().colorpicker($options);";
+
+        $this->prepend('<i></i>')
+            ->defaultAttribute('style', 'width: 140px');
 
         return parent::render();
     }

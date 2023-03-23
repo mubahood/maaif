@@ -4,16 +4,13 @@ namespace Encore\Admin\Form\Field;
 
 class Time extends Date
 {
-    protected $icon = 'fa-clock';
+    protected $format = 'HH:mm:ss';
 
-    /**
-     * @var array
-     */
-    protected $options = [
-        'format'           => 'HH:mm:ss',
-        'allowInputToggle' => true,
-        'icons'            => [
-            'time' => 'fas fa-clock',
-        ],
-    ];
+    public function render()
+    {
+        $this->prepend('<i class="fa fa-clock-o fa-fw"></i>')
+            ->defaultAttribute('style', 'width: 150px');
+
+        return parent::render();
+    }
 }

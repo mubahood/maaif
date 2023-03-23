@@ -4,6 +4,7 @@ namespace Encore\Admin\Form\Field;
 
 use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Form\Field;
+use Encore\Admin\Widgets\Form as WidgetForm;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -91,10 +92,10 @@ class Embeds extends Field
              */
             if (is_array($column)) {
                 foreach ($column as $key => $name) {
-                    $rules["{$this->column}.$name"] = $fieldRules;
+                    $rules["{$this->column}.$name$key"] = $fieldRules;
                 }
 
-//                $this->resetInputKey($input, $column);
+                $this->resetInputKey($input, $column);
             } else {
                 $rules["{$this->column}.$column"] = $fieldRules;
             }
@@ -175,27 +176,27 @@ class Embeds extends Field
      *
      * @return void.
      */
-//    public function resetInputKey(array &$input, array $column)
-//    {
-//        $column = array_flip($column);
-//
-//        foreach ($input[$this->column] as $key => $value) {
-//            if (!array_key_exists($key, $column)) {
-//                continue;
-//            }
-//
-//            $newKey = $key.$column[$key];
-//
-//            /*
-//             * set new key
-//             */
-//            Arr::set($input, "{$this->column}.$newKey", $value);
-//            /*
-//             * forget the old key and value
-//             */
-//            Arr::forget($input, "{$this->column}.$key");
-//        }
-//    }
+    public function resetInputKey(array &$input, array $column)
+    {
+        $column = array_flip($column);
+
+        foreach ($input[$this->column] as $key => $value) {
+            if (!array_key_exists($key, $column)) {
+                continue;
+            }
+
+            $newKey = $key.$column[$key];
+
+            /*
+             * set new key
+             */
+            Arr::set($input, "{$this->column}.$newKey", $value);
+            /*
+             * forget the old key and value
+             */
+            Arr::forget($input, "{$this->column}.$key");
+        }
+    }
 
     /**
      * Get data for Embedded form.
@@ -208,6 +209,10 @@ class Embeds extends Field
      */
     protected function getEmbeddedData()
     {
+        if ($old = old($this->column)) {
+            return $old;
+        }
+
         if (empty($this->value)) {
             return [];
         }
@@ -226,15 +231,43 @@ class Embeds extends Field
      */
     protected function buildEmbeddedForm()
     {
-        $form = new EmbeddedForm($this->column);
+        $form = new EmbeddedForm($this->getEmbeddedColumnName());
 
-        $form->setParent($this->form);
+        if ($this->form instanceof WidgetForm) {
+            $form->setParentWidgetForm($this->form);
+        } else {
+            $form->setParent($this->form);
+        }
 
         call_user_func($this->builder, $form);
 
         $form->fill($this->getEmbeddedData());
 
         return $form;
+    }
+
+    /**
+     * Determine the column name to use with the embedded form.
+     *
+     * @return array|string
+     */
+    protected function getEmbeddedColumnName()
+    {
+        if ($this->isNested()) {
+            return $this->elementName;
+        }
+
+        return $this->column;
+    }
+
+    /**
+     * Check if the field is in a nested form.
+     *
+     * @return bool
+     */
+    protected function isNested()
+    {
+        return !empty($this->elementName);
     }
 
     /**

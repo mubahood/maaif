@@ -1,10 +1,9 @@
 <div class="row">
-    <div class="col">
+    <div class="col-md-12">
         {!! $panel !!}
     </div>
-</div>
-<div class="row">
-    <div class="col">
+
+    <div class="col-md-12">
         @foreach($relations as $relation)
             {!!  $relation->render() !!}
         @endforeach

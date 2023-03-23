@@ -2,9 +2,9 @@
 
 namespace Tests\Controllers;
 
+use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
-use Encore\Admin\Http\Controllers\AdminController;
-use Encore\Admin\Table;
+use Encore\Admin\Grid;
 use Tests\Models\Image;
 
 class ImageController extends AdminController
@@ -12,22 +12,22 @@ class ImageController extends AdminController
     protected $title = 'Images';
 
     /**
-     * Make a table builder.
+     * Make a grid builder.
      *
-     * @return Table
+     * @return Grid
      */
-    protected function table()
+    protected function grid()
     {
-        $table = new Table(new Image());
+        $grid = new Grid(new Image());
 
-        $table->id('ID')->sortable();
+        $grid->id('ID')->sortable();
 
-        $table->created_at();
-        $table->updated_at();
+        $grid->created_at();
+        $grid->updated_at();
 
-        $table->disableFilter();
+        $grid->disableFilter();
 
-        return $table;
+        return $grid;
     }
 
     /**

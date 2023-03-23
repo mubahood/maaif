@@ -2,12 +2,12 @@
 
 namespace Encore\Admin;
 
-use Encore\Admin\Http\Middleware;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AdminServiceProvider extends ServiceProvider
 {
@@ -29,6 +29,7 @@ class AdminServiceProvider extends ServiceProvider
         Console\ExportSeedCommand::class,
         Console\MinifyCommand::class,
         Console\FormCommand::class,
+        Console\PermissionCommand::class,
         Console\ActionCommand::class,
         Console\GenerateMenuCommand::class,
         Console\ConfigCommand::class,
@@ -42,9 +43,10 @@ class AdminServiceProvider extends ServiceProvider
     protected $routeMiddleware = [
         'admin.auth'       => Middleware\Authenticate::class,
         'admin.pjax'       => Middleware\Pjax::class,
+        'admin.log'        => Middleware\LogOperation::class,
+        'admin.permission' => Middleware\Permission::class,
         'admin.bootstrap'  => Middleware\Bootstrap::class,
         'admin.session'    => Middleware\Session::class,
-        'admin.sul'        => Middleware\SingleUserLogin::class,
     ];
 
     /**
@@ -56,8 +58,10 @@ class AdminServiceProvider extends ServiceProvider
         'admin' => [
             'admin.auth',
             'admin.pjax',
+            'admin.log',
             'admin.bootstrap',
-            //'admin.session',
+            'admin.permission',
+            //            'admin.session',
         ],
     ];
 
@@ -80,53 +84,12 @@ class AdminServiceProvider extends ServiceProvider
 
         $this->compatibleBlade();
 
-        $this->registerBladeDirective();
-    }
-
-    protected function registerBladeDirective()
-    {
-        Blade::directive('el', function ($name) {
-            return <<<PHP
-<?php
-if (!isset(\$__id)) {
-    \$__id = uniqid();
-    echo "class='{\$__id} {$name}'";
-} else {
-    echo "$('.{\$__id}')";
-}
-?>
-PHP;
+        Blade::directive('box', function ($title) {
+            return "<?php \$box = new \Encore\Admin\Widgets\Box({$title}, '";
         });
 
-        Blade::directive('id', function () {
-            return <<<'PHP'
-<?php
-if (!isset($__uniqid)) {
-    $__uniqid = uniqid();
-    echo $__uniqid;
-} else {
-    echo $__uniqid;
-    unset($__uniqid);
-}
-?>
-PHP;
-        });
-
-        Blade::directive('color', function () {
-            $color = config('admin.theme.color');
-
-            return <<<PHP
-<?php echo "{$color}";?>
-PHP;
-        });
-
-        Blade::directive('script', function () {
-            return <<<'PHP'
-<?php
-    $vars = get_defined_vars();
-    echo "selector='{$vars['selector']}' nested='{$vars['nested']}'";
-?>
-PHP;
+        Blade::directive('endbox', function ($expression) {
+            return "'); echo \$box->render(); ?>";
         });
     }
 
@@ -137,7 +100,8 @@ PHP;
      */
     protected function ensureHttps()
     {
-        if (config('admin.https')) {
+        $is_admin = Str::startsWith(request()->getRequestUri(), '/'.ltrim(config('admin.route.prefix'), '/'));
+        if ((config('admin.https') || config('admin.secure')) && $is_admin) {
             url()->forceScheme('https');
             $this->app['request']->server->set('HTTPS', true);
         }
@@ -152,7 +116,11 @@ PHP;
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../config' => config_path()], 'laravel-admin-config');
-            $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'laravel-admin-lang');
+            if (version_compare($this->app->version(), '9.0.0', '>=')) {
+                $this->publishes([__DIR__.'/../resources/lang' => base_path('lang')], 'laravel-admin-lang');
+            } else {
+                $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'laravel-admin-lang');
+            }
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'laravel-admin-migrations');
             $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-admin')], 'laravel-admin-assets');
         }
@@ -186,12 +154,12 @@ PHP;
             });
         });
 
-        Router::macro('adminView', function ($uri, $component, $data = [], $options = []) {
+        Router::macro('component', function ($uri, $component, $data = [], $options = []) {
             return $this->match(['GET', 'HEAD'], $uri, function (Content $layout) use ($component, $data, $options) {
                 return $layout
                     ->title(Arr::get($options, 'title', ' '))
                     ->description(Arr::get($options, 'desc', ' '))
-                    ->view($component, $data);
+                    ->component($component, $data);
             });
         });
     }
@@ -232,10 +200,6 @@ PHP;
         // register route middleware.
         foreach ($this->routeMiddleware as $key => $middleware) {
             app('router')->aliasMiddleware($key, $middleware);
-        }
-
-        if (config('admin.single_device_login')) {
-            array_push($this->middlewareGroups['admin'], 'admin.sul');
         }
 
         // register middleware group.

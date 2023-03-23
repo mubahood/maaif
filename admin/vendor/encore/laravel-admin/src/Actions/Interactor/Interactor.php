@@ -33,9 +33,7 @@ abstract class Interactor
     }
 
     /**
-     * @param array $data
-     *
      * @return mixed
      */
-    abstract public function addScript(array $data = []);
+    abstract public function addScript();
 }

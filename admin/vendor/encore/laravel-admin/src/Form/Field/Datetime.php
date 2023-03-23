@@ -4,16 +4,12 @@ namespace Encore\Admin\Form\Field;
 
 class Datetime extends Date
 {
-    protected $icon = 'fa-calendar';
+    protected $format = 'YYYY-MM-DD HH:mm:ss';
 
-    /**
-     * @var array
-     */
-    protected $options = [
-        'format'           => 'YYYY-MM-DD HH:mm:ss',
-        'allowInputToggle' => true,
-        'icons'            => [
-            'time' => 'fas fa-clock',
-        ],
-    ];
+    public function render()
+    {
+        $this->defaultAttribute('style', 'width: 160px');
+
+        return parent::render();
+    }
 }

@@ -1,6 +1,6 @@
-<div class="row mt-3">
+<div class="row">
     @foreach($fields as $field)
-    <div class="col-{{ $field['width'] }}">
+    <div class="col-md-{{ $field['width'] }}">
         {!! $field['element']->render() !!}
     </div>
     @endforeach

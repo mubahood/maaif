@@ -4,24 +4,26 @@ namespace Encore\Admin\Form\Field;
 
 class Icon extends Text
 {
-    protected $default = 'far fa-circle';
+    protected $default = 'fa-pencil';
 
-    protected $view = 'admin::form.iconpicker';
+    protected static $css = [
+        '/vendor/laravel-admin/fontawesome-iconpicker/dist/css/fontawesome-iconpicker.min.css',
+    ];
 
-    public $bePrepend = false;
-
-    public function renderPrepend()
-    {
-        $this->view = 'admin::form.iconpicker-prepend';
-
-        return parent::render();
-    }
+    protected static $js = [
+        '/vendor/laravel-admin/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.min.js',
+    ];
 
     public function render()
     {
-        if ($this->bePrepend) {
-            return '';
-        }
+        $this->script = <<<EOT
+
+$('{$this->getElementClassSelector()}').iconpicker({placement:'bottomLeft'});
+
+EOT;
+
+        $this->prepend('<i class="fa fa-pencil fa-fw"></i>')
+            ->defaultAttribute('style', 'width: 140px');
 
         return parent::render();
     }

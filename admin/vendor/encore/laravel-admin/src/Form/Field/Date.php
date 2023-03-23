@@ -4,102 +4,24 @@ namespace Encore\Admin\Form\Field;
 
 class Date extends Text
 {
-    /**
-     * @var string
-     */
-    protected $view = 'admin::form.date';
-
-    /**
-     * @var string
-     */
-    protected $icon = 'fa-calendar-alt';
-
-    /**
-     * @var array
-     */
-    protected $options = [
-        'format'           => 'YYYY-MM-DD',
-        'allowInputToggle' => true,
-        'icons'            => [
-            'time' => 'fas fa-clock',
-        ],
+    protected static $css = [
+        '/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
     ];
 
-    /**
-     * Set picker format.
-     *
-     * @param string $format
-     *
-     * @return $this
-     */
+    protected static $js = [
+        '/vendor/laravel-admin/moment/min/moment-with-locales.min.js',
+        '/vendor/laravel-admin/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
+    ];
+
+    protected $format = 'YYYY-MM-DD';
+
     public function format($format)
     {
-        return $this->options(compact('format'));
+        $this->format = $format;
+
+        return $this;
     }
 
-    /**
-     * Set max value.
-     *
-     * @param string $maxDate
-     *
-     * @return $this
-     */
-    public function max($maxDate)
-    {
-        return $this->options(compact('maxDate'));
-    }
-
-    /**
-     * Set min value.
-     *
-     * @param string $minDate
-     *
-     * @return $this
-     */
-    public function min($minDate)
-    {
-        return $this->options(compact('minDate'));
-    }
-
-    /**
-     * Set default value.
-     *
-     * @param string $value
-     *
-     * @return $this
-     */
-    public function default($defaultDate)
-    {
-        return $this->options(compact('defaultDate'));
-    }
-
-    /**
-     * Set enabled values.
-     *
-     * @param array|string $value
-     *
-     * @return $this
-     */
-    public function enable($enabledDates)
-    {
-        return $this->options(compact('enabledDates'));
-    }
-
-    /**
-     * Set disabled values.
-     *
-     * @param $value
-     *
-     * @return $thiss
-     */
-    public function disable($disabledDates = null)
-    {
-        return $this->options(compact('disabledDates'));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function prepare($value)
     {
         if ($value === '') {
@@ -109,19 +31,16 @@ class Date extends Text
         return $value;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function render()
     {
-        $this->options(['locale' => $this->options['locale'] ?? config('app.locale')]);
+        $this->options['format'] = $this->format;
+        $this->options['locale'] = array_key_exists('locale', $this->options) ? $this->options['locale'] : config('app.locale');
+        $this->options['allowInputToggle'] = true;
 
-        $this->addVariables([
-            'icon'    => $this->icon,
-            'options' => $this->options,
-        ]);
+        $this->script = "$('{$this->getElementClassSelector()}').parent().datetimepicker(".json_encode($this->options).');';
 
-        $this->attribute(['autocomplete' => 'off']);
+        $this->prepend('<i class="fa fa-calendar fa-fw"></i>')
+            ->defaultAttribute('style', 'width: 110px');
 
         return parent::render();
     }

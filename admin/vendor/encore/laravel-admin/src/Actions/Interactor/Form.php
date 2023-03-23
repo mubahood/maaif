@@ -53,7 +53,9 @@ class Form extends Interactor
     {
         $field = new Field\Text($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -67,7 +69,9 @@ class Form extends Interactor
     {
         $field = new Field\Table($column, [$label, $builder]);
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -80,7 +84,9 @@ class Form extends Interactor
     {
         $field = new Field\Email($column, $this->formatLabel($label));
 
-        return $this->addField($field)->setView('admin::actions.form.text');
+        $this->addField($field)->setView('admin::actions.form.text');
+
+        return $field->inputmask(['alias' => 'email']);
     }
 
     /**
@@ -105,7 +111,6 @@ class Form extends Interactor
     public function ip($column, $label = '')
     {
         return $this->text($column, $label)
-            ->icon('fa-laptop')
             ->width('200px')
             ->inputmask(['alias' => 'ip']);
     }
@@ -119,8 +124,7 @@ class Form extends Interactor
     public function url($column, $label = '')
     {
         return $this->text($column, $label)
-            ->prependText('<i class="fab fa-internet-explorer fa-fw"></i>')
-            ->attribute('type', 'url')
+            ->inputmask(['alias' => 'url'])
             ->width('200px');
     }
 
@@ -133,7 +137,6 @@ class Form extends Interactor
     public function password($column, $label = '')
     {
         return $this->text($column, $label)
-            ->icon('fa-eye-slash')
             ->attribute('type', 'password');
     }
 
@@ -146,7 +149,6 @@ class Form extends Interactor
     public function mobile($column, $label = '')
     {
         return $this->text($column, $label)
-            ->icon('fa-phone')
             ->inputmask(['mask' => '99999999999'])
             ->width('100px');
     }
@@ -161,7 +163,9 @@ class Form extends Interactor
     {
         $field = new Field\Textarea($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -174,7 +178,9 @@ class Form extends Interactor
     {
         $field = new Field\Select($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -187,7 +193,9 @@ class Form extends Interactor
     {
         $field = new Field\MultipleSelect($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -198,11 +206,11 @@ class Form extends Interactor
      */
     public function checkbox($column, $label = '')
     {
-        admin_assets_require('icheck');
-
         $field = new Field\Checkbox($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -213,11 +221,11 @@ class Form extends Interactor
      */
     public function radio($column, $label = '')
     {
-        admin_assets_require('icheck');
-
         $field = new Field\Radio($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -230,7 +238,9 @@ class Form extends Interactor
     {
         $field = new Field\File($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -243,7 +253,9 @@ class Form extends Interactor
     {
         $field = new Field\MultipleFile($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -256,7 +268,9 @@ class Form extends Interactor
     {
         $field = new Field\Image($column, $this->formatLabel($label));
 
-        return $this->addField($field)->setView('admin::actions.form.file');
+        $this->addField($field)->setView('admin::actions.form.file');
+
+        return $field;
     }
 
     /**
@@ -269,7 +283,9 @@ class Form extends Interactor
     {
         $field = new Field\MultipleImage($column, $this->formatLabel($label));
 
-        return $this->addField($field)->setView('admin::actions.form.multiplefile');
+        $this->addField($field)->setView('admin::actions.form.muitplefile');
+
+        return $field;
     }
 
     /**
@@ -282,7 +298,9 @@ class Form extends Interactor
     {
         $field = new Field\Date($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -317,7 +335,9 @@ class Form extends Interactor
     {
         $field = new Field\Hidden($column, $this->formatLabel($label));
 
-        return $this->addField($field);
+        $this->addField($field);
+
+        return $field;
     }
 
     /**
@@ -455,6 +475,23 @@ class Form extends Interactor
     }
 
     /**
+     * @return void
+     */
+    public function addModalHtml()
+    {
+        $data = [
+            'fields'     => $this->fields,
+            'title'      => $this->action->name(),
+            'modal_id'   => $this->getModalId(),
+            'modal_size' => $this->modalSize,
+        ];
+
+        $modal = view('admin::actions.form.modal', $data)->render();
+
+        Admin::html($modal);
+    }
+
+    /**
      * @return string
      */
     public function getModalId()
@@ -471,28 +508,144 @@ class Form extends Interactor
     }
 
     /**
-     * @param array $data
-     *
-     * @throws \Throwable
-     *
-     * @return mixed|string
+     * @return void
      */
-    public function addScript($data = [])
+    public function addScript()
     {
         $this->action->attribute('modal', $this->getModalId());
 
-        call_user_func(
-            [$this->action, 'form'],
-            ($this->action instanceof RowAction) ? $this->action->getRow() : null
-        );
+        $parameters = json_encode($this->action->parameters());
 
-        $data = array_merge($data, [
-            'fields'        => $this->fields,
-            'modal_id'      => $this->getModalId(),
-            'modal_size'    => $this->modalSize,
-            'confirm'       => $this->confirm,
-        ]);
+        $script = <<<SCRIPT
 
-        return Admin::view('admin::actions.form', $data);
+(function ($) {
+    $('{$this->action->selector($this->action->selectorPrefix)}').off('{$this->action->event}').on('{$this->action->event}', function() {
+        var data = $(this).data();
+        var target = $(this);
+        var modalId = $(this).attr('modal');
+        Object.assign(data, {$parameters});
+        {$this->action->actionScript()}
+        $('#'+modalId).modal('show');
+        $(':submit', '#'+modalId).button('reset');
+        $('#'+modalId+' form').off('submit').on('submit', function (e) {
+            $(':submit', e.target).button('loading');
+            e.preventDefault();
+            var form = this;
+            {$this->buildActionPromise()}
+            {$this->action->handleActionPromise()}
+        });
+    });
+})(jQuery);
+
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildConfirmActionPromise()
+    {
+        $trans = [
+            'cancel' => trans('admin.cancel'),
+            'submit' => trans('admin.submit'),
+        ];
+
+        $settings = [
+            'type'                => 'question',
+            'showCancelButton'    => true,
+            'showLoaderOnConfirm' => true,
+            'confirmButtonText'   => $trans['submit'],
+            'cancelButtonText'    => $trans['cancel'],
+            'title'               => $this->confirm,
+            'text'                => '',
+        ];
+
+        $settings = trim(substr(json_encode($settings, JSON_PRETTY_PRINT), 1, -1));
+
+        return <<<PROMISE
+        var process = $.admin.swal({
+            {$settings},
+            preConfirm: function() {
+                {$this->buildGeneralActionPromise()}
+
+                return process;
+            }
+        }).then(function(result) {
+
+            if (typeof result.dismiss !== 'undefined') {
+                return Promise.reject();
+            }
+
+            var result = result.value[0];
+
+            if (typeof result.status === "boolean") {
+                var response = result;
+            } else {
+                var response = result.value;
+            }
+
+            return [response, target];
+        });
+PROMISE;
+    }
+
+    protected function buildGeneralActionPromise()
+    {
+        return <<<SCRIPT
+        var process = new Promise(function (resolve,reject) {
+            Object.assign(data, {
+                _token: $.admin.token,
+                _action: '{$this->action->getCalledClass()}',
+            });
+
+            var formData = new FormData(form);
+            for (var key in data) {
+                formData.append(key, data[key]);
+            }
+
+            $.ajax({
+                method: '{$this->action->getMethod()}',
+                url: '{$this->action->getHandleRoute()}',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    resolve([data, target]);
+                    if (data.status === true) {
+                        $('#'+modalId).modal('hide');
+                    }
+                    $(':submit', '#'+modalId).button('reset');
+                },
+                error:function(request){
+                    reject(request);
+                }
+            });
+        });
+SCRIPT;
+    }
+
+    /**
+     * @throws \Exception
+     *
+     * @return string
+     */
+    protected function buildActionPromise()
+    {
+        if ($this->action instanceof RowAction) {
+            call_user_func([$this->action, 'form'], $this->action->getRow());
+        } else {
+            call_user_func([$this->action, 'form']);
+        }
+
+        $this->addModalHtml();
+
+        if (!empty($this->confirm)) {
+            return $this->buildConfirmActionPromise();
+        }
+
+        return $this->buildGeneralActionPromise();
     }
 }

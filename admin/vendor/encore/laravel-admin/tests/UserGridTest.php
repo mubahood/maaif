@@ -4,7 +4,7 @@ use Encore\Admin\Auth\Database\Administrator;
 use Tests\Models\Profile as ProfileModel;
 use Tests\Models\User as UserModel;
 
-class UserTableTest extends TestCase
+class UserGridTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -61,7 +61,7 @@ class UserTableTest extends TestCase
             });
     }
 
-    public function testTableWithData()
+    public function testGridWithData()
     {
         $this->seedsTable();
 
@@ -72,7 +72,7 @@ class UserTableTest extends TestCase
         $this->assertCount(100, ProfileModel::all());
     }
 
-    public function testTablePagination()
+    public function testGridPagination()
     {
         $this->seedsTable(65);
 
@@ -206,7 +206,7 @@ class UserTableTest extends TestCase
         $this->assertCount(50, $this->crawler()->filter('td code'));
     }
 
-    public function testTableActions()
+    public function testGridActions()
     {
         $this->seedsTable(15);
 
@@ -216,7 +216,7 @@ class UserTableTest extends TestCase
         $this->assertCount(15, $this->crawler()->filter('td a i[class*=fa-trash]'));
     }
 
-    public function testTableRows()
+    public function testGridRows()
     {
         $this->seedsTable(10);
 
@@ -226,7 +226,7 @@ class UserTableTest extends TestCase
         $this->assertCount(5, $this->crawler()->filter('td a[class*=btn]'));
     }
 
-    public function testTablePerPage()
+    public function testGridPerPage()
     {
         $this->seedsTable(98);
 

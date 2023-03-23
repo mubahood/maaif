@@ -9,16 +9,16 @@ namespace Encore\Admin\Form\Field;
  */
 class Listbox extends MultipleSelect
 {
-    /**
-     * @var array
-     */
     protected $settings = [];
 
-    /**
-     * @param array $settings
-     *
-     * @return $this
-     */
+    protected static $css = [
+        '/vendor/laravel-admin/bootstrap-duallistbox/dist/bootstrap-duallistbox.min.css',
+    ];
+
+    protected static $js = [
+        '/vendor/laravel-admin/bootstrap-duallistbox/dist/jquery.bootstrap-duallistbox.min.js',
+    ];
+
     public function settings(array $settings)
     {
         $this->settings = $settings;
@@ -43,16 +43,34 @@ class Listbox extends MultipleSelect
      */
     protected function loadRemoteOptions($url, $parameters = [], $options = [])
     {
-        $remote = array_merge([
+        $ajaxOptions = json_encode(array_merge([
             'url' => $url.'?'.http_build_query($parameters),
-        ], $options);
+        ], $options));
 
-        return $this->addVariables(compact('remote'));
+        $this->script = <<<EOT
+        
+$.ajax($ajaxOptions).done(function(data) {
+
+  var listbox = $("{$this->getElementClassSelector()}");
+
+    var value = listbox.data('value') + '';
+    
+    if (value) {
+      value = value.split(',');
+    }
+    
+    for (var key in data) {
+        var selected =  ($.inArray(key, value) >= 0) ? 'selected' : '';
+        listbox.append('<option value="'+key+'" '+selected+'>'+data[key]+'</option>');
+    }
+    
+    listbox.bootstrapDualListbox('refresh', true);
+});
+EOT;
+
+        return $this;
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
-     */
     public function render()
     {
         $settings = array_merge([
@@ -64,13 +82,16 @@ class Listbox extends MultipleSelect
             'selectorMinimalHeight' => 200,
         ], $this->settings);
 
-        $this->addVariables([
-            'options'  => $this->getOptions(),
-            'settings' => $settings,
-        ])->attribute('data-value', implode(',', (array) $this->value()));
+        $settings = json_encode($settings);
 
-        $this->addCascadeScript();
+        $this->script .= <<<SCRIPT
 
-        return parent::fieldRender();
+$("{$this->getElementClassSelector()}").bootstrapDualListbox($settings);
+
+SCRIPT;
+
+        $this->attribute('data-value', implode(',', (array) $this->value()));
+
+        return parent::render();
     }
 }

@@ -14,7 +14,7 @@ class CascadeGroup extends Field
     /**
      * @var string
      */
-    protected $hide = 'd-none';
+    protected $hide = 'hide';
 
     /**
      * CascadeGroup constructor.

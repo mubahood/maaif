@@ -1,15 +1,16 @@
-<div class="card card-outline card-{{ $style }}">
-    <div class="card-header">
-        <h3 class="card-title">{{ $title }}</h3>
-        <div class="card-tools">
+<div class="box box-{{ $style }}">
+    <div class="box-header with-border">
+        <h3 class="box-title">{{ $title }}</h3>
+
+        <div class="box-tools">
             {!! $tools !!}
         </div>
     </div>
-    <!-- /.card-header -->
+    <!-- /.box-header -->
     <!-- form start -->
     <div class="form-horizontal">
 
-        <div class="card-body">
+        <div class="box-body">
 
             <div class="fields-group">
 
@@ -19,6 +20,6 @@
             </div>
 
         </div>
-        <!-- /.card-body -->
+        <!-- /.box-body -->
     </div>
 </div>

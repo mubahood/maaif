@@ -98,7 +98,7 @@ return [
         'filter_clear'       => 'Показать все',
         'filter_placeholder' => 'Фильтр',
     ],
-    'table_items_selected'    => '{n} элементов выбрано',
+    'grid_items_selected'    => '{n} элементов выбрано',
 
     'menu_titles'            => [],
     'prev'                   => 'Предыдущая',

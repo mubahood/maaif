@@ -3,14 +3,13 @@
 namespace Encore\Admin\Form\Concerns;
 
 use Closure;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response;
 
 trait HasHooks
 {
     /**
-     * Supported hooks: submitted, editing, saving, saved.
+     * Supported hooks: submitted, editing, saving, saved, deleting, deleted.
      *
      * @var array
      */
@@ -74,39 +73,17 @@ trait HasHooks
     {
         $hooks = Arr::get($this->hooks, $name, []);
 
-        try {
-            foreach ($hooks as $func) {
-                if (!$func instanceof Closure) {
-                    continue;
-                }
-
-                $response = call_user_func($func, $this, $parameters);
-
-                if ($response instanceof RedirectResponse) {
-                    return \response([
-                        'status'   => true,
-                        'redirect' => $response->getTargetUrl(),
-                    ]);
-                }
+        foreach ($hooks as $func) {
+            if (!$func instanceof Closure) {
+                continue;
             }
-        } catch (\Exception $exception) {
-            return \response([
-                'status'    => false,
-                'message'   => $exception->getMessage(),
-            ]);
-        }
-    }
 
-    /**
-     * Set after getting creating model callback.
-     *
-     * @param Closure $callback
-     *
-     * @return $this
-     */
-    public function creating(Closure $callback)
-    {
-        return $this->registerHook('creating', $callback);
+            $response = call_user_func($func, $this, $parameters);
+
+            if ($response instanceof Response) {
+                return $response;
+            }
+        }
     }
 
     /**
@@ -158,13 +135,23 @@ trait HasHooks
     }
 
     /**
-     * Call creating callbacks.
+     * @param Closure $callback
      *
-     * @return mixed
+     * @return $this
      */
-    protected function callCreating()
+    public function deleting(Closure $callback)
     {
-        return $this->callHooks('creating');
+        return $this->registerHook('deleting', $callback);
+    }
+
+    /**
+     * @param Closure $callback
+     *
+     * @return $this
+     */
+    public function deleted(Closure $callback)
+    {
+        return $this->registerHook('deleted', $callback);
     }
 
     /**
@@ -205,5 +192,25 @@ trait HasHooks
     protected function callSaved()
     {
         return $this->callHooks('saved');
+    }
+
+    /**
+     * Call hooks when deleting.
+     *
+     * @param mixed $id
+     *
+     * @return mixed
+     */
+    protected function callDeleting($id)
+    {
+        return $this->callHooks('deleting', $id);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function callDeleted()
+    {
+        return $this->callHooks('deleted');
     }
 }

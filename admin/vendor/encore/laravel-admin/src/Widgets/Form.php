@@ -11,7 +11,8 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
+use Illuminate\Support\MessageBag;
+use Illuminate\Validation\Validator;
 
 /**
  * Class Form.
@@ -31,6 +32,7 @@ use Illuminate\Support\Fluent;
  * @method Field\Id             id($name, $label = '')
  * @method Field\Ip             ip($name, $label = '')
  * @method Field\Url            url($name, $label = '')
+ * @method Field\Color          color($name, $label = '')
  * @method Field\Email          email($name, $label = '')
  * @method Field\Mobile         mobile($name, $label = '')
  * @method Field\Slider         slider($name, $label = '')
@@ -65,8 +67,6 @@ use Illuminate\Support\Fluent;
 class Form implements Renderable
 {
     use BaseForm\Concerns\HandleCascadeFields;
-    use BaseForm\Concerns\ValidatesFields;
-    use Form\HasResponse;
 
     /**
      * The title of form.
@@ -115,6 +115,11 @@ class Form implements Renderable
     ];
 
     /**
+     * @var bool
+     */
+    public $inbox = true;
+
+    /**
      * @var string
      */
     public $confirm = '';
@@ -134,8 +139,6 @@ class Form implements Renderable
         $this->fill($data);
 
         $this->initFormAttributes();
-
-        $this->response = new Fluent();
     }
 
     /**
@@ -143,14 +146,8 @@ class Form implements Renderable
      *
      * @return mixed
      */
-    public function title($title = '')
+    public function title()
     {
-        if ($title) {
-            $this->title = $title;
-
-            return $this;
-        }
-
         return $this->title;
     }
 
@@ -225,6 +222,7 @@ class Form implements Renderable
             'action'         => '',
             'class'          => 'form-horizontal',
             'accept-charset' => 'UTF-8',
+            'pjax-container' => true,
         ];
     }
 
@@ -264,7 +262,12 @@ class Form implements Renderable
             $attributes['enctype'] = 'multipart/form-data';
         }
 
-        return admin_attrs($attributes);
+        $html = [];
+        foreach ($attributes as $key => $val) {
+            $html[] = "$key=\"$val\"";
+        }
+
+        return implode(' ', $html) ?: '';
     }
 
     /**
@@ -298,6 +301,18 @@ class Form implements Renderable
     }
 
     /**
+     * Disable Pjax.
+     *
+     * @return $this
+     */
+    public function disablePjax()
+    {
+        Arr::forget($this->attributes, 'pjax-container');
+
+        return $this;
+    }
+
+    /**
      * Disable reset button.
      *
      * @return $this
@@ -324,20 +339,23 @@ class Form implements Renderable
     /**
      * Set field and label width in current form.
      *
-     * @param int $field
-     * @param int $label
+     * @param int $fieldWidth
+     * @param int $labelWidth
      *
      * @return $this
      */
-    public function setWidth($field = 8, $label = 2)
+    public function setWidth($fieldWidth = 8, $labelWidth = 2)
     {
-        collect($this->fields)->each(function ($item) use ($field, $label) {
+        collect($this->fields)->each(function ($field) use ($fieldWidth, $labelWidth) {
             /* @var Field $field  */
-            $item->setWidth($field, $label);
+            $field->setWidth($fieldWidth, $labelWidth);
         });
 
         // set this width
-        $this->width = compact('label', 'field');
+        $this->width = [
+            'label' => $labelWidth,
+            'field' => $fieldWidth,
+        ];
 
         return $this;
     }
@@ -373,7 +391,7 @@ class Form implements Renderable
     /**
      * Get all fields of form.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Field[]
      */
     public function fields()
     {
@@ -390,14 +408,11 @@ class Form implements Renderable
         $this->fields()->each->fill($this->data());
 
         return [
-            'id'         => $this->attributes['id'],
             'fields'     => $this->fields,
             'attributes' => $this->formatAttribute(),
             'method'     => $this->attributes['method'],
             'buttons'    => $this->buttons,
             'width'      => $this->width,
-            'confirm'    => $this->confirm,
-            'title'      => $this->title(),
         ];
     }
 
@@ -408,9 +423,13 @@ class Form implements Renderable
      */
     public function hasFile()
     {
-        return $this->fields()->contains(function ($field) {
-            return $field instanceof Field\File || $field instanceof Field\MultipleFile;
-        });
+        foreach ($this->fields as $field) {
+            if ($field instanceof Field\File) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -418,7 +437,7 @@ class Form implements Renderable
      *
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @return bool|MessageBag
      */
     public function validate(Request $request)
     {
@@ -426,7 +445,40 @@ class Form implements Renderable
             $this->form();
         }
 
-        return $this->validateErrorResponse($request->all());
+        $failedValidators = [];
+
+        /** @var Field $field */
+        foreach ($this->fields() as $field) {
+            if (!$validator = $field->getValidator($request->all())) {
+                continue;
+            }
+
+            if (($validator instanceof Validator) && !$validator->passes()) {
+                $failedValidators[] = $validator;
+            }
+        }
+
+        $message = $this->mergeValidationMessages($failedValidators);
+
+        return $message->any() ? $message : false;
+    }
+
+    /**
+     * Merge validation messages from input validators.
+     *
+     * @param \Illuminate\Validation\Validator[] $validators
+     *
+     * @return MessageBag
+     */
+    protected function mergeValidationMessages($validators)
+    {
+        $messageBag = new MessageBag();
+
+        foreach ($validators as $validator) {
+            $messageBag = $messageBag->merge($validator->messages());
+        }
+
+        return $messageBag;
     }
 
     /**
@@ -450,11 +502,80 @@ class Form implements Renderable
         return $fieldset;
     }
 
+    /**
+     * @return $this
+     */
+    public function unbox()
+    {
+        $this->inbox = false;
+
+        return $this;
+    }
+
+    protected function addConfirmScript()
+    {
+        $id = $this->attributes['id'];
+
+        $trans = [
+            'cancel' => trans('admin.cancel'),
+            'submit' => trans('admin.submit'),
+        ];
+
+        $settings = [
+            'type'                => 'question',
+            'showCancelButton'    => true,
+            'confirmButtonText'   => $trans['submit'],
+            'cancelButtonText'    => $trans['cancel'],
+            'title'               => $this->confirm,
+            'text'                => '',
+        ];
+
+        $settings = trim(json_encode($settings, JSON_PRETTY_PRINT));
+
+        $script = <<<SCRIPT
+
+$('form#{$id}').off('submit').on('submit', function (e) {
+    e.preventDefault();
+    var form = this;
+    $.admin.swal($settings).then(function (result) {
+        if (result.value == true) {
+            form.submit();
+        }
+    });
+    return false;
+});
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    protected function addCascadeScript()
+    {
+        $id = $this->attributes['id'];
+
+        $script = <<<SCRIPT
+;(function () {
+    $('form#{$id}').submit(function (e) {
+        e.preventDefault();
+        $(this).find('div.cascade-group.hide :input').attr('disabled', true);
+    });
+})();
+SCRIPT;
+
+        Admin::script($script);
+    }
+
     protected function prepareForm()
     {
         if (method_exists($this, 'form')) {
             $this->form();
         }
+
+        if (!empty($this->confirm)) {
+            $this->addConfirmScript();
+        }
+
+        $this->addCascadeScript();
     }
 
     protected function prepareHandle()
@@ -477,7 +598,13 @@ class Form implements Renderable
 
         $this->prepareHandle();
 
-        return Admin::view('admin::widgets.form', $this->getVariables());
+        $form = view('admin::widgets.form', $this->getVariables())->render();
+
+        if (!($title = $this->title()) || !$this->inbox) {
+            return $form;
+        }
+
+        return (new Box($title, $form))->render();
     }
 
     /**

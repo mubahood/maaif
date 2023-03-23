@@ -41,11 +41,6 @@ class Builder
     protected $fields;
 
     /**
-     * @var string
-     */
-    protected $confirm = '';
-
-    /**
      * @var array
      */
     protected $options = [];
@@ -111,6 +106,8 @@ class Builder
      * Builder constructor.
      *
      * @param Form $form
+     *
+     * @return void
      */
     public function __construct(Form $form)
     {
@@ -123,13 +120,15 @@ class Builder
 
     /**
      * Do initialize.
+     *
+     * @return void
      */
     public function init()
     {
         $this->tools = new Tools($this);
         $this->footer = new Footer($this);
 
-        $this->formClass = uniqid('model-form-');
+        $this->formClass = 'model-form-'.uniqid();
     }
 
     /**
@@ -175,7 +174,7 @@ class Builder
     /**
      * Returns builder is $mode.
      *
-     * @param $mode
+     * @param string $mode
      *
      * @return bool
      */
@@ -205,17 +204,9 @@ class Builder
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function getModel()
-    {
-        return $this->form->model();
-    }
-
-    /**
      * Set resource Id.
      *
-     * @param $id
+     * @param mixed $id
      *
      * @return void
      */
@@ -281,6 +272,8 @@ class Builder
      * Set form action.
      *
      * @param string $action
+     *
+     * @return void
      */
     public function setAction($action)
     {
@@ -461,9 +454,13 @@ class Builder
      */
     public function hasFile(): bool
     {
-        return $this->fields()->contains(function ($field) {
-            return $field instanceof Field\File || $field instanceof Field\MultipleFile;
-        });
+        foreach ($this->fields() as $field) {
+            if ($field instanceof Field\File || $field instanceof Field\MultipleFile) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -480,9 +477,7 @@ class Builder
         }
 
         if (Str::contains($previous, url($this->getResource()))) {
-            $this->addHiddenField(
-                (new Hidden(static::PREVIOUS_URL_KEY))->value($previous)
-            );
+            $this->addHiddenField((new Hidden(static::PREVIOUS_URL_KEY))->value($previous));
         }
     }
 
@@ -512,7 +507,12 @@ class Builder
             $attributes['enctype'] = 'multipart/form-data';
         }
 
-        return '<form '.admin_attrs($attributes).'>';
+        $html = [];
+        foreach ($attributes as $name => $value) {
+            $html[] = "$name=\"$value\"";
+        }
+
+        return '<form '.implode(' ', $html).' pjax-container>';
     }
 
     /**
@@ -530,12 +530,36 @@ class Builder
 
     /**
      * @param string $message
+     *
+     * @return void
      */
     public function confirm(string $message)
     {
-        $this->confirm = $message;
+        $trans = [
+            'confirm' => trans('admin.confirm'),
+            'cancel'  => trans('admin.cancel'),
+        ];
 
-        return $this;
+        $script = <<<SCRIPT
+$('form.{$this->formClass} button[type=submit]').click(function (e) {
+    e.preventDefault();
+    var form = $(this).parents('form');
+    swal({
+        title: "$message",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "{$trans['confirm']}",
+        cancelButtonText: "{$trans['cancel']}",
+    }).then(function (result) {
+        if (result.value) {
+          form.submit();
+        }
+    });
+});
+SCRIPT;
+
+        Admin::script($script);
     }
 
     /**
@@ -549,19 +573,19 @@ class Builder
             return;
         }
 
-        $reserved = [
-            $this->getModel()->getCreatedAtColumn(),
-            $this->getModel()->getUpdatedAtColumn(),
+        $reservedColumns = [
+            $this->form->model()->getCreatedAtColumn(),
+            $this->form->model()->getUpdatedAtColumn(),
         ];
 
-        if ($this->getModel()->incrementing) {
-            $reserved[] = $this->getModel()->getKeyName();
+        if ($this->form->model()->incrementing) {
+            $reservedColumns[] = $this->form->model()->getKeyName();
         }
 
-        $this->form->getLayout()->removeReservedFields($reserved);
+        $this->form->getLayout()->removeReservedFields($reservedColumns);
 
-        $this->fields = $this->fields()->reject(function (Field $field) use ($reserved) {
-            return in_array($field->column(), $reserved, true);
+        $this->fields = $this->fields()->reject(function (Field $field) use ($reservedColumns) {
+            return in_array($field->column(), $reservedColumns, true);
         });
     }
 
@@ -586,6 +610,58 @@ class Builder
     }
 
     /**
+     * Add script for tab form.
+     *
+     * @return void
+     */
+    protected function addTabformScript()
+    {
+        $script = <<<'SCRIPT'
+
+var hash = document.location.hash;
+if (hash) {
+    $('.nav-tabs a[href="' + hash + '"]').tab('show');
+}
+
+// Change hash for page-reload
+$('.nav-tabs a').on('shown.bs.tab', function (e) {
+    history.pushState(null,null, e.target.hash);
+});
+
+if ($('.has-error').length) {
+    $('.has-error').each(function () {
+        var tabId = '#'+$(this).closest('.tab-pane').attr('id');
+        $('li a[href="'+tabId+'"] i').removeClass('hide');
+    });
+
+    var first = $('.has-error:first').closest('.tab-pane').attr('id');
+    $('li a[href="#'+first+'"]').tab('show');
+}
+
+SCRIPT;
+        Admin::script($script);
+    }
+
+    /**
+     * Add script for cascade.
+     *
+     * @return void
+     */
+    protected function addCascadeScript()
+    {
+        $script = <<<SCRIPT
+;(function () {
+    $('form.{$this->formClass}').submit(function (e) {
+        e.preventDefault();
+        $(this).find('div.cascade-group.hide :input').attr('disabled', true);
+    });
+})();
+SCRIPT;
+
+        Admin::script($script);
+    }
+
+    /**
      * Render form.
      *
      * @return string
@@ -594,13 +670,21 @@ class Builder
     {
         $this->removeReservedFields();
 
-        return Admin::view($this->view, [
+        $tabObj = $this->form->setTab();
+
+        if (!$tabObj->isEmpty()) {
+            $this->addTabformScript();
+        }
+
+        $this->addCascadeScript();
+
+        $data = [
             'form'   => $this,
-            'confirm'=> $this->confirm,
-            'class'  => $this->formClass,
-            'tabObj' => $this->form->setTab(),
+            'tabObj' => $tabObj,
             'width'  => $this->width,
             'layout' => $this->form->getLayout(),
-        ]);
+        ];
+
+        return view($this->view, $data)->render();
     }
 }

@@ -112,7 +112,6 @@ trait UploadField
     protected function setupDefaultOptions()
     {
         $defaults = [
-            'theme'                => 'fas',
             'overwriteInitial'     => false,
             'initialPreviewAsData' => true,
             'msgPlaceholder'       => trans('admin.choose_file'),
@@ -122,7 +121,6 @@ trait UploadField
             'showUpload'           => false,
             'showCancel'           => false,
             'dropZoneEnabled'      => false,
-            'browseClass'          => admin_color('btn btn-%s'),
             'deleteExtraData'      => [
                 $this->formatName($this->column) => static::FILE_DELETE_FLAG,
                 static::FILE_DELETE_FLAG         => '',
@@ -499,7 +497,7 @@ trait UploadField
             $this->destroyThumbnail();
         }
 
-        if ($this->storage->exists($this->original)) {
+        if (!empty($this->original) && $this->storage->exists($this->original)) {
             $this->storage->delete($this->original);
         }
     }

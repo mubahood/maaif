@@ -168,7 +168,18 @@ class Content implements Renderable
      */
     public function view($view, $data = [])
     {
-        return $this->body(Admin::view($view, $data));
+        $this->view = compact('view', 'data');
+
+        return $this;
+    }
+
+    /**
+     * @param string $view
+     * @param array  $data
+     */
+    public function component($view, $data = [])
+    {
+        return $this->body(Admin::component($view, $data));
     }
 
     /**
@@ -272,6 +283,18 @@ class Content implements Renderable
     }
 
     /**
+     * @return array
+     */
+    protected function getUserData()
+    {
+        if (!$user = Admin::user()) {
+            return [];
+        }
+
+        return Arr::only($user->toArray(), ['id', 'username', 'email', 'name', 'avatar']);
+    }
+
+    /**
      * Render this content.
      *
      * @return string
@@ -282,8 +305,9 @@ class Content implements Renderable
             'header'      => $this->title,
             'description' => $this->description,
             'breadcrumb'  => $this->breadcrumb,
-            '__content'   => $this->build(),
-            '__view'      => $this->view,
+            '_content_'   => $this->build(),
+            '_view_'      => $this->view,
+            '_user_'      => $this->getUserData(),
         ];
 
         return view('admin::content', $items)->render();

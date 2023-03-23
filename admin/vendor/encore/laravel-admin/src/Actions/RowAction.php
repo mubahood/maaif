@@ -2,10 +2,10 @@
 
 namespace Encore\Admin\Actions;
 
-use Encore\Admin\Table\Column;
+use Encore\Admin\Grid\Column;
 use Illuminate\Http\Request;
 
-abstract class RowAction extends TableAction
+abstract class RowAction extends GridAction
 {
     /**
      * @var \Illuminate\Database\Eloquent\Model
@@ -20,17 +20,12 @@ abstract class RowAction extends TableAction
     /**
      * @var string
      */
-    public $selectorPrefix = '.table-row-action-';
+    public $selectorPrefix = '.grid-row-action-';
 
     /**
      * @var bool
      */
     protected $asColumn = false;
-
-    /**
-     * @var bool
-     */
-    public $dblclick = false;
 
     /**
      * Get primary key value of current row.
@@ -109,18 +104,6 @@ abstract class RowAction extends TableAction
     }
 
     /**
-     * Double-click table row to activate this action.
-     *
-     * @return $this
-     */
-    public function dblclick()
-    {
-        $this->dblclick = true;
-
-        return $this;
-    }
-
-    /**
      * @param Request $request
      *
      * @return mixed
@@ -144,19 +127,6 @@ abstract class RowAction extends TableAction
     {
     }
 
-    public function getElementClass()
-    {
-        return parent::getElementClass().' dropdown-item';
-    }
-
-    /**
-     * @return string
-     */
-    public function getActiontElementClass()
-    {
-        return parent::getElementClass();
-    }
-
     /**
      * Render row action.
      *
@@ -165,7 +135,7 @@ abstract class RowAction extends TableAction
     public function render()
     {
         if ($href = $this->href()) {
-            return "<a href='{$href}' class='{$this->getElementClass()}'>{$this->name()}</a>";
+            return "<a href='{$href}'>{$this->name()}</a>";
         }
 
         $this->addScript();

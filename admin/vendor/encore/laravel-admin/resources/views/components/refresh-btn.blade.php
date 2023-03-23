@@ -1,10 +1,11 @@
-<li class="nav-item">
-    <a href="javascript:void(0);" @el(nav-link)>
-        <i class="fas fa-sync"></i>
+<li>
+    <a href="javascript:void(0);" class="container-refresh">
+        <i class="fa fa-refresh"></i>
     </a>
 </li>
 <script>
-    @el.off('click').on('click', function() {
-        $.admin.reload('{{ admin_trans('admin.refresh_succeeded') }}');
+    $('.container-refresh').off('click').on('click', function() {
+        $.admin.reload();
+        $.admin.toastr.success('{{ __('admin.refresh_succeeded') }}', '', {positionClass:"toast-top-center"});
     });
 </script>

@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Form\Field;
 
+use Encore\Admin\Admin;
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Arr;
 
@@ -93,20 +94,20 @@ class ListField extends Field
             return false;
         }
 
-        $rules["{$this->column}.*"] = $fieldRules;
-        $attributes["{$this->column}.*"] = __('Value');
+        $rules["{$this->column}.values.*"] = $fieldRules;
+        $attributes["{$this->column}.values.*"] = __('Value');
 
-        $rules[$this->column][] = 'array';
+        $rules["{$this->column}.values"][] = 'array';
 
         if (!is_null($this->max)) {
-            $rules[$this->column][] = "max:$this->max";
+            $rules["{$this->column}.values"][] = "max:$this->max";
         }
 
         if (!is_null($this->min)) {
-            $rules[$this->column][] = "min:$this->min";
+            $rules["{$this->column}.values"][] = "min:$this->min";
         }
 
-        $attributes[$this->column] = $this->label;
+        $attributes["{$this->column}.values"] = $this->label;
 
         return validator($input, $rules, $this->getValidationMessages(), $attributes);
     }
@@ -114,8 +115,39 @@ class ListField extends Field
     /**
      * {@inheritdoc}
      */
+    protected function setupScript()
+    {
+        $this->script = <<<SCRIPT
+
+$('.{$this->column}-add').on('click', function () {
+    var tpl = $('template.{$this->column}-tpl').html();
+    $('tbody.list-{$this->column}-table').append(tpl);
+});
+
+$('tbody').on('click', '.{$this->column}-remove', function () {
+    $(this).closest('tr').remove();
+});
+
+SCRIPT;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function prepare($value)
     {
-        return array_values($value);
+        return array_values($value['values']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render()
+    {
+        $this->setupScript();
+
+        Admin::style('td .form-group {margin-bottom: 0 !important;}');
+
+        return parent::render();
     }
 }

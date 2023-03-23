@@ -1,10 +1,9 @@
-
 <li class="dd-item" data-id="{{ $branch[$keyName] }}">
     <div class="dd-handle">
         {!! $branchCallback($branch) !!}
-        <span class="float-right dd-nodrag">
+        <span class="pull-right dd-nodrag">
             <a href="{{ url("$path/$branch[$keyName]/edit") }}"><i class="fa fa-edit"></i></a>
-            {!! (new \Encore\Admin\Tree\Delete($path, $branch[$keyName]))->setModel($model)->render()  !!}
+            <a href="javascript:void(0);" data-id="{{ $branch[$keyName] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
         </span>
     </div>
     @if(isset($branch['children']))

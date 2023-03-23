@@ -6,6 +6,10 @@ class Ip extends Text
 {
     protected $rules = 'nullable|ip';
 
+    protected static $js = [
+        '/vendor/laravel-admin/AdminLTE/plugins/input-mask/jquery.inputmask.bundle.min.js',
+    ];
+
     /**
      * @see https://github.com/RobinHerbots/Inputmask#options
      *
@@ -19,7 +23,7 @@ class Ip extends Text
     {
         $this->inputmask($this->options);
 
-        $this->prependText('<i class="fa fa-laptop fa-fw"></i>')
+        $this->prepend('<i class="fa fa-laptop fa-fw"></i>')
             ->defaultAttribute('style', 'width: 130px');
 
         return parent::render();

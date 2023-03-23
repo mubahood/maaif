@@ -2,7 +2,7 @@
 
 namespace Encore\Admin\Traits;
 
-use Encore\Admin\Table\Model as TableModel;
+use Encore\Admin\Grid\Model as GridModel;
 
 trait ShouldSnakeAttributes
 {
@@ -24,7 +24,7 @@ trait ShouldSnakeAttributes
             return static::$snakeAttributes;
         }
 
-        $model = ($this->model instanceof TableModel) ?
+        $model = ($this->model instanceof GridModel) ?
             $this->model->eloquent() : $this->model;
 
         $class = get_class($model);

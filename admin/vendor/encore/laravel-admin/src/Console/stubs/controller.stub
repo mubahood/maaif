@@ -3,9 +3,9 @@
 namespace DummyNamespace;
 
 use DummyModelNamespace;
-use Encore\Admin\Http\Controllers\AdminController;
+use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
-use Encore\Admin\Table;
+use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
 class DummyClass extends AdminController
@@ -18,17 +18,17 @@ class DummyClass extends AdminController
     protected $title = 'DummyTitle';
 
     /**
-     * Make a table builder.
+     * Make a grid builder.
      *
-     * @return Table
+     * @return Grid
      */
-    protected function table()
+    protected function grid()
     {
-        $table = new Table(new DummyModel());
+        $grid = new Grid(new DummyModel());
 
-DummyTable
+DummyGrid
 
-        return $table;
+        return $grid;
     }
 
     /**

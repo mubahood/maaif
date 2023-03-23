@@ -2,9 +2,9 @@
 
 namespace DummyNamespace;
 
-use Encore\Admin\Http\Controllers\AdminController;
+use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
-use Encore\Admin\Table;
+use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
 class ExampleController extends AdminController
@@ -17,19 +17,19 @@ class ExampleController extends AdminController
     protected $title = 'Example controller';
 
     /**
-     * Make a table builder.
+     * Make a grid builder.
      *
-     * @return Table
+     * @return Grid
      */
-    protected function table()
+    protected function grid()
     {
-        $table = new Table(new ExampleModel);
+        $grid = new Grid(new ExampleModel);
 
-        $table->column('id', __('ID'))->sortable();
-        $table->column('created_at', __('Created at'));
-        $table->column('updated_at', __('Updated at'));
+        $grid->column('id', __('ID'))->sortable();
+        $grid->column('created_at', __('Created at'));
+        $grid->column('updated_at', __('Updated at'));
 
-        return $table;
+        return $grid;
     }
 
     /**

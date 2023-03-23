@@ -2,13 +2,6 @@
 
 namespace Encore\Admin\Form\Field;
 
-use Encore\Admin\Form\Field;
-
-/**
- * Trait PlainInput.
- *
- * @mixin Text
- */
 trait PlainInput
 {
     /**
@@ -22,32 +15,17 @@ trait PlainInput
     protected $append;
 
     /**
-     * @param mixed $prepend
+     * @param mixed $string
      *
      * @return $this
      */
-    public function prepend($prepend)
+    public function prepend($string)
     {
-        if ($prepend instanceof Field) {
-            $prepend->bePrepend = true;
-            $this->form->pushField($prepend);
-        }
-
         if (is_null($this->prepend)) {
-            $this->prepend = $prepend;
+            $this->prepend = $string;
         }
 
         return $this;
-    }
-
-    /**
-     * @param string $text
-     *
-     * @return $this
-     */
-    public function prependText($text)
-    {
-        return $this->prepend("<span class=\"input-group-text\">{$text}</span>");
     }
 
     /**
@@ -62,16 +40,6 @@ trait PlainInput
         }
 
         return $this;
-    }
-
-    /**
-     * @param string $text
-     *
-     * @return $this
-     */
-    public function appendText($text)
-    {
-        return $this->append("<span class=\"input-group-text\">{$text}</span>");
     }
 
     /**
