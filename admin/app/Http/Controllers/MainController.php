@@ -287,7 +287,7 @@ status
     {
 
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML(view('reports/print', []));
+        $pdf->loadHTML(view('reports/report-annual-workplans-print', []));
         return $pdf->stream();
 
        /*  $id = (int)(trim($_GET['id']));

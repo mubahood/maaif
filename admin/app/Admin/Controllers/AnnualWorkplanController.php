@@ -5,19 +5,19 @@ namespace App\Admin\Controllers;
 use App\Models\AnnualWorkplan;
 use App\Models\Department;
 use App\Models\District;
-use Encore\Admin\Controllers\AdminController;
-use Encore\Admin\Form;
-use Encore\Admin\Grid;
-use Encore\Admin\Show;
+use OpenAdmin\Admin\Controllers\AdminController;
+use OpenAdmin\Admin\Form;
+use OpenAdmin\Admin\Grid;
+use OpenAdmin\Admin\Show;
 
-class ReportAnnualWorkplanController extends AdminController
+class AnnualWorkplanController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Annual Workplans - Reports';
+    protected $title = 'Annual Workplans';
 
     /**
      * Make a grid builder.
@@ -28,10 +28,6 @@ class ReportAnnualWorkplanController extends AdminController
     {
         $grid = new Grid(new AnnualWorkplan());
         $grid->disableBatchActions();
-        $grid->disableCreateButton();
-        $grid->disableExport();
-        $grid->disableActions();
-
         $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('ID'))->sortable();
         $grid->column('year', __('Year'))->sortable();
@@ -51,10 +47,6 @@ class ReportAnnualWorkplanController extends AdminController
             })
             ->sortable();
         $grid->column('description', __('Description'))->hide();
-        $grid->column('export', __('Report'))->display(function () {
-            $link = '<a target="_blank" href="' . url('report-annual-workplans-print?id=' . $this->id) . '">Generate Report</a>';
-            return $link;
-        });
 
         return $grid;
     }

@@ -289,7 +289,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout' => ['fixed'],
+    'layout' => ['fixed',"fixed", "layout-boxed", "layout-top-nav", "sidebar-mini"],
 
     /*
     |--------------------------------------------------------------------------
@@ -381,7 +381,7 @@ return [
     | The global Grid action display class.
     |--------------------------------------------------------------------------
     */
-    'grid_action_class' => \OpenAdmin\Admin\Grid\Displayers\DropdownActions::class,
+    'grid_action_class' => \OpenAdmin\Admin\Grid\Displayers\Actions\Actions::class,
 
     /*
     |--------------------------------------------------------------------------
