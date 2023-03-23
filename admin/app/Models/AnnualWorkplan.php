@@ -5,6 +5,7 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class AnnualWorkplan extends Model
 {
@@ -49,8 +50,34 @@ class AnnualWorkplan extends Model
 
     public function getNameAttribute()
     {
-        return   $this->district->name . ", " . $this->department->department . ' - ' .  $this->year; 
+        return   $this->district->name . ", " . $this->department->department . ' - ' .  $this->year;
+    }
+    public function getBugetTextAttribute()
+    {
+        $sql = "SELECT SUM(budget) AS s FROM  ext_area_quaterly_activity WHERE annual_id = $this->id";
+        $s = DB::select($sql);
+        return $s[0]->s;
     }
 
-    protected $appends = ['name'];
+    public function getBugetByQuater($q)
+    {
+        $sql = "SELECT SUM(budget) AS s FROM  ext_area_quaterly_activity WHERE annual_id = $this->id AND quarter = $q";
+        $s = DB::select($sql);
+        return $s[0]->s;
+    }
+
+    public function getQuaterlyActivities($q)
+    {
+        return QuaterlyOutput::where([
+            'annual_id' => $this->id,
+            'quarter' => $q
+        ])->get();
+    }
+
+    public function quaterly_outputs()
+    {
+        return $this->hasMany(QuaterlyOutput::class, 'annual_id');
+    }
+
+    protected $appends = ['name', 'buget_text'];
 }
