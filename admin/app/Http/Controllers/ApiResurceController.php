@@ -7,7 +7,7 @@ use App\Models\Person;
 use App\Models\Utils;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
-use Encore\Admin\Auth\Database\Administrator;
+use OpenAdmin\Admin\Auth\Database\Administrator;
 use Exception;
 use Illuminate\Http\Request;
 use Throwable;

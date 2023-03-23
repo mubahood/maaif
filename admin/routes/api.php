@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
+use App\Models\AnnualOutput;
+use App\Models\AnnualOutputHasActivity;
+use App\Models\AnnualWorkplan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +42,28 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 }
  */
 
+Route::get('ajax/AnnualOutputHasActivity', function (Request $r) {
+
+    $data = [];
+    $an = AnnualOutput::where([
+        'id' => ((int)($r->q))
+    ])->first();
+
+    if ($an == null) {
+        return [];
+    }
+
+    
+    foreach ($an->annual_outputs as $v) {
+        $data[] = [
+            'id' => $v->id,
+            'text' => $r->q . "<= " . $v->name_text
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
 Route::get('ajax', function (Request $r) {
 
     $_model = trim($r->get('model'));
@@ -87,8 +112,8 @@ Route::get('ajax', function (Request $r) {
         $name = "";
         if (isset($v->name)) {
             $name = " - " . $v->name;
-        }else{
-            $name = " - " . $v->$search_by_1; 
+        } else {
+            $name = " - " . $v->$search_by_1;
         }
         $data[] = [
             'id' => $v->id,
@@ -99,8 +124,8 @@ Route::get('ajax', function (Request $r) {
         $name = "";
         if (isset($v->name)) {
             $name = " - " . $v->name;
-        }else{
-            $name = " - " . $v->$search_by_1; 
+        } else {
+            $name = " - " . $v->$search_by_1;
         }
         $data[] = [
             'id' => $v->id,
