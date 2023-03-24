@@ -2131,10 +2131,10 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "OpenAdmin\\Admin\\AdminServiceProvider"
+                        "Encore\\Admin\\AdminServiceProvider"
                     ],
                     "aliases": {
-                        "Admin": "OpenAdmin\\Admin\\Facades\\Admin"
+                        "Admin": "Encore\\Admin\\Facades\\Admin"
                     }
                 }
             },
@@ -2143,7 +2143,7 @@
                     "src/helpers.php"
                 ],
                 "psr-4": {
-                    "OpenAdmin\\Admin\\": "src/"
+                    "Encore\\Admin\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
