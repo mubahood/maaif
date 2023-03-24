@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Encore\Admin\Form\Field\BelongsToMany;
+ 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as RelationsBelongsToMany;

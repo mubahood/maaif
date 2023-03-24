@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnnualWorkplan;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\NewsPost;
-use Encore\Admin\Auth\Database\Administrator;
+use OpenAdmin\Admin\Auth\Database\Administrator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -285,15 +286,20 @@ status
 
     public function report_annual_workplans_print()
     {
-
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML(view('reports/print', []));
-        return $pdf->stream();
-
-       /*  $id = (int)(trim($_GET['id']));
-        $m =  Movement::find($id);
+        $id = (int)(trim($_GET['id']));
+        $m =  AnnualWorkplan::find($id);
         if ($m == null) {
             dd("Movement not found.");
-        } */
+        }
+
+
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(view('reports/report-annual-workplans-print', [
+            'm' => $m
+        ]));
+        return $pdf->stream();
+
+        /*  */
     }
 }
