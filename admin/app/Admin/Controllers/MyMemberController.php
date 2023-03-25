@@ -23,7 +23,7 @@ class MyMemberController extends AdminController
      *
      * @var string
      */
-    protected $title = 'User';
+    protected $title = 'My Members';
 
     /**
      * Make a grid builder.
@@ -79,21 +79,22 @@ class MyMemberController extends AdminController
             ->sortable();
         $grid->column('education', __('Education'))->hide();
         $grid->column('year_working', __('Year working'))->hide();
-        $grid->column('year_maaif', __('Joined'))->sortable();
+        $grid->column('activies', __('Activies'))
+            ->display(function () {
+                $activies = '<p style="font-weight: bolder; padding: 0px; margin: 0px; text-align: center; font-size: 20px;">
+                <a title="View Activities" href="quaterly-outputs?user_id=' . $this->id . '" >' . count($this->activities) . '</a></p>';
+                return $activies;
+            });
+
         $grid->column('actions', __('Actions'))->display(function () {
             $addActivity = '<a href="quaterly-outputs/create?user=' . $this->id . '" >Add activity</a>';
+            //$addActivity .= '<p class="p-0 m-0"><a href="quaterly-outputs/create?user=' . $this->id . '" >Generate report</a></p>';
             return $addActivity;
         });
 
         $grid->disableActions();
 
 
-        /*
-        $grid->actions(function ($actions) {
-            $actions->disableDelete(); 
-            $actions->add(new CaseModelAddQuarterlyActivity1); 
-        });
- */
 
         return $grid;
     }

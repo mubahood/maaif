@@ -48,7 +48,7 @@ class AnnualOutputController extends AdminController
                     . "&search_by_2=id"
                     . "&model=User"
             );
-            $filter->equal('user_id', 'Filter by account')
+            $filter->equal('user_id', 'Filter by officer')
                 ->select(function ($id) {
                     $a = User::find($id);
                     if ($a) {

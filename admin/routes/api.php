@@ -1,8 +1,8 @@
 <?php
- 
+
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
-use App\Models\AnnualOutput; 
+use App\Models\AnnualOutput;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,7 +48,8 @@ Route::get('AnnualOutputController', function (Request $r) {
         'like',
         "%$r->q%"
     )
-        ->limit(25)
+        ->orderBy('id', 'Desc')
+        ->limit(30)
         ->get();
 
     if ($ans == null) {
@@ -59,7 +60,7 @@ Route::get('AnnualOutputController', function (Request $r) {
     foreach ($ans as $v) {
         $data[] = [
             'id' => $v->id,
-            'text' => $v->id . " - " .$v->annual_workplan->name." - ". str_replace(['\n','\r'],'',$v->key_output)
+            'text' => $v->id . " - " . $v->annual_workplan->name . " - " . str_replace(['\n', '\r'], '', $v->key_output)
         ];
     }
     return [

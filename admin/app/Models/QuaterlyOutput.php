@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,15 +11,20 @@ class QuaterlyOutput extends Model
     protected $table = 'ext_area_quaterly_activity';
     use HasFactory;
 
-    
+
     function output_activities()
     {
-        return $this->belongsToMany(QuaterlyOutputActivity::class, 'quaterly_output_id'); 
-    }  
- 
+        return $this->belongsToMany(QuaterlyOutputActivity::class, 'quaterly_output_id');
+    }
+
+    public function getEntreprizesAttribute($vals)
+    {
+        return explode(',', $vals);
+    }
     public function getTopicAttribute($vals)
     {
         $arr = explode(',', $vals);
+        return $arr;
         $texts = "";
         $isFirst = true;
         foreach ($arr as $key => $txt) {
@@ -36,16 +42,56 @@ class QuaterlyOutput extends Model
         if (strlen($texts) < 2) {
             $texts = $vals;
         }
-
         return $texts;
     }
 
-    public function work_plan(){
-        return $this->belongsTo(AnnualWorkplan::class,'annual_id');
+
+
+    public static function boot()
+    {
+
+        parent::boot();
+        self::creating(function ($m) {
+            return QuaterlyOutput::prepare($m);
+        });
+
+
+        self::updating(function ($m) {
+            return QuaterlyOutput::prepare($m);
+        });
+    }
+
+
+
+    public static function prepare($m)
+    {
+        $a = AnnualOutput::find($m->key_output_id);
+        if ($a != null) {
+            $m->annual_id = $a->annual_workplan_id;
+        } else {
+            throw new Exception("Annual plan not found.", 1);
+        }
+        return $m;
+    }
+    public function setTopicAttribute($value)
+    {
+        $this->attributes['topic'] = implode(',', $value);
+    }
+
+
+    public function setEntreprizesAttribute($value)
+    {
+        $this->attributes['entreprizes'] = implode(',', $value);
+    }
+
+
+    public function work_plan()
+    {
+        return $this->belongsTo(AnnualWorkplan::class, 'annual_id');
     }
     public function output()
     {
-       /*  $y = AnnualOutput::find($this->annual_id);
+        /*  $y = AnnualOutput::find($this->annual_id);
         if (
             $y == null 
         ) {
@@ -65,7 +111,7 @@ class QuaterlyOutput extends Model
                 $this->save();
             }
         } */
-        return $this->belongsTo(AnnualOutputHasActivity::class, 'key_output_id'); 
+        return $this->belongsTo(AnnualOutputHasActivity::class, 'key_output_id');
     }
     public function user()
     {

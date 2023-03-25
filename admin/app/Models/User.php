@@ -19,6 +19,10 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
     protected $table = 'user';
 
+    public function activities()
+    {
+        return $this->hasMany(QuaterlyOutput::class, 'user_id');
+    }
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');

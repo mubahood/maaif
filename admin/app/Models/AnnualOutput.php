@@ -84,15 +84,7 @@ class AnnualOutput extends Model
         return $texts;
     }
 
-    public function getTopicAttribute($value)
-    {
-        return explode(',', $value);
-    }
-
-    public function setTopicAttribute($value)
-    {
-        $this->attributes['tags'] = implode(',', $value);
-    } 
+    
 
     protected $appends = ['activities_text'];
 }

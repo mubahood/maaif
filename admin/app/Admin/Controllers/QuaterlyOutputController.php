@@ -6,12 +6,15 @@ use App\Models\Activity;
 use App\Models\AnnualOutput;
 use App\Models\AnnualOutputHasActivity;
 use App\Models\AnnualWorkplan;
+use App\Models\Enterprise;
 use App\Models\FinancialYear;
 use App\Models\QuaterlyOutput;
+use App\Models\Topic;
 use App\Models\User;
 use App\Models\Utils;
 use content;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -34,36 +37,54 @@ class QuaterlyOutputController extends AdminController
      */
     protected function grid()
     {
-        
-        /* 
-        $m = AnnualOutput::find(4557);
-        ```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````  $m->indicators .= rand(11,1111);
-        $m->save();
-        dd($m);``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````` */
 
-        /*   $years = [1, 2, 3, 4, 5, 8, 9];
-        foreach (QuaterlyOutput::all() as $key => $v) {
-            $v->annual_id = shuffle($years);
-            $v->save();
-            echo $v->id . " <hr> ";
-            continue;
-            $years[rand(0, 5)];
-            dd($v);
-            $u = User::find($v->user_id);
-            if ($u == null) {
-                continue;
-            }
-            if (in_array($u->year_working, $years)) {
-                continue;
-            }
-            $years[] = $u->year_working;
-            echo $u->year_working . "<hr>";
-            continue;
-            dd($u->year_working);
-            dd($v);
+        $m = QuaterlyOutput::where([
+            'created_by' => Auth::user()->id
+        ])->orderBy('id', 'desc')->first();
+        if ($m != null && $m->add_another == 'Yes') {
+            Admin::script('window.location.replace("' . admin_url('quaterly-outputs/create?user=' . $m->user_id) . '");');
+            return 'Loading...';
         }
-        die('save'); */
+
+
         $grid = new Grid(new QuaterlyOutput());
+
+
+        $grid->filter(function ($filter) {
+            // Remove the default id filter
+            $filter->disableIdFilter();
+
+            $filter->equal('annual_id', 'Filter by Workplan')
+                ->select(AnnualWorkplan::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id'));
+
+
+            $ajax_url = url(
+                '/api/ajax?'
+                    . "search_by_1=name"
+                    . "&search_by_2=id"
+                    . "&model=User"
+            );
+            $filter->equal('user_id', 'Filter by officer')
+                ->select(function ($id) {
+                    $a = User::find($id);
+                    if ($a) {
+                        return [$a->id => "#" . $a->id . " - " . $a->name];
+                    }
+                })->ajax($ajax_url);
+
+
+            $filter->group('budget', 'Filter by Budget', function ($group) {
+                $group->gt('greater than');
+                $group->lt('less than');
+                $group->equal('equal to');
+            });
+
+            $filter->between('created_at', 'Filter by date between')->date();
+        });
+
+
+
+
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
 
@@ -73,6 +94,10 @@ class QuaterlyOutputController extends AdminController
         })->sortable();
 
         $grid->column('topic', __('Topics'))->display(function ($x) {
+            return "name_text";
+            if ($this->topic != null) {
+            }
+
             return '<p title="' . $x . '">' . Str::limit($x, 50) . '</p>';
         });
 
@@ -142,25 +167,22 @@ class QuaterlyOutputController extends AdminController
      */
     protected function form()
     {
-        /* foreach (QuaterlyOutput::all() as $key => $v) {
-            //dd($v); 
-
-            if($v->output!= null){
-                continue; 
-            }
-
-            $ans = AnnualOutputHasActivity::where([
-                'annual_output_id' => $v->work_plan->id
-            ])->get();
-
-            $v->key_output_id = $ans[rand(0, count($ans))]->id;
+        /*  foreach (QuaterlyOutput::all() as $key => $v) {
+            $v->created_by = $v->user_id;
             $v->save();
-        
-            echo $v->id."<br>";
-            die();
-        }
-        die("done"); */
+            echo $v->id."<hr>"; 
+        } */
+
         $form = new Form(new QuaterlyOutput());
+
+        if ($form->isCreating()) {
+            $form->hidden('created_by')->value(Auth::user()->id)->default(Auth::user()->id);
+        }
+
+        $form->disableCreatingCheck();
+        $form->disableEditingCheck();
+        $form->disableViewCheck();
+        $form->disableReset();
         $ajax_url = url(
             '/api/ajax?'
                 . "search_by_1=name"
@@ -206,21 +228,6 @@ class QuaterlyOutputController extends AdminController
         }
 
 
-
-
-
-        /* 
-        $form->select('annual_id', __('Annual workplan'))->options(
-            AnnualWorkplan::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id')
-        )->rules('required');
- */
-
-        /*  $outs = []; 
-        foreach (AnnualOutputHasActivity::where([])->orderBy('id', 'desc')->limit(200)->get() as $value) {
-            $outs[$value->id] = $value->name_text;
-        }
-        
-  */
         $ajax_url = url(
             '/api/AnnualOutputController'
         );
@@ -233,11 +240,17 @@ class QuaterlyOutputController extends AdminController
             })
             ->ajax($ajax_url)->rules('required');
 
-        $topics = Topic
-        ext_topics
+        $topics = Topic::all()->pluck('name_text', 'id');
+        $form->multipleSelect('topic', __('Topics'))
+            ->options($topics)
+            ->required();
 
-        $form->multipleSelect('topic', __('Topics'))->required();
- 
+
+        $entreprizes = Enterprise::all()->pluck('name', 'id');
+        $form->multipleSelect('entreprizes', __('Enterprises'))
+            ->options($entreprizes)
+            ->required();
+
 
         /* annual_output_has_activity_id */
         /* 
@@ -269,6 +282,11 @@ class QuaterlyOutputController extends AdminController
         /*  $form->text('entreprizes', __('Entreprizes')); */
         $form->decimal('num_planned', __('Number planned'))->required();
         $form->decimal('num_target_ben', __('Number target'))->required();
+
+        $form->radio('add_another', __('Do you want to add another output to this officer?'))->options([
+            "Yes" => 'YES',
+            "No" => 'No',
+        ])->required();
 
         return $form;
     }
