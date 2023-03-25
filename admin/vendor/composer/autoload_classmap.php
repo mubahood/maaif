@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Admin\\Actions\\User\\CloneWorkPlan' => $baseDir . '/app/Admin/Actions/User/CloneWorkPlan.php',
     'App\\Admin\\Controllers\\ActivityCategoryController' => $baseDir . '/app/Admin/Controllers/ActivityCategoryController.php',
     'App\\Admin\\Controllers\\ActivityController' => $baseDir . '/app/Admin/Controllers/ActivityController.php',
     'App\\Admin\\Controllers\\AdvisoryAlertController' => $baseDir . '/app/Admin/Controllers/AdvisoryAlertController.php',
@@ -37,6 +38,7 @@ return array(
     'App\\Admin\\Controllers\\MeetingController' => $baseDir . '/app/Admin/Controllers/MeetingController.php',
     'App\\Admin\\Controllers\\MemberController' => $baseDir . '/app/Admin/Controllers/MemberController.php',
     'App\\Admin\\Controllers\\MembersController' => $baseDir . '/app/Admin/Controllers/MembersController.php',
+    'App\\Admin\\Controllers\\MyMemberController' => $baseDir . '/app/Admin/Controllers/MyMemberController.php',
     'App\\Admin\\Controllers\\NewsPostController' => $baseDir . '/app/Admin/Controllers/NewsPostController.php',
     'App\\Admin\\Controllers\\ParticipantController' => $baseDir . '/app/Admin/Controllers/ParticipantController.php',
     'App\\Admin\\Controllers\\PersonController' => $baseDir . '/app/Admin/Controllers/PersonController.php',
@@ -143,6 +145,7 @@ return array(
     'App\\Models\\ServiceProvider' => $baseDir . '/app/Models/ServiceProvider.php',
     'App\\Models\\TrafficRecord' => $baseDir . '/app/Models/TrafficRecord.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
+    'App\\Models\\UserCategory' => $baseDir . '/app/Models/UserCategory.php',
     'App\\Models\\UserHasProgram' => $baseDir . '/app/Models/UserHasProgram.php',
     'App\\Models\\Utils' => $baseDir . '/app/Models/Utils.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',

@@ -34,12 +34,14 @@ Route::group([
     $router->resource('annual-workplans', AnnualWorkplanController::class);
     $router->resource('ext-topics', ExtTopicController::class);
     $router->resource('my-members', MyMemberController::class);
+    $router->resource('financial-years', FinancialYearController::class);
+
 
 
     $router->resource('report-annual-workplans', ReportAnnualWorkplanController::class);
     $router->resource('report-departments', ReportDepartmentController::class);
     $router->resource('report-districts', ReportDistrictController::class);
-    $router->resource('report-members', ReportMemberController::class); 
+    $router->resource('report-members', ReportMemberController::class);
 
     /* =============NEW=============== */
     $router->resource('service-providers', ServiceProviderController::class);

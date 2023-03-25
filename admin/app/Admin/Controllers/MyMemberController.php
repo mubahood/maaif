@@ -3,13 +3,20 @@
 namespace App\Admin\Controllers;
 
 use App\Models\User;
+use Encore\Admin\Actions\RowAction;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Model;
 use Encore\Admin\Show;
-use Illuminate\Support\Facades\Auth;
 
-class MemberController extends AdminController
+
+
+
+
+
+
+class MyMemberController extends AdminController
 {
     /**
      * Title for current resource.
@@ -26,55 +33,72 @@ class MemberController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new User());
+        $grid->model()->orderBy('name', 'asc');
+        $grid->quickSearch('name');
+        $grid->disableBatchActions();
 
-        $u = Auth::user();
-        if($u->isRole('administrator')){
-            $grid->model()->where([
-                'id' => '1000'
-            ]);
-        }
-
-        $grid->quickSearch('first_name')->placeholder('Seach by name..');
-        $grid->column('id', __('Id'));
-        $grid->column('first_name', __('First name'))
-        ->editable()
-        ->sortable();
-        $grid->column('username', __('Username'))->display(
-            function($u){
-                return $this->first_name." ".$this->last_name;
-            }
-        );
+        $grid->column('id', __('ID'))->sortable();
+        $grid->column('name', __('Name'))->sortable();
+        $grid->column('gender', __('Sex'))
+            ->using([
+                'F' => 'Female',
+                'M' => 'Male',
+            ])
+            ->filter([
+                'F' => 'Female',
+                'M' => 'Male',
+            ])
+            ->sortable();
+        $grid->column('phone', __('Phone number'));
         $grid->column('email', __('Email'));
-        $grid->column('password', __('Password')); 
-        $grid->column('phone', __('Phone'));
-        $grid->column('location_id', __('Location id'));
-        $grid->column('district_id', __('District id'));
-        $grid->column('user_category_id', __('User category id'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('gender', __('Gender'));
-        $grid->column('job_title', __('Job title'));
-        $grid->column('education', __('Education'));
-        $grid->column('year_working', __('Year working'));
-        $grid->column('year_maaif', __('Year maaif'));
-        $grid->column('device_assigned', __('Device assigned'));
-        $grid->column('device_serial', __('Device serial'));
-        $grid->column('directorate_id', __('Directorate id'));
-        $grid->column('department_id', __('Department id'));
-        $grid->column('division_id', __('Division id'));
-        $grid->column('subcounty_id', __('Subcounty id'));
-        $grid->column('zone_id', __('Zone id'));
-        $grid->column('parish_id', __('Parish id'));
-        $grid->column('municipality_id', __('Municipality id'));
-        $grid->column('is_verified', __('Is verified'));
-        $grid->column('password_changed', __('Password changed'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('remember_token', __('Remember token'));
-        $grid->column('name', __('Name'));
-        $grid->column('avatar', __('Avatar'));
+        $grid->column('district_id', __('District'))
+            ->display(function () {
+                return $this->district->name;
+            })
+            ->sortable();
+        $grid->column('department_id', __('Department'))
+            ->display(function ($x) {
+                return $x;
+                $dep = $this->department;
+                if ($dep == null) {
+                    return $x;
+                }
+                return $this->dep->name;
+            })
+            ->hide()
+            ->sortable();
+        $grid->column('user_category_id', __('Designation'))
+            ->display(function ($x) {
+                $dep = $this->designation;
+                if ($dep == null) {
+                    return $x;
+                }
+                return $dep->name;
+            })
+            ->label()
+            ->sortable();
+        $grid->column('education', __('Education'))->hide();
+        $grid->column('year_working', __('Year working'))->hide();
+        $grid->column('year_maaif', __('Joined'))->sortable();
+        $grid->column('actions', __('Actions'))->display(function () {
+            $addActivity = '<a href="quaterly-outputs/create?user=' . $this->id . '" >Add activity</a>';
+            return $addActivity;
+        });
+
+        $grid->disableActions();
+
+
+        /*
+        $grid->actions(function ($actions) {
+            $actions->disableDelete(); 
+            $actions->add(new CaseModelAddQuarterlyActivity1); 
+        });
+ */
 
         return $grid;
     }
+
+
 
     /**
      * Make a show builder.
@@ -92,6 +116,7 @@ class MemberController extends AdminController
         $show->field('username', __('Username'));
         $show->field('email', __('Email'));
         $show->field('password', __('Password'));
+        $show->field('created', __('Created'));
         $show->field('phone', __('Phone'));
         $show->field('location_id', __('Location id'));
         $show->field('district_id', __('District id'));
@@ -113,7 +138,8 @@ class MemberController extends AdminController
         $show->field('municipality_id', __('Municipality id'));
         $show->field('is_verified', __('Is verified'));
         $show->field('password_changed', __('Password changed'));
-        $show->field('updated_at', __('Updated at')); 
+        $show->field('updated_at', __('Updated at'));
+        $show->field('created_at', __('Created at'));
         $show->field('remember_token', __('Remember token'));
         $show->field('name', __('Name'));
         $show->field('avatar', __('Avatar'));
@@ -130,15 +156,12 @@ class MemberController extends AdminController
     {
         $form = new Form(new User());
 
-        if($form->isEditing()){
-            $form->text('first_name', __('First name'))->rules('required'); 
-        }
-
-
+        $form->text('first_name', __('First name'));
         $form->text('last_name', __('Last name'));
         $form->text('username', __('Username'));
         $form->email('email', __('Email'));
-        $form->textarea('password', __('Password')); 
+        $form->textarea('password', __('Password'));
+        $form->datetime('created', __('Created'))->default(date('Y-m-d H:i:s'));
         $form->mobile('phone', __('Phone'));
         $form->number('location_id', __('Location id'));
         $form->number('district_id', __('District id'));

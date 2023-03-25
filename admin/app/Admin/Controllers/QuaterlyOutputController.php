@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\AnnualOutput;
 use App\Models\AnnualOutputHasActivity;
 use App\Models\AnnualWorkplan;
+use App\Models\FinancialYear;
 use App\Models\QuaterlyOutput;
 use App\Models\User;
 use App\Models\Utils;
@@ -33,6 +34,12 @@ class QuaterlyOutputController extends AdminController
      */
     protected function grid()
     {
+        
+        /* 
+        $m = AnnualOutput::find(4557);
+        ```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````  $m->indicators .= rand(11,1111);
+        $m->save();
+        dd($m);``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````` */
 
         /*   $years = [1, 2, 3, 4, 5, 8, 9];
         foreach (QuaterlyOutput::all() as $key => $v) {
@@ -160,43 +167,77 @@ class QuaterlyOutputController extends AdminController
                 . "&search_by_2=id"
                 . "&model=User"
         );
-        $form->select('user_id', "Extension Officer")
-            ->options(function ($id) {
-                $a = User::find($id);
-                if ($a == null) {
-                    $a = Auth::user();
-                }
-                if ($a) {
+
+        $hasUser = false;
+        if (isset($_GET['user'])) {
+            $u_id = ((int)($_GET['user']));
+            $officer = User::find($u_id);
+            if ($officer != null) {
+                $hasUser = true;
+            }
+        }
+
+
+        if ($hasUser) {
+            $form->select('user_id', "Extension Officer")
+                ->options(function ($id) {
+                    $u_id = ((int)($_GET['user']));
+                    $officer = User::find($u_id);
+
+                    $a = User::find($u_id);
                     return [$a->id => "#" . $a->id . " - " . $a->name];
-                }
-            })
-            ->default(Auth::user()->id)
-            ->ajax($ajax_url)->rules('required');
+                })
+                ->default($u_id)
+                ->readOnly()
+                ->ajax($ajax_url)->rules('required');
+        } else {
+            $form->select('user_id', "Extension Officer")
+                ->options(function ($id) {
+                    $a = User::find($id);
+                    if ($a == null) {
+                        $a = Auth::user();
+                    }
+                    if ($a) {
+                        return [$a->id => "#" . $a->id . " - " . $a->name];
+                    }
+                })
+                ->default(Auth::user()->id)
+                ->ajax($ajax_url)->rules('required');
+        }
 
 
 
-        $ajax_url = url(
-            '/api/ajax/AnnualOutputHasActivity?'
-                . "search_by_1=year"
-                . "&search_by_2=id"
-                . "&model=AnnualOutput"
-        );
 
+
+        /* 
         $form->select('annual_id', __('Annual workplan'))->options(
             AnnualWorkplan::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id')
-        )->load('key_output_id', $ajax_url)->rules('required'); 
-
+        )->rules('required');
+ */
 
         /*  $outs = []; 
         foreach (AnnualOutputHasActivity::where([])->orderBy('id', 'desc')->limit(200)->get() as $value) {
             $outs[$value->id] = $value->name_text;
         }
+        
   */
-        $form->select('key_output_id', __('Key annual actvity'));
+        $ajax_url = url(
+            '/api/AnnualOutputController'
+        );
+        $form->select('key_output_id', __('Select Annual Output -Activity'))
+            ->options(function ($id) {
+                $a = AnnualOutput::find($id);
+                if ($a) {
+                    return [$a->id => "#" . $a->id . " - " . $a->key_output];
+                }
+            })
+            ->ajax($ajax_url)->rules('required');
 
-        $form->textarea('activities', __('Quarterly Activities'))->required();
+        $topics = Topic
+        ext_topics
 
-
+        $form->multipleSelect('topic', __('Topics'))->required();
+ 
 
         /* annual_output_has_activity_id */
         /* 
@@ -228,11 +269,6 @@ class QuaterlyOutputController extends AdminController
         /*  $form->text('entreprizes', __('Entreprizes')); */
         $form->decimal('num_planned', __('Number planned'))->required();
         $form->decimal('num_target_ben', __('Number target'))->required();
-        $form->decimal('num_carried_out', __('Number carried'))->required();
-        $form->decimal('num_reached_ben', __('Num reached'))->required();
-        $form->text('remarks', __('Remarks'))->required();
-        $form->text('lessons', __('Lessons'))->required();
-        $form->textarea('recommendations', __('Recommendations'))->required();
 
         return $form;
     }

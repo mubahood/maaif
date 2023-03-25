@@ -10,6 +10,31 @@ class AnnualOutput extends Model
     use HasFactory;
     protected $table = 'ext_area_annual_outputs';
 
+    public static function prepare($m)
+    {
+        $wp = AnnualWorkplan::find($m->annual_workplan_id);
+        if ($wp == null) {
+            $m->annual_workplan_id = 1;
+        }
+        $m->annual_workplan_id = $wp->id;
+        return $m;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+
+        self::creating(function ($m) {
+            return AnnualOutput::prepare($m);
+        });
+
+        self::updating(function ($m) {
+            return AnnualOutput::prepare($m);
+        });
+    }
+
+
     public static function getArray($user_id)
     {
         $items = [];
@@ -58,6 +83,16 @@ class AnnualOutput extends Model
 
         return $texts;
     }
+
+    public function getTopicAttribute($value)
+    {
+        return explode(',', $value);
+    }
+
+    public function setTopicAttribute($value)
+    {
+        $this->attributes['tags'] = implode(',', $value);
+    } 
 
     protected $appends = ['activities_text'];
 }

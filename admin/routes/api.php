@@ -1,10 +1,8 @@
 <?php
-
+ 
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
-use App\Models\AnnualOutput;
-use App\Models\AnnualOutputHasActivity;
-use App\Models\AnnualWorkplan;
+use App\Models\AnnualOutput; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +40,33 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 }
  */
 
+Route::get('AnnualOutputController', function (Request $r) {
+
+    $data = [];
+    $ans = AnnualOutput::where(
+        'key_output',
+        'like',
+        "%$r->q%"
+    )
+        ->limit(25)
+        ->get();
+
+    if ($ans == null) {
+        return [];
+    }
+
+
+    foreach ($ans as $v) {
+        $data[] = [
+            'id' => $v->id,
+            'text' => $v->id . " - " .$v->annual_workplan->name." - ". str_replace(['\n','\r'],'',$v->key_output)
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
+
 Route::get('ajax/AnnualOutputHasActivity', function (Request $r) {
 
     $data = [];
@@ -53,7 +78,7 @@ Route::get('ajax/AnnualOutputHasActivity', function (Request $r) {
         return [];
     }
 
-    
+
     foreach ($an->annual_outputs as $v) {
         $data[] = [
             'id' => $v->id,

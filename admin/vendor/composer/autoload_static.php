@@ -586,6 +586,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
     );
 
     public static $classMap = array (
+        'App\\Admin\\Actions\\User\\CloneWorkPlan' => __DIR__ . '/../..' . '/app/Admin/Actions/User/CloneWorkPlan.php',
         'App\\Admin\\Controllers\\ActivityCategoryController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ActivityCategoryController.php',
         'App\\Admin\\Controllers\\ActivityController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ActivityController.php',
         'App\\Admin\\Controllers\\AdvisoryAlertController' => __DIR__ . '/../..' . '/app/Admin/Controllers/AdvisoryAlertController.php',
@@ -617,6 +618,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\MeetingController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MeetingController.php',
         'App\\Admin\\Controllers\\MemberController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MemberController.php',
         'App\\Admin\\Controllers\\MembersController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MembersController.php',
+        'App\\Admin\\Controllers\\MyMemberController' => __DIR__ . '/../..' . '/app/Admin/Controllers/MyMemberController.php',
         'App\\Admin\\Controllers\\NewsPostController' => __DIR__ . '/../..' . '/app/Admin/Controllers/NewsPostController.php',
         'App\\Admin\\Controllers\\ParticipantController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ParticipantController.php',
         'App\\Admin\\Controllers\\PersonController' => __DIR__ . '/../..' . '/app/Admin/Controllers/PersonController.php',
@@ -723,6 +725,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Models\\ServiceProvider' => __DIR__ . '/../..' . '/app/Models/ServiceProvider.php',
         'App\\Models\\TrafficRecord' => __DIR__ . '/../..' . '/app/Models/TrafficRecord.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
+        'App\\Models\\UserCategory' => __DIR__ . '/../..' . '/app/Models/UserCategory.php',
         'App\\Models\\UserHasProgram' => __DIR__ . '/../..' . '/app/Models/UserHasProgram.php',
         'App\\Models\\Utils' => __DIR__ . '/../..' . '/app/Models/Utils.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',

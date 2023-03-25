@@ -23,6 +23,27 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
 use App\Admin\Extensions\Nav\Shortcut;
 use App\Admin\Extensions\Nav\Dropdown;
+use App\Models\FinancialYear;
+
+
+if (isset($_GET['change_dpy_to'])) {
+    $ay = ((int)(trim($_GET['change_dpy_to'])));
+    if ($ay != null) {
+        $fy = FinancialYear::find($ay);
+        if ($fy != null) {
+            $fy->active = 1;
+            $fy->save();
+        }
+
+        $red_link = admin_url();
+        if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != null && strlen($_SERVER['HTTP_REFERER']) > 10) {
+            $red_link = $_SERVER['HTTP_REFERER'];
+        }
+        Admin::disablePjax();
+        header('location: ' . $red_link);
+        die();
+    }
+}
 
 Utils::system_boot();
 
@@ -52,6 +73,12 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
         'How to ............ ' => '',
         'How to ............ ' => '',
     ], 'fa-question')->title('HELP'));
+
+
+
+    $navbar->right(view('widgets.admin-links', [
+        'years' => FinancialYear::where([])->orderby('id', 'desc')->get(),
+    ]));
 });
 
 
@@ -60,3 +87,4 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 Encore\Admin\Form::forget(['map', 'editor']);
 Admin::css(url('/assets/css/bootstrap.css'));
 Admin::css('/assets/css/styles.css');
+Admin::js('/js/charts.js');
