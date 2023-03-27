@@ -16,12 +16,31 @@ define('YEARS', [
     '2021/2022' => '2021/2022',
     '2022/2023' => '2022/2023',
     '2023/2024' => '2023/2024',
-/*     '2024/2025' => '2024/2025', */
+    /*     '2024/2025' => '2024/2025', */
 ]);
+
 
 class Utils extends Model
 {
     use HasFactory;
+
+
+    public static function addOrdinalSuffix($num)
+    {
+        if (!in_array(($num % 100), array(11, 12, 13))) {
+            switch ($num % 10) {
+                case 1:
+                    return $num . '<sup>st</sup>';
+                case 2:
+                    return $num . '<sup>nd</sup>';
+                case 3:
+                    return $num . '<sup>rd</sup>';
+            }
+        }
+        return $num . '<sup>th</sup>';
+    }
+
+
 
 
     /* 

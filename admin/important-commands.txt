@@ -11,6 +11,7 @@ php artisan make:migration create_departments_table
 php artisan make:migration create_annual_workplans_table 
 php artisan make:migration create_quaterly_output_has_area_annual_outputs_table 
 php artisan make:migration create_financial_years_table 
+php artisan make:migration create_worklplan_clones_table 
   
 php artisan admin:make AnnualOutputController --model=App\Models\AnnualOutput
 php artisan admin:make QuaterlyOutputController --model=App\Models\QuaterlyOutput
@@ -32,6 +33,7 @@ php artisan admin:make DistrictController --model=App\Models\District
 php artisan admin:make MemberController --model=App\Models\User
 php artisan admin:make MyMemberController --model=App\Models\User
 php artisan admin:make FinancialYearController --model=App\Models\FinancialYear
+php artisan admin:make WorklplanCloneController --model=App\Models\WorklplanClone
 
  
 php artisan make:model AuaterlyOutput
@@ -55,6 +57,8 @@ php artisan make:model ActivityCategory
 php artisan make:model QuaterlyOutputActivities
 php artisan make:model UserCategory
 php artisan make:model FinancialYear
+php artisan make:model WorklplanClone
+php artisan make:model Village
 
 Php artisan admin:action User\CloneWorkPlan --name="Clone workplan" 
 Php artisan admin:action User\AddQuarterlyActivity --name="Add" 

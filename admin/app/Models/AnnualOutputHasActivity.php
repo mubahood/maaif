@@ -28,7 +28,7 @@ class AnnualOutputHasActivity extends Model
             $this->save();
             $annual_output = AnnualOutput::find($this->annual_output_id);
         }
-        return $act_name . " - " . $annual_output->year;
+        return  $annual_output->year . ' - ' . $act_name;
     }
     public function activity()
     {

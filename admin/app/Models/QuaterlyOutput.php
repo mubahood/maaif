@@ -17,6 +17,14 @@ class QuaterlyOutput extends Model
         return $this->belongsToMany(QuaterlyOutputActivity::class, 'quaterly_output_id');
     }
 
+    public function getActivitiesAttribute($vals)
+    {
+        return explode(',', $vals);
+    }
+    public function setActivitiesAttribute($vals)
+    {
+        return implode(',', $vals);
+    }
     public function getEntreprizesAttribute($vals)
     {
         return explode(',', $vals);
@@ -27,6 +35,30 @@ class QuaterlyOutput extends Model
         return $arr;
         $texts = "";
         $isFirst = true;
+        foreach ($arr as $key => $txt) {
+            $a =  AnnualOutput::find($txt);
+            if ($a) {
+                if ($isFirst) {
+                    $isFirst = false;
+                } else {
+                    $texts .= ',';
+                }
+                $texts .= $a->key_output;
+            }
+        }
+
+        if (strlen($texts) < 2) {
+            $texts = $vals;
+        }
+        return $texts;
+    }
+    public function getTopicTextAttribute($vals)
+    {
+
+        $texts = "";
+        $isFirst = true;
+        $arr = $this->topic;
+
         foreach ($arr as $key => $txt) {
             $a =  AnnualOutput::find($txt);
             if ($a) {
@@ -89,6 +121,8 @@ class QuaterlyOutput extends Model
     {
         return $this->belongsTo(AnnualWorkplan::class, 'annual_id');
     }
+
+
     public function output()
     {
         /*  $y = AnnualOutput::find($this->annual_id);
@@ -113,8 +147,25 @@ class QuaterlyOutput extends Model
         } */
         return $this->belongsTo(AnnualOutputHasActivity::class, 'key_output_id');
     }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function daily_actovities()
+    {
+        return $this->hasMany(DailyActivity::class, 'quarterly_activity_id');
+    }
+
+    public function getNumReachedAttribute()
+    {
+        $tot = 0;
+        foreach ($this->daily_actovities as $v) {
+            $tot += $v->num_ben_total;
+        }
+        return $tot;
+    }
+
+    protected $appends = ['topic_text', 'num_reached'];
 }

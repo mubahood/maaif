@@ -79,15 +79,34 @@ class MyMemberController extends AdminController
             ->sortable();
         $grid->column('education', __('Education'))->hide();
         $grid->column('year_working', __('Year working'))->hide();
-        $grid->column('activies', __('Activies'))
+        $grid->column('activies', __('Activities'))
             ->display(function () {
                 $activies = '<p style="font-weight: bolder; padding: 0px; margin: 0px; text-align: center; font-size: 20px;">
                 <a title="View Activities" href="quaterly-outputs?user_id=' . $this->id . '" >' . count($this->activities) . '</a></p>';
                 return $activies;
             });
+        $grid->column('bugdet', __('Bugdet'))
+            ->display(function () {
+                $activies = number_format($this->bugdet());
+                return 'UGX ' . $activies;
+            });
 
         $grid->column('actions', __('Actions'))->display(function () {
-            $addActivity = '<a href="quaterly-outputs/create?user=' . $this->id . '" >Add activity</a>';
+
+
+            $addActivity  =   '<div class="dropdown show dropleft  h4  m-0">
+            <a class="px-0" href="#" role="button" id="dropdownMenuLink' . $this->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink' . $this->id . '">
+              <a class="dropdown-item py-2" href="quaterly-outputs/create?user=' . $this->id . '" >Add activity</a>
+              <a class="dropdown-item py-2"  href="quaterly-outputs/?user_id=' . $this->id . '" >View Workplan</a>
+              <a class="dropdown-item py-2"  href="evaluations/?user_id=' . $this->id . '" >View Evaluation</a>
+              <a class="dropdown-item py-2"  href="javascript:;" >Print Workplan</a>
+              <a class="dropdown-item py-2" href="worklplan-clones/create?user=' . $this->id . '" >Clone Workplan</a>
+            </div>
+          </div>';
+
             //$addActivity .= '<p class="p-0 m-0"><a href="quaterly-outputs/create?user=' . $this->id . '" >Generate report</a></p>';
             return $addActivity;
         });

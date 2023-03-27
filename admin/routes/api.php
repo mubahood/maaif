@@ -68,7 +68,7 @@ Route::get('AnnualOutputController', function (Request $r) {
     ];
 });
 
-Route::get('ajax/AnnualOutputHasActivity', function (Request $r) {
+Route::get('AnnualOutputHasActivity', function (Request $r) {
 
     $data = [];
     $an = AnnualOutput::where([
@@ -79,11 +79,10 @@ Route::get('ajax/AnnualOutputHasActivity', function (Request $r) {
         return [];
     }
 
-
-    foreach ($an->annual_outputs as $v) {
+    foreach ($an->output_activities as $v) {
         $data[] = [
             'id' => $v->id,
-            'text' => $r->q . "<= " . $v->name_text
+            'text' => $v->name_text
         ];
     }
     return [

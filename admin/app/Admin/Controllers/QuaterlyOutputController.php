@@ -28,7 +28,7 @@ class QuaterlyOutputController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Quaterly Outputs';
+    protected $title = 'Quaterly activities';
 
     /**
      * Make a grid builder.
@@ -47,9 +47,7 @@ class QuaterlyOutputController extends AdminController
         }
 
 
-        $grid = new Grid(new QuaterlyOutput());
-
-
+        $grid = new Grid(new QuaterlyOutput()); 
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
@@ -94,32 +92,38 @@ class QuaterlyOutputController extends AdminController
         })->sortable();
 
         $grid->column('topic', __('Topics'))->display(function ($x) {
-            return "name_text";
-            if ($this->topic != null) {
-            }
 
-            return '<p title="' . $x . '">' . Str::limit($x, 50) . '</p>';
+            return '<p title="' . $this->topic_text . '">' . Str::limit($this->topic_text, 60) . '</p>';
         });
 
+
+ 
+        $grid->column('annual_id', __('Annual Output'))
+            ->display(function ($x) {
+                if ($this->output == null) {
+                    return $x;
+                }
+                return '<p title="' . $this->output->name_text . '">' . Str::limit($this->output->name_text, 60) . '</p>';
+            })->sortable();
+
+        $grid->column('quarter', __('Quarter'))->display(function ($x) {
+            return '<b>' . Utils::addOrdinalSuffix($x) . '</b>';
+        })->filter([
+            '1' => '1st Quarter',
+            '2' => '4th Quarter',
+            '3' => '3rd Quarter',
+            '4' => '4th Quarter',
+        ])->sortable();
+
+        $grid->column('num_target_ben', __('No. target'))->sortable();
         $grid->column('budget', __('Budget'))
             ->display(function ($x) {
                 return '<b>UGX ' . number_format($x) . '</b>';
             })->totalRow(function ($x) {
                 return '<b>UGX ' . number_format($x) . '</b>';
             })->sortable();
-        $grid->column('num_target_ben', __('No. target'))->sortable();
-        $grid->column('num_carried_out', __('No. carried out'))->sortable();
-        $grid->column('num_reached_ben', __('No. reached'))->sortable();
-        $grid->column('remarks', __('Remarks'))->sortable();
-        $grid->column('annual_id', __('Output'))
-            ->display(function ($x) {
 
-                if ($this->output == null) {
-                    return $x;
-                }
-                return $this->output->activities_text;
-            })->sortable();
-        $grid->column('quarter', __('Quarter'))->sortable();
+
         $grid->column('user_id', __('Officer'))->display(function ($x) {
             if ($this->user == null) {
                 return $x;
@@ -180,7 +184,7 @@ class QuaterlyOutputController extends AdminController
         }
 
         $form->disableCreatingCheck();
-        $form->disableEditingCheck();
+        /* $form->disableEditingCheck(); */
         $form->disableViewCheck();
         $form->disableReset();
         $ajax_url = url(
@@ -231,14 +235,18 @@ class QuaterlyOutputController extends AdminController
         $ajax_url = url(
             '/api/AnnualOutputController'
         );
-        $form->select('key_output_id', __('Select Annual Output -Activity'))
+        $form->select('key_output_id', __('Select Annual Output'))
             ->options(function ($id) {
                 $a = AnnualOutput::find($id);
                 if ($a) {
                     return [$a->id => "#" . $a->id . " - " . $a->key_output];
                 }
             })
-            ->ajax($ajax_url)->rules('required');
+            ->ajax($ajax_url)
+            ->load('activities', url('api/AnnualOutputHasActivity'))
+            ->rules('required');
+
+        $form->multipleSelect('activities', "Activities");
 
         $topics = Topic::all()->pluck('name_text', 'id');
         $form->multipleSelect('topic', __('Topics'))
@@ -250,6 +258,7 @@ class QuaterlyOutputController extends AdminController
         $form->multipleSelect('entreprizes', __('Enterprises'))
             ->options($entreprizes)
             ->required();
+
 
 
         /* annual_output_has_activity_id */

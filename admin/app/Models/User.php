@@ -23,6 +23,17 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(QuaterlyOutput::class, 'user_id');
     }
+
+
+    public function bugdet()
+    {
+        $budget = 0;
+        foreach ($this->activities as $key => $v) {
+            $budget += $v->budget;
+        }
+        return $budget;
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');

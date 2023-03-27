@@ -35,6 +35,7 @@ Route::group([
     $router->resource('ext-topics', ExtTopicController::class);
     $router->resource('my-members', MyMemberController::class);
     $router->resource('financial-years', FinancialYearController::class);
+    $router->resource('worklplan-clones', WorklplanCloneController::class);
 
 
 

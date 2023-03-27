@@ -3,10 +3,12 @@
 namespace App\Admin\Controllers;
 
 use App\Models\DailyActivity;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
+use Illuminate\Support\Str;
 
 class DailyActivityController extends AdminController
 {
@@ -15,7 +17,7 @@ class DailyActivityController extends AdminController
      *
      * @var string
      */
-    protected $title = 'DailyActivity';
+    protected $title = 'Daily Activities';
 
     /**
      * Make a grid builder.
@@ -26,26 +28,44 @@ class DailyActivityController extends AdminController
     {
         $grid = new Grid(new DailyActivity());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
-        $grid->column('date', __('Date'));
-        $grid->column('topic', __('Topic'));
-        $grid->column('gps_latitude', __('Gps latitude'));
-        $grid->column('gps_longitude', __('Gps longitude'));
-        $grid->column('entreprise', __('Entreprise'));
-        $grid->column('photo', __('Photo'));
-        $grid->column('village_id', __('Village id'));
+        $grid->model([])->orderBy('id', 'desc');
+        $grid->disableBatchActions();
+
+
+        $grid->column('id', __('Id'))->hide();
+        $grid->column('date', __('Date'))->display(function ($x) {
+            return Utils::my_date($x);
+        })->sortable();
+        $grid->column('topic', __('Topic'))->display(function () {
+            return $this->topic_text;
+        })->sortable();
+        $grid->column('gps_latitude', __('Gps latitude'))->hide();
+        $grid->column('gps_longitude', __('Gps longitude'))->hide();
+        $grid->column('entreprise', __('Entreprise'))->display(function () {
+            return $this->entreprise_text;
+        })->label()->sortable();
+
+        $grid->column('village_id', __('Village'))->display(function () {
+            return $this->village_text;
+        })->sortable();
         $grid->column('notes', __('Notes'));
-        $grid->column('num_ben_males', __('Num ben males'));
-        $grid->column('num_ben_total', __('Num ben total'));
-        $grid->column('num_ben_females', __('Num ben females'));
-        $grid->column('ben_ref_name', __('Ben ref name'));
-        $grid->column('ben_ref_phone', __('Ben ref phone'));
-        $grid->column('ben_group', __('Ben group'));
-        $grid->column('user_id', __('User id'));
-        $grid->column('quarterly_activity_id', __('Quarterly activity id'));
-        $grid->column('activity_type', __('Activity type'));
+        $grid->column('num_ben_males', __('No. of Males'))->sortable();
+        $grid->column('num_ben_females', __('No. of Females'))->sortable();
+        $grid->column('num_ben_total', __('Total'))->sortable();
+        $grid->column('ben_ref_name', __('Ben. name'))->sortable();
+        $grid->column('ben_ref_phone', __('Ben. phone'))->sortable();
+        $grid->column('ben_group', __('Ben. group'))->hide();
+        $grid->column('user_id', __('Officer'))->sortable();
+        $grid->column('quarterly_activity_id', __('Quarterly activity'))
+            ->display(function () {
+                if($this->activity == null){
+                    return '-';
+                }
+                return '<p title="' . $this->activity->topic_text . '">' . Str::limit($this->activity->topic_text, 35) . '</p>'; 
+
+            })->sortable();
+        $grid->column('activity_type', __('Activity type'))->hide();
+        $grid->column('photo', __('Photo'))->hide();
 
         return $grid;
     }
