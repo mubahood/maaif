@@ -21,7 +21,7 @@ class EvaluationController extends AdminController
      *
      * @var string
      */
-    protected $title = 'QuaterlyOutput';
+    protected $title = 'Evaluation';
 
     /**
      * Make a grid builder.

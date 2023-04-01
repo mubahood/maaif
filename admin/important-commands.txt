@@ -34,6 +34,8 @@ php artisan admin:make MemberController --model=App\Models\User
 php artisan admin:make MyMemberController --model=App\Models\User
 php artisan admin:make FinancialYearController --model=App\Models\FinancialYear
 php artisan admin:make WorklplanCloneController --model=App\Models\WorklplanClone
+php artisan admin:make RegionController --model=App\Models\Region
+php artisan admin:make ExtTopicController --model=App\Models\Topic
 
  
 php artisan make:model AuaterlyOutput
@@ -59,6 +61,7 @@ php artisan make:model UserCategory
 php artisan make:model FinancialYear
 php artisan make:model WorklplanClone
 php artisan make:model Village
+php artisan make:model Region
 
 Php artisan admin:action User\CloneWorkPlan --name="Clone workplan" 
 Php artisan admin:action User\AddQuarterlyActivity --name="Add" 

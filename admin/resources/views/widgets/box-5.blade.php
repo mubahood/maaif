@@ -12,11 +12,11 @@ if (!isset($is_dark)) {
 $is_dark = ((bool) $is_dark);
 
 $bg = '';
-$text = 'text-primary';
-$border = 'border-primary';
+$text = 'text-success';
+$border = 'border-success';
 $text2 = 'text-dark';
 if ($is_dark) {
-    $bg = 'bg-primary';
+    $bg = 'bg-success';
     $text = 'text-white';
     $text2 = 'text-white';
 

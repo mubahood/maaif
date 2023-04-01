@@ -2,21 +2,21 @@
 
 namespace App\Admin\Controllers;
 
-use App\Models\Activity;
 use App\Models\Department;
+use App\Models\Topic;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class ActivityController extends AdminController
+class ExtTopicController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Activities';
+    protected $title = 'Topics';
 
     /**
      * Make a grid builder.
@@ -25,14 +25,11 @@ class ActivityController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new Activity());
+        $grid = new Grid(new Topic());
         $grid->disableBatchActions();
-        $grid->quickSearch('name')->placeholder('Search by name...');
-
-
-        $grid->column('name', __('Name'))->sortable();
-        $grid->column('type', __('Type'))->label()->sortable();
-        $grid->column('department_id', __('Department'))->display(function ($x) {
+        $grid->model()->orderBy('name', 'asc');
+        $grid->column('name', __('Topics'))->sortable();
+        $grid->column('department_id', __('Department'))->display(function () {
             if ($this->department == null) {
                 return '-';
             }
@@ -50,7 +47,7 @@ class ActivityController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Activity::findOrFail($id));
+        $show = new Show(Topic::findOrFail($id));
 
         $show->field('id', __('Id'));
         $show->field('created_at', __('Created at'));
@@ -68,28 +65,14 @@ class ActivityController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new Activity());
-        $form->disableReset();
-        $form->disableViewCheck();
-        $form->disableCreatingCheck();
+        $form = new Form(new Topic());
 
-        $form->text('name', __('Activity Name'))->rules('required');
+        $form->text('name', __('Name'))->rules('required');
         $form->hidden('category', __('Category'))->default(1);
-        $form->radio('type', 'Activity Name')->options([
-            'General' => 'General activity',
-            'Departmental' => 'Departmental activity'
-        ])
-            ->when('Departmental', function ($f) {
-                $f->select('department_id', __('Select Department'))
-                    ->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
-                    ->rules('required');
-            })
+        $form->select('department_id', __('Select Department'))
+            ->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
             ->rules('required');
-        /* 
- `department_id` 
- ``;
 
-*/
         return $form;
     }
 }

@@ -98,7 +98,7 @@ class EventController extends AdminController
         $form->text('theme', __('Event Theme'))->rules('required');
         $form->date('event_date', __('Event date'))->rules('required');
         $form->image('photo', __('Photo'))->rules('required');
-        $form->quill('details', __('Details'))->rules('required');
+        $form->textarea('details', __('Details'))->rules('required');
         $form->text('venue_name', __('Venue name'))->rules('required');
         $form->text('address', __('Venue Address'))->rules('required');
         $form->image('venue_photo', __('Venue photo'))->rules('required');
@@ -114,7 +114,7 @@ class EventController extends AdminController
             $form->text('name', __('Speaker\'s name'))->rules('required');
             $form->text('designation', __('Speaker\'s Designation'))->rules('required');
             $form->image('photo', __('Speaker\'s photo'));
-            $form->quill('details', __('Speaker\'s Profile'))->rules('required');
+            $form->textarea('details', __('Speaker\'s Profile'))->rules('required');
 
         });
 

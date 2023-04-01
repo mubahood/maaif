@@ -137,7 +137,7 @@ class ProductController extends AdminController
             ->options(Location::get_sub_counties_array());
 
 
-        $form->quill('details', __('Details'))->rules('required');
+        $form->textarea('details', __('Details'))->rules('required');
 
         return $form;
     }

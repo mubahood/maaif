@@ -27,7 +27,7 @@ class AnnualWorkplan extends Model
             ])->first();
 
             if ($an != null) {
-                throw new Exception("You cannot create item anual work plan in same distrit, same department in same year.", 1);
+                throw new Exception("You cannot create multiple annual work plan in same distrit, same department in same year.", 1);
             }
         });
     }
@@ -39,7 +39,7 @@ class AnnualWorkplan extends Model
     }
     public function district()
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(District::class,'district_id');
     }
 
 

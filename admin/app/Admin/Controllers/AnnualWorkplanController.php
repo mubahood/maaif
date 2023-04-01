@@ -5,7 +5,10 @@ namespace App\Admin\Controllers;
 use App\Models\AnnualWorkplan;
 use App\Models\Department;
 use App\Models\District;
+use App\Models\FinancialYear;
+use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
@@ -26,9 +29,27 @@ class AnnualWorkplanController extends AdminController
      */
     protected function grid()
     {
+        $u = Admin::user();
+
         $grid = new Grid(new AnnualWorkplan());
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
+
+        if ($u->can('ministry')) {
+
+        } else if ($u->can('district')) {
+            $grid->disableActions(); 
+            $grid->model()->where('district_id', $u->district_id);
+        } else if ($u->can('subcounty')) {
+            $grid->model()->where('user_id', $u->user_id);
+            $grid->disableExport();
+        }else{
+            $grid->model()->where('department_id', $u->department_id);
+        }
+
+
+
+
         $grid->column('id', __('ID'))->sortable();
         $grid->column('year', __('Year'))->sortable();
         $grid->column('department_id', __('Department'))
@@ -80,29 +101,42 @@ class AnnualWorkplanController extends AdminController
     protected function form()
     {
         $form = new Form(new AnnualWorkplan());
-
+        $form->disableCreatingCheck();
+        $form->disableViewCheck();
+        $form->disableReset();
+        $form->disableEditingCheck();
+        $u = Admin::user();
+        $year = Utils::data_entry_year();
+        if ($year == null) {
+            die("data entry year not found.");
+        }
         $ajax_url = url(
             '/api/ajax?'
                 . "search_by_1=name"
                 . "&search_by_2=id"
                 . "&model=District"
         );
+
         $form->select('district_id', "Select district")
-            ->options(function ($id) {
-                $a = District::find($id);
-                if ($a) {
-                    return [$a->id => "#" . $a->id . " - " . $a->name];
-                }
-            })
-            ->ajax($ajax_url)->rules('required');
+            ->options(
+                District::all()->pluck('name', 'id')
+            )
+            ->readOnly()
+            ->rules('required')
+            ->default($u->district_id);
 
 
         $form->select('department_id', "Select department")
             ->options(Department::where([])->orderBy('department', 'Asc')
                 ->get()
                 ->pluck('department', 'id'))
+            ->rules('required')
+            ->readOnly()
+            ->default($u->department_id);
+        $form->select('year', __('Year'))->options(FinancialYear::where(['data_entry' => 1])->get()->pluck('name', 'name'))
+            ->default($year->name)
+            ->readOnly()
             ->rules('required');
-        $form->select('year', __('Year'))->options(YEARS)->rules('required');
         $form->textarea('description', __('Description'));
 
         return $form;

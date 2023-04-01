@@ -33,6 +33,9 @@ class FinancialYear extends Model
             if ($m->active == 1) {
                 DB::update("UPDATE financial_years SET active = 0");
             }
+            if ($m->data_entry == 1) {
+                DB::update("UPDATE financial_years SET data_entry = 0");
+            }
         });
     }
 }

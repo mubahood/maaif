@@ -26,11 +26,12 @@ class DepartmentController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Department());
-        $grid->quickSearch('department')->placeholder('Search by department name...');
         $grid->disableBatchActions();
+        $grid->quickSearch('department')->placeholder('Search by department name...');
+       // $grid->disableBatchActions();
         $grid->column('id', __('ID'))->sortable();
         $grid->column('department', __('Department'))->sortable();
-        $grid->column('directorate_id', __('Director'))->display(function ($x) {
+        $grid->column('directorate_id', __('Sector Head'))->display(function ($x) {
             if($this->director == null){
                 return $x;
              }
@@ -76,7 +77,7 @@ class DepartmentController extends AdminController
                 . "&search_by_2=id"
                 . "&model=User"
         );
-        $form->select('directorate_id', "Department Director")
+        $form->select('directorate_id', "Sector Head")
             ->options(function ($id) {
                 $a = User::find($id);
                 if ($a) {
@@ -85,7 +86,7 @@ class DepartmentController extends AdminController
             })
             ->ajax($ajax_url)->rules('required');
 
-        $form->quill('description', __('Description'));
+        $form->textarea('description', __('Description'));
         return $form;
     }
 }

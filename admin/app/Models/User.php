@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-
+use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany as RelationsBelongsToMany;
@@ -47,6 +47,8 @@ class User extends Authenticatable implements JWTSubject
     {
         $dep = Department::find($this->department_id);
         if ($dep == null) {
+            $this->department_id = 1;
+            $this->save();
             //return "-";
         }
         return $this->belongsTo(Department::class, 'department_id');

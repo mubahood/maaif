@@ -76,9 +76,9 @@ Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) {
 
 
 
-    $navbar->right(view('widgets.admin-links', [
+/*     $navbar->right(view('widgets.admin-links', [
         'years' => FinancialYear::where([])->orderby('id', 'desc')->get(),
-    ]));
+    ])); */
 });
 
 

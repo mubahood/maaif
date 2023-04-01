@@ -23,6 +23,10 @@ class Topic extends Model
     {
         return $this->belongsTo(TopicCategory::class, 'category');
     }
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
 
     //TopicCategory
     protected $appends = ['name_text'];

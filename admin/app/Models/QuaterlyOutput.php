@@ -103,8 +103,27 @@ class QuaterlyOutput extends Model
         } else {
             throw new Exception("Annual plan not found.", 1);
         }
+
+
+        $wp = AnnualWorkplan::find($m->annual_id);
+        if ($wp == null) {
+            throw new Exception("Annual Workplan not found.", 1);
+        }
+        if ($wp->department == null) {
+            throw new Exception("Annual Workplan Department not found.", 1);
+        }
+        if ($wp->district == null) {
+            throw new Exception("Annual Workplan District not found.", 1);
+        }
+
+        $m->department_id = $wp->department_id;
+        $m->district_id = $wp->district_id;
+        $m->year = $wp->year;
+
         return $m;
     }
+
+    
     public function setTopicAttribute($value)
     {
         $this->attributes['topic'] = implode(',', $value);

@@ -1,11 +1,11 @@
 <?php
 use App\Models\Utils;
-?> 
+?>
 <div class="card  mb-4 mb-md-5 border-0">
     <!--begin::Header-->
     <div class="d-flex justify-content-between px-3 pt-2 px-md-4 border-bottom">
         <h4 style="line-height: 1; margrin: 0; " class="fs-22 fw-800">
-            Persons with Disabilities by Districts
+            My Outputs - By Budget
         </h4>
     </div>
     <div class="card-body py-2 py-md-3">
@@ -20,7 +20,7 @@ use App\Models\Utils;
             type: 'doughnut',
             data: {
                 datasets: [{
-                    data: [370, 57, 101, 210, 259, 712, 100,11,53,12,187],
+                    data: [370, 57, 101, 210, 259, 712, 100, 11, 53, 12, 187],
                     backgroundColor: [
                         '#8EFCDF',
                         '#D0B1FD',
@@ -54,7 +54,7 @@ use App\Models\Utils;
                 maintainAspectRatio: false,
                 legend: {
                     position: 'left',
-                    display: true, 
+                    display: true,
                 },
                 title: {
                     display: false,

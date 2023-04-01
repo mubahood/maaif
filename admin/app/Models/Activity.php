@@ -21,15 +21,21 @@ class Activity extends Model
 
     public function cat()
     {
-        return $this->belongsTo(ActivityCategory::class,'category');
+        return $this->belongsTo(ActivityCategory::class, 'category');
+    }
+
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
     public function getNameTextAttribute()
     {
         $_name = "";
-        if($this->cat != null){ 
-            $_name  = $this->cat->name . ' - ';
+        if ($this->department != null) {
+            $_name  = $this->department->department . ' - ';
         }
-        return    $_name.  $this->name;
+        return    $_name .  $this->name;
     }
     protected $appends = ['name_text'];
 }

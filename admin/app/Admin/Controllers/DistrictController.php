@@ -26,23 +26,37 @@ class DistrictController extends AdminController
     {
         $grid = new Grid(new District());
 
+        $grid->disableActions();
+        $grid->disableBatchActions();
+        $grid->disableFilter();
+        $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
+
         $grid->quickSearch('name')->placeholder('Search by name...');
         $grid->model()->orderBy('name', 'asc');
         $grid->disableBatchActions();
 
         $grid->column('id', __('ID'))->sortable();
+
         $grid->column('name', __('Name'))->sortable();
+        $grid->column('region_id', __('Region'))
+            ->display(function ($x) {
+                if ($this->region == null) {
+                    return '-';
+                }
+                return $this->region->name;
+            })->sortable();
         $grid->column('users', __('Users'))
             ->display(function ($x) {
                 return count($this->users);
             });
-        $grid->column('district_status', __('District status'))->sortable();
-        $grid->column('region_id', __('Region id'));
-        $grid->column('subregion_id', __('Subregion id'));
-        $grid->column('map_id', __('Map id'));
-        $grid->column('zone_id', __('Zone id')); 
-        $grid->column('land_type_id', __('Land type id'));
-        $grid->column('user_id', __('User id'));
+        $grid->column('district_status', __('District status'))->hide();
+        $grid->column('subregion_id', __('Subregion'))->hide();
+        $grid->column('map_id', __('Map'))->hide();
+        $grid->column('zone_id', __('Zone'))->hide();
+        $grid->column('land_type_id', __('Land type id'))->hide();
+        $grid->column('user_id', __('User'))->hide();
 
         return $grid;
     }

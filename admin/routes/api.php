@@ -3,6 +3,9 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
 use App\Models\AnnualOutput;
+use App\Models\County;
+use App\Models\Subcounty;
+use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,14 +43,98 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 }
  */
 
-Route::get('AnnualOutputController', function (Request $r) {
+Route::get('Subcounty', function (Request $r) {
 
+    $district_id = 0;
+    if (isset($_GET['district_id'])) {
+        $district_id = ((int)($_GET['district_id']));
+    }
+
+    $data = [];
+    $query = Subcounty::where(
+        'name',
+        'like',
+        "%$r->q%"
+    );
+
+    if ($district_id > 0) {
+        $counties = [];
+        foreach (County::where([
+            'district_id' => $district_id
+        ])->get() as $key => $county) {
+            $counties[] = $county->id;
+        }
+        
+        $query->where('county_id',$counties);
+    }
+
+    $query->orderBy('id', 'Desc')
+        ->limit(30);
+
+    $ans = $query
+        ->get();
+
+    if ($ans == null) {
+        return [];
+    }
+
+
+    foreach ($ans as $v) {
+        $data[] = [
+            'id' => $v->id,
+            'text' =>  $v->name_text
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
+
+
+Route::get('usersByDistrict', function (Request $r) {
+    $data = [];
+    $ans = Administrator::where(
+        'name',
+        'like',
+        "%$r->q%"
+    )
+        ->where([
+            'district_id' => $_GET['district_id'],
+            'department_id' => $_GET['department_id'],
+        ])
+        ->orderBy('name', 'Asc')
+        ->limit(30)
+        ->get();
+
+    if ($ans == null) {
+        return [];
+    }
+
+
+    foreach ($ans as $v) {
+        $data[] = [
+            'id' => $v->id,
+            'text' => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
+
+
+Route::get('AnnualOutputController', function (Request $r) {
     $data = [];
     $ans = AnnualOutput::where(
         'key_output',
         'like',
         "%$r->q%"
     )
+        ->where([
+            'district_id' => $_GET['district_id'],
+            'department_id' => $_GET['department_id'],
+            'year' => $_GET['year'],
+        ])
         ->orderBy('id', 'Desc')
         ->limit(30)
         ->get();

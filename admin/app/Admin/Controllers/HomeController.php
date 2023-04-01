@@ -4,9 +4,11 @@ namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Association;
+use App\Models\DailyActivity;
 use App\Models\Group;
 use App\Models\Location;
 use App\Models\Person;
+use App\Models\User;
 use App\Models\Utils;
 use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
@@ -27,8 +29,8 @@ class HomeController extends Controller
         $content
             ->title('MAAIF - extension')
             ->description('Hello ' . $u->name . "!");
- 
- 
+
+
         $u = Admin::user();
 
 
@@ -36,36 +38,38 @@ class HomeController extends Controller
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'New members',
-                    'sub_title' => 'Joined 30 days ago.',
-                    'number' => number_format(rand(100, 600)),
-                    'link' => 'javascript:;'
+                    'title' => 'My members',
+                    'sub_title' =>
+                    number_format(User::where('gender', 'like', '%m%')->count()) . ' Males, ' .
+                        number_format(User::where('gender', 'like', '%f%')->count()) . ' Females.',
+                    'number' => number_format(User::where([])->count()),
+                    'link' => 'my-members'
                 ]));
             });
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'Products & Services',
-                    'sub_title' => 'All time.',
-                    'number' => number_format(rand(1000, 6000)),
-                    'link' => 'javascript:;'
+                    'title' => 'Annual outputs',
+                    'sub_title' => 'For this financial year.',
+                    'number' => number_format(rand(50, 150)),
+                    'link' => 'annual-outputs'
                 ]));
             });
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'Job oppotunities',
-                    'sub_title' => rand(100, 400) . ' jobs posted 7 days ago.',
+                    'title' => 'My quarterly ',
+                    'sub_title' => rand(100, 400) . ' new activies posted 7 days ago.',
                     'number' => number_format(rand(1000, 6000)),
-                    'link' => 'javascript:;'
+                    'link' => 'quaterly-outputs'
                 ]));
             });
             $row->column(3, function (Column $column) {
                 $column->append(view('widgets.box-5', [
                     'is_dark' => true,
-                    'title' => 'System traffic',
-                    'sub_title' => rand(100, 400) . ' mobile app, ' . rand(100, 300) . ' web browser.',
-                    'number' => number_format(rand(100, 6000)),
+                    'title' => 'Evaluation',
+                    'sub_title' =>  '143 Total activities, 132 activities done. ',
+                    'number' => '94%',
                     'link' => 'javascript:;'
                 ]));
             });
@@ -74,10 +78,13 @@ class HomeController extends Controller
 
 
         $content->row(function (Row $row) {
-            $row->column(6, function (Column $column) {
+            $row->column(4, function (Column $column) {
+                $column->append(view('dashboard.events', ['items' => DailyActivity::where([])->orderBy('id','desc')->limit(11)->get() ]));
+            });
+            $row->column(4, function (Column $column) {
                 $column->append(view('widgets.by-categories', []));
             });
-            $row->column(6, function (Column $column) {
+            $row->column(4, function (Column $column) {
                 $column->append(view('widgets.by-districts', []));
             });
         });

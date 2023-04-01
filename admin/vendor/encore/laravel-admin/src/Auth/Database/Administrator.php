@@ -2,6 +2,10 @@
 
 namespace Encore\Admin\Auth\Database;
 
+use App\Models\Department;
+use App\Models\District;
+use App\Models\QuaterlyOutput;
+use App\Models\Subcounty;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -21,6 +25,44 @@ class Administrator extends Model implements AuthenticatableContract
     use DefaultDatetimeFormat;
 
     protected $fillable = ['username', 'password', 'name', 'avatar'];
+
+
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function ($m) {
+            return Administrator::prepare($m);
+        });
+
+        self::updating(function ($m) {
+            return Administrator::prepare($m);
+        });
+    }
+
+    public function subcounty(){
+        return $this->belongsTo(Subcounty::class,'subcounty_id');
+    }
+    public static function prepare($m)
+    {
+        $sub = Subcounty::find($m->subcounty_id);
+        if($sub!=null){
+            if($sub->county!=null){
+                $m->district_id = $sub->county->district_id;
+            }
+        }
+
+        if(
+            $m->first_name != null &&
+            $m->last_name != null &&
+            strlen($m->last_name)> 2
+        ){
+            $m->name = $m->first_name." ".$m->last_name;
+        }
+         
+
+        return $m; 
+    } 
+
 
     /**
      * Create a new Eloquent model instance.
@@ -89,4 +131,42 @@ class Administrator extends Model implements AuthenticatableContract
 
         return $this->belongsToMany($relatedModel, $pivotTable, 'user_id', 'permission_id');
     }
+
+
+    public function activities()
+    {
+        return $this->hasMany(QuaterlyOutput::class, 'user_id');
+    }
+
+
+    public function bugdet()
+    {
+        $budget = 0;
+        foreach ($this->activities as $key => $v) {
+            $budget += $v->budget;
+        }
+        return $budget;
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+ 
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
 }

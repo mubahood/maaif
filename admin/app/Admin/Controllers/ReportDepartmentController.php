@@ -87,7 +87,7 @@ class ReportDepartmentController extends AdminController
             })
             ->ajax($ajax_url)->rules('required');
 
-        $form->quill('description', __('Description'));
+        $form->textarea('description', __('Description'));
         return $form;
     }
 }

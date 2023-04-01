@@ -173,7 +173,7 @@ class JobController extends AdminController
     
 
 
-        $form->quill('details', __('Full job details'))->rules('required');
+        $form->textarea('details', __('Full job details'))->rules('required');
 
 
         $form->disableCreatingCheck();

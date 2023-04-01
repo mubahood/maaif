@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,9 +15,19 @@ class AnnualOutput extends Model
     {
         $wp = AnnualWorkplan::find($m->annual_workplan_id);
         if ($wp == null) {
-            $m->annual_workplan_id = 1;
+            throw new Exception("Annual Workplan not found.", 1);
         }
+        if ($wp->department == null) {
+            throw new Exception("Annual Workplan Department not found.", 1);
+        }
+        if ($wp->district == null) {
+            throw new Exception("Annual Workplan District not found.", 1);
+        }
+
         $m->annual_workplan_id = $wp->id;
+        $m->department_id = $wp->department_id;
+        $m->district_id = $wp->district_id;
+        $m->year = $wp->year;
         return $m;
     }
 
@@ -48,6 +59,7 @@ class AnnualOutput extends Model
     {
         return $this->belongsToMany(Activity::class, 'annual_output_has_activities');
     }
+
     function annual_workplan()
     {
         return $this->belongsTo(AnnualWorkplan::class);
@@ -84,7 +96,7 @@ class AnnualOutput extends Model
         return $texts;
     }
 
-    
+
 
     protected $appends = ['activities_text'];
 }

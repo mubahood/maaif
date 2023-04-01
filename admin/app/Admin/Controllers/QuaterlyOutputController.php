@@ -45,9 +45,32 @@ class QuaterlyOutputController extends AdminController
             Admin::script('window.location.replace("' . admin_url('quaterly-outputs/create?user=' . $m->user_id) . '");');
             return 'Loading...';
         }
+        /*        set_time_limit(-1);
+        
+        foreach (QuaterlyOutput::all() as $key => $v) {
+            $v->remarks = '';
+            $v->save();
+            echo($v->id."<br>"); 
+        }
+        dd("done"); */
+
+        $grid = new Grid(new QuaterlyOutput());
+
+        $u = Admin::user();
+        if ($u->can('ministry')) {
+        } else if ($u->can('district')) {
+            $grid->disableActions();
+            $grid->disableCreateButton();
+            $grid->model()->where('district_id', $u->district_id);
+        } else if ($u->can('subcounty')) {
+            $grid->model()->where('user_id', $u->user_id);
+            $grid->disableExport();
+        } else {
+            $grid->model()->where('department_id', $u->department_id);
+        }
 
 
-        $grid = new Grid(new QuaterlyOutput()); 
+
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
@@ -97,7 +120,7 @@ class QuaterlyOutputController extends AdminController
         });
 
 
- 
+
         $grid->column('annual_id', __('Annual Output'))
             ->display(function ($x) {
                 if ($this->output == null) {
@@ -177,6 +200,12 @@ class QuaterlyOutputController extends AdminController
             echo $v->id."<hr>"; 
         } */
 
+        $year = Utils::data_entry_year();
+
+        if ($year == null) {
+            die("data entry year not found.");
+        }
+
         $form = new Form(new QuaterlyOutput());
 
         if ($form->isCreating()) {
@@ -187,13 +216,8 @@ class QuaterlyOutputController extends AdminController
         /* $form->disableEditingCheck(); */
         $form->disableViewCheck();
         $form->disableReset();
-        $ajax_url = url(
-            '/api/ajax?'
-                . "search_by_1=name"
-                . "&search_by_2=id"
-                . "&model=User"
-        );
-
+        $u = Admin::user();
+        $ajax_url = url('/api/usersByDistrict?district_id=' . $u->district_id . "&department_id=" . $u->department_id);
         $hasUser = false;
         if (isset($_GET['user'])) {
             $u_id = ((int)($_GET['user']));
@@ -210,21 +234,23 @@ class QuaterlyOutputController extends AdminController
                     $u_id = ((int)($_GET['user']));
                     $officer = User::find($u_id);
 
-                    $a = User::find($u_id);
-                    return [$a->id => "#" . $a->id . " - " . $a->name];
+                    $v = User::find($u_id);
+                    return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
                 })
                 ->default($u_id)
                 ->readOnly()
                 ->ajax($ajax_url)->rules('required');
         } else {
+
+
             $form->select('user_id', "Extension Officer")
                 ->options(function ($id) {
-                    $a = User::find($id);
-                    if ($a == null) {
-                        $a = Auth::user();
+                    $v = User::find($id);
+                    if ($v == null) {
+                        $v = Auth::user();
                     }
-                    if ($a) {
-                        return [$a->id => "#" . $a->id . " - " . $a->name];
+                    if ($v) {
+                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
                     }
                 })
                 ->default(Auth::user()->id)
@@ -233,7 +259,9 @@ class QuaterlyOutputController extends AdminController
 
 
         $ajax_url = url(
-            '/api/AnnualOutputController'
+            '/api/AnnualOutputController?district_id=' . $u->district_id .
+                "&department_id=" . $u->department_id .
+                "&year=" . $year->name
         );
         $form->select('key_output_id', __('Select Annual Output'))
             ->options(function ($id) {
@@ -243,15 +271,18 @@ class QuaterlyOutputController extends AdminController
                 }
             })
             ->ajax($ajax_url)
-            ->load('activities', url('api/AnnualOutputHasActivity'))
+            ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
 
-        $form->multipleSelect('activities', "Activities");
+        $form->select('annual_activity_id', "Select Activity From Annual Activitiy for this Quarter")
+            ->required();
 
-        $topics = Topic::all()->pluck('name_text', 'id');
+        $topics = Topic::where([
+            'department_id' => Admin::user()->department_id
+        ])->orderby('name', 'asc')->get()->pluck('name', 'id');
         $form->multipleSelect('topic', __('Topics'))
             ->options($topics)
-            ->required();
+            ->required(); 
 
 
         $entreprizes = Enterprise::all()->pluck('name', 'id');
@@ -289,8 +320,8 @@ class QuaterlyOutputController extends AdminController
             4 => '4th quarter',
         ])->required();
         /*  $form->text('entreprizes', __('Entreprizes')); */
-        $form->decimal('num_planned', __('Number planned'))->required();
-        $form->decimal('num_target_ben', __('Number target'))->required();
+        $form->decimal('num_planned', __('Planned Number of Times this Quarter'))->required();
+        $form->decimal('num_target_ben', __('Number of Target Beneficiaries this Quarter'))->required();
 
         $form->radio('add_another', __('Do you want to add another output to this officer?'))->options([
             "Yes" => 'YES',

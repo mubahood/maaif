@@ -36,6 +36,12 @@ Route::group([
     $router->resource('my-members', MyMemberController::class);
     $router->resource('financial-years', FinancialYearController::class);
     $router->resource('worklplan-clones', WorklplanCloneController::class);
+    $router->resource('regions', RegionController::class);
+    $router->resource('counties', CountyController::class);
+    $router->resource('sub-counties', SubcountyController::class);
+    $router->resource('parishes', ParishController::class);
+    $router->resource('villages', VillageController::class);
+    $router->resource('topics', ExtTopicController::class);
 
 
 

@@ -157,7 +157,7 @@ class InstitutionController extends AdminController
         $form->text('gps_latitude', __('Institution Gps latitude'));
         $form->text('gps_longitude', __('Institution Gps longitude'));
         $form->image('photo', __('Institution logo'));
-        $form->quill('about', __('About The Institution'))->rules('required');
+        $form->textarea('about', __('About The Institution'))->rules('required');
         $form->disableCreatingCheck();
         $form->disableEditingCheck();
         $form->disableReset();

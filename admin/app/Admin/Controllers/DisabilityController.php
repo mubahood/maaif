@@ -69,7 +69,7 @@ class DisabilityController extends AdminController
 
         $form->text('name', __('Name'))->required();
         $form->image('photo', __('Photo'));
-        $form->quill('description', __('Description'));
+        $form->textarea('description', __('Description'));
 
         return $form;
     }

@@ -150,7 +150,7 @@ class AssociationController extends AdminController
         $form->text('gps_latitude', __('Business Gps latitude'));
         $form->text('gps_longitude', __('Business Gps longitude'));
         $form->image('photo', __('Business logo')); 
-        $form->quill('about', __('About business'))->rules('required');
+        $form->textarea('about', __('About business'))->rules('required');
         $form->disableCreatingCheck();
         $form->disableEditingCheck();
         $form->disableReset();

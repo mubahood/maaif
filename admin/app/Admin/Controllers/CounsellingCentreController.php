@@ -156,7 +156,7 @@ class CounsellingCentreController extends AdminController
         $form->text('gps_latitude', __('Counselling Centre Gps latitude'));
         $form->text('gps_longitude', __('Counselling Centre Gps longitude'));
         $form->image('photo', __('Counselling Centre logo'));
-        $form->quill('about', __('About The Counselling Centre'))->rules('required');
+        $form->textarea('about', __('About The Counselling Centre'))->rules('required');
         $form->disableCreatingCheck();
         $form->disableEditingCheck();
         $form->disableReset();

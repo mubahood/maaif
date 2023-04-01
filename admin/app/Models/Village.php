@@ -9,4 +9,9 @@ class Village extends Model
 {
     use HasFactory; 
     protected $table = 'village';
+    public function parish()
+    {
+        return $this->belongsTo(Parish::class, 'parish_id');
+    } 
+    
 }
