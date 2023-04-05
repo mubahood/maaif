@@ -42,6 +42,7 @@ Route::group([
     $router->resource('parishes', ParishController::class);
     $router->resource('villages', VillageController::class);
     $router->resource('topics', ExtTopicController::class);
+    $router->resource('system-configs', SystemCinfigController::class); 
 
 
 
