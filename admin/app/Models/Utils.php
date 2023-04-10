@@ -178,6 +178,25 @@ class Utils extends Model
     }
     public static function system_boot()
     {
+
+        return;
+
+        $plans = AnnualWorkplan::where([])->get();
+        foreach ($plans as $key => $plan) {
+            AnnualWorkplan::generate_work_plan($plan); 
+            dd($plans);
+        }
+
+        $plans = AnnualWorkplan::where('financial_year_id', NULL)->get();
+        foreach ($plans as $key => $plan) {
+            $year = FinancialYear::where('name', $plan->year)->first();
+            if ($year == null) {
+                die($plan->year . " Year not found!");
+            }
+            $plan->financial_year_id = $plan->id;
+            $plan->save();
+        }
+
         $u = Admin::user();
 
         $users = User::where([

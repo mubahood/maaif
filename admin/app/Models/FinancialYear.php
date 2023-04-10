@@ -11,6 +11,10 @@ class FinancialYear extends Model
 {
     use HasFactory;
 
+    public function workplans()
+    {
+        return $this->hasMany(AnnualWorkplan::class, 'financial_year_id');
+    }
 
     public static function boot()
     {
@@ -26,7 +30,7 @@ class FinancialYear extends Model
             }
             if ($m->active == 1) {
                 DB::update("UPDATE financial_years SET active = 0");
-            } 
+            }
         });
 
         self::updating(function ($m) {

@@ -32,7 +32,7 @@ class FinancialYearController extends AdminController
             $a->disableView();
         });
 
-        $grid->model()->orderBy('id', 'desc');
+        $grid->model()->orderBy('name', 'desc');
         $grid->disableBatchActions();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('data_entry', __('Year under planning'))
@@ -44,6 +44,8 @@ class FinancialYearController extends AdminController
                 1 => 'success',
                 0 => 'danger',
             ]);
+
+
         $grid->column('active', __('Implementation'))
             ->using([
                 1 => 'Active',
@@ -53,6 +55,10 @@ class FinancialYearController extends AdminController
                 1 => 'success',
                 0 => 'danger',
             ]);
+
+        $grid->column('workplan', __('Workplans'))->display(function () {
+            return count($this->workplans);
+        });
 
         return $grid;
     }

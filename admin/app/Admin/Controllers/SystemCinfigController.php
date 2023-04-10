@@ -59,8 +59,8 @@ class SystemCinfigController extends AdminController
     {
         $form = new Form(new SystemCinfig());
 
-        $form->month('financial_year_date', __('Financial year starts/ends - Month'))->required();
-
+        $form->date('financial_year_date', __('Financial year starts/ends - Month'))->required();
+        
         return $form;
     }
 }

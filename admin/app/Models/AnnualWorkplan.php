@@ -23,12 +23,26 @@ class AnnualWorkplan extends Model
             $an = AnnualWorkplan::where([
                 'district_id' => $m->district_id,
                 'department_id' => $m->department_id,
-                'year' => $m->year,
+                'year' => $m->year, 
             ])->first();
 
             if ($an != null) {
                 throw new Exception("You cannot create multiple annual work plan in same distrit, same department in same year.", 1);
             }
+
+            $year = FinancialYear::where('name', $m->year)->first();
+            if ($year == null) {
+                die($m->year . " Year not found!");
+            }
+            $m->financial_year_id = $year->id;
+        });
+
+        self::updating(function ($m) {
+            $year = FinancialYear::where('name', $m->year)->first();
+            if ($year == null) {
+                die($m->year . " Year not found!");
+            }
+            $m->financial_year_id = $year->id;
         });
     }
 
@@ -39,7 +53,7 @@ class AnnualWorkplan extends Model
     }
     public function district()
     {
-        return $this->belongsTo(District::class,'district_id');
+        return $this->belongsTo(District::class, 'district_id');
     }
 
 
@@ -78,6 +92,57 @@ class AnnualWorkplan extends Model
     {
         return $this->hasMany(QuaterlyOutput::class, 'annual_id');
     }
+
+    public static function generate_work_plan($year)
+    {
+        foreach (District::all() as $dist) {
+            if ($dist->id < 1) {
+                continue;
+            }
+            foreach (Department::all() as $dept) {
+                $old_plan = AnnualWorkplan::where([
+                    'district_id' => $dist->id,
+                    'department_id' => $dept->id,
+                    'financial_year_id' => $year->id,
+                ])->first();
+                if ($old_plan != null) {
+                    continue;
+                }
+
+                $plan = new AnnualWorkplan();
+                $plan->district_id = $dist->id;
+                $plan->department_id = $dept->id;
+                $plan->financial_year_id = $year->id;
+                $plan->year = $year->year;
+                //$plan->save();
+                dd($plan);
+
+                dd("Good TO CREATE");
+                dd($dept);
+            }
+            dd($dist);
+        }
+        die("==gone==");
+    }
+    /* 
+	
+year	
+description	
+*/
+
+
+
+    /* 
+    "id" => 1
+    "created_at" => "2023-03-06 14:22:01"
+    "updated_at" => "2023-04-05 11:54:50"
+    "district_id" => 0
+    "department_id" => 1
+    "year" => "2019/2020"
+    "description" => null
+    "financial_year_id" => 1
+    
+    */
 
     protected $appends = ['name', 'buget_text'];
 }

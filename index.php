@@ -1,6 +1,6 @@
 
 <?php
-
+die("Something really cool is coming soon!");
 //error_reporting(1);
 
 // intialize App
