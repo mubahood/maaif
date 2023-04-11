@@ -1,5 +1,7 @@
 
 <?php
+header('Location: /admin');
+die();
 die("Something really cool is coming soon!");
 //error_reporting(1);
 
