@@ -61,8 +61,8 @@ class AnnualOutput extends Model
     }
 
     function annual_workplan()
-    {
-        return $this->belongsTo(AnnualWorkplan::class);
+    {  
+        return $this->belongsTo(AnnualWorkplan::class,'annual_workplan_id');
     }
 
     function user()

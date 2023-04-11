@@ -1,4 +1,13 @@
-ALTER TABLE `admin_role_users` 
+ssh -p 2299 root@omulimisa.org 
+eapps2018!
+
+Raymond @omulimsa:
+http://omulimisa.org:8090/
+root
+omg!@thisOne
+
+
+ALTER TABLE `ext_area_quaterly_activity` 
 CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`), 
 ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `id`,
 ADD `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`; 

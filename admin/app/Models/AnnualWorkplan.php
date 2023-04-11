@@ -114,15 +114,10 @@ class AnnualWorkplan extends Model
                 $plan->department_id = $dept->id;
                 $plan->financial_year_id = $year->id;
                 $plan->year = $year->year;
-                //$plan->save();
-                dd($plan);
-
-                dd("Good TO CREATE");
-                dd($dept);
-            }
-            dd($dist);
-        }
-        die("==gone==");
+                //$plan->save(); 
+             
+            } 
+        } 
     }
     /* 
 	

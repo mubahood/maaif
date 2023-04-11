@@ -178,13 +178,17 @@ class Utils extends Model
     }
     public static function system_boot()
     {
-
-        return;
-
+       /*  set_time_limit(-1);
+        foreach (QuaterlyOutput::all() as $key => $v) {
+            $v->created_by = $v->user_id;
+            $v->save();
+            echo $v->id."<br>";
+        }
+        die();  */
+ 
         $plans = AnnualWorkplan::where([])->get();
         foreach ($plans as $key => $plan) {
-            AnnualWorkplan::generate_work_plan($plan); 
-            dd($plans);
+            AnnualWorkplan::generate_work_plan($plan);  
         }
 
         $plans = AnnualWorkplan::where('financial_year_id', NULL)->get();

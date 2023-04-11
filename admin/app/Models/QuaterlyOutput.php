@@ -101,7 +101,9 @@ class QuaterlyOutput extends Model
         if ($a != null) {
             $m->annual_id = $a->annual_workplan_id;
         } else {
-            throw new Exception("Annual plan not found.", 1);
+            $m->annual_id = 1;
+            $m->save(); 
+          //  throw new Exception("Annual plan not found.", 1);
         }
 
 
