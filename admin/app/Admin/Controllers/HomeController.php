@@ -25,7 +25,11 @@ class HomeController extends Controller
 {
     public function index(Content $content)
     {
+        
+        
         $u = Auth::user();
+       /*  $u->sendPasswordResetCode();
+        die('Romina'); */
         $content
             ->title('MAAIF - extension')
             ->description('Hello ' . $u->name . "!");
@@ -79,7 +83,7 @@ class HomeController extends Controller
 
         $content->row(function (Row $row) {
             $row->column(4, function (Column $column) {
-                $column->append(view('dashboard.events', ['items' => DailyActivity::where([])->orderBy('id','desc')->limit(11)->get() ]));
+                $column->append(view('dashboard.events', ['items' => DailyActivity::where([])->orderBy('id', 'desc')->limit(11)->get()]));
             });
             $row->column(4, function (Column $column) {
                 $column->append(view('widgets.by-categories', []));

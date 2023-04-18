@@ -7,6 +7,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use SplFileObject;
 
 define('YEARS', [
@@ -20,9 +21,29 @@ define('YEARS', [
 ]);
 
 
+
+
 class Utils extends Model
 {
     use HasFactory;
+
+
+    public static function sendMail(
+        $email = 'mubs0x@gmail.com',
+        $message = 'Simple mesage',
+    ) {
+
+        try {
+            Mail::send('email', ['message' => $message], function ($m) use ($email) {
+                $m->to($email, $this->name)
+                    ->subject('UWA Offenders database - 2 factor authentication');
+                $m->from('info@8technologies.cloud', 'UWA Offenders database');
+            });
+        } catch (\Throwable $th) {
+            $msg = 'failed';
+            throw $th;
+        }
+    }
 
 
     public static function data_entry_year()
@@ -178,17 +199,17 @@ class Utils extends Model
     }
     public static function system_boot()
     {
-       /*  set_time_limit(-1);
+        /*  set_time_limit(-1);
         foreach (QuaterlyOutput::all() as $key => $v) {
             $v->created_by = $v->user_id;
             $v->save();
             echo $v->id."<br>";
         }
         die();  */
- 
+
         $plans = AnnualWorkplan::where([])->get();
         foreach ($plans as $key => $plan) {
-            AnnualWorkplan::generate_work_plan($plan);  
+            AnnualWorkplan::generate_work_plan($plan);
         }
 
         $plans = AnnualWorkplan::where('financial_year_id', NULL)->get();

@@ -193,17 +193,17 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
                 @foreach ($m->getQuaterlyActivities($i) as $item)
                     @php
                         
-                        if ($j > 20) {
+                        if ($j > 1000) {
                             break;
                         }
-                        if (strlen($item->topic) < 10) {
+                        if (strlen($item->topic_text) < 10) {
                             continue;
                         }
                         $j++;
                     @endphp
                     <tr>
                         <td><?= $j ?>.</td>
-                        <td> <?= $item->topic ?></td>
+                        <td> <?= $item->topic_text ?></td>
                         <td>
                             <h2 class="text-center"><?= $item->num_planned ?></h2>
                         </td>
