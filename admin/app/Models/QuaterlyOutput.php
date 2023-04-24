@@ -102,8 +102,8 @@ class QuaterlyOutput extends Model
             $m->annual_id = $a->annual_workplan_id;
         } else {
             $m->annual_id = 1;
-            $m->save(); 
-          //  throw new Exception("Annual plan not found.", 1);
+            $m->save();
+            //  throw new Exception("Annual plan not found.", 1);
         }
 
 
@@ -125,7 +125,7 @@ class QuaterlyOutput extends Model
         return $m;
     }
 
-    
+
     public function setTopicAttribute($value)
     {
         $this->attributes['topic'] = implode(',', $value);
@@ -172,6 +172,48 @@ class QuaterlyOutput extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+
+    public function get_curried()
+    {
+        $_daily_activities = count($this->daily_actovities);
+        $_num_planned = ((int)($this->num_planned));
+
+        if ($_num_planned == 0) {
+            if($_daily_activities>0){
+                return 100;                
+            }
+            return 0;
+        }
+
+        $ans = ($_daily_activities / $_num_planned) * 100;
+
+        if($ans>100){
+            return 100;
+        }
+
+        return ceil($ans);
+    }
+
+    public function get_benefitiaries_percentage()
+    {
+        $_num_reached = $this->num_reached;
+        $_num_planned = $this->num_target_ben;
+
+        if ($_num_reached == 0) {
+            if($_num_planned>0){
+                return 0;
+            }
+            return $_num_planned;
+        }
+
+        $ans = ($_num_reached / $_num_planned) * 100;
+
+        if($ans>100){
+            return 100;
+        } 
+        return ceil($ans); 
     }
 
     public function daily_actovities()

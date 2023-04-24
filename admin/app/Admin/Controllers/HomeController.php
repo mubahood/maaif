@@ -17,18 +17,56 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Column;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
+use Encore\Admin\Widgets\Box;
+use Encore\Admin\Widgets\Form;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Auth;
 use SplFileObject;
 
 class HomeController extends Controller
 {
+    public function test(Content $content)
+    {
+
+        $this->dumpRequest($content);
+
+        $content->title('Form 1');
+
+        $form = new Widgets\Form();
+
+        $form->method('get');
+
+        $form->text('text');
+        $form->email('email');
+        $form->mobile('mobile', '电话');
+        $form->url('url');
+        $form->ip('ip');
+        $form->color('color', '颜色');
+        $form->number('number', '数字');
+        $form->switch('switch', '开关');
+        $form->textarea('text');
+        $form->currency('currency');
+        $form->rate('rate');
+
+        $form->divider();
+
+        $form->radio('radio')->options(['PHP', 'Java', 'Javascript'])->stacked();
+        $form->checkbox('checkbox')->options(['PHP', 'Java', 'Javascript', 'C#', 'Python', 'Golang'])->canCheckAll();
+
+        $content->body(new Widgets\Box('Form 1', $form));
+
+        return $content;
+
+
+
+        return $content;
+    }
     public function index(Content $content)
     {
-        
-        
+
+
         $u = Auth::user();
-       /*  $u->sendPasswordResetCode();
+        /*  $u->sendPasswordResetCode();
         die('Romina'); */
         $content
             ->title('MAAIF - extension')

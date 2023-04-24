@@ -39,6 +39,7 @@ class EvaluationController extends AdminController
 
 
         $grid = new Grid(new QuaterlyOutput());
+ 
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
@@ -72,27 +73,24 @@ class EvaluationController extends AdminController
         });
 
 
-
-
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
-
-        $grid->column('id', __('ID'))->sortable()->hide();
+        $grid->column('id', __('ID'))->sortable();
         $grid->column('created_at', __('Date'))->display(function ($x) {
             return Utils::my_date($x);
         })->hide()->sortable();
 
-
+        
+        $grid->column('topic', __('Topics'))->display(function ($x) {
+            return '<p title="' . $this->topic_text . '">' . Str::limit($this->topic_text, 45) . '</p>';
+        });
+        
         $grid->column('user_id', __('Officer'))->display(function ($x) {
             if ($this->user == null) {
                 return $x;
             }
             return $this->user->id . ". " . $this->user->name;
-        })->sortable();
-
-
-
-
+        })->sortable(); 
 
         $grid->column('annual_id', __('Annual Output'))
             ->display(function ($x) {
@@ -100,33 +98,55 @@ class EvaluationController extends AdminController
                     return $x;
                 }
                 return '<p title="' . $this->output->name_text . '">' . Str::limit($this->output->name_text, 45) . '</p>';
-            })->sortable();
-        $grid->column('quarter', __('Quarter'))->display(function ($x) {
-            return '<b>' . Utils::addOrdinalSuffix($x) . '</b>';
-        })->filter([
-            '1' => '1st Quarter',
-            '2' => '4th Quarter',
-            '3' => '3rd Quarter',
-            '4' => '4th Quarter',
-        ])->sortable();
+            })->sortable(); 
 
 
-        $grid->column('topic', __('Topics'))->display(function ($x) {
+        $grid->column('num_planned', 'Planned No.')->sortable();
+        $grid->column('num_target_ben', 'Target Beneficiaries')->sortable();
 
-            return '<p title="' . $this->topic_text . '">' . Str::limit($this->topic_text, 45) . '</p>';
-        });
+        $grid->column('num_carried_out', 'No. Carried Out')
+            ->display(function () {
+                return count($this->daily_actovities);
+            });
+        $grid->column('Carried', '% Carried Out')
+            ->display(function () {
+                $car = $this->get_curried();
+                $color = 'red';
+                if ($car < 50) {
+                    $color = 'red';
+                } elseif ($car < 75) {
+                    $color = '#f2bb18';
+                } else {
+                    $color = 'green';
+                }
+                return '<p style="background-color: ' . $color . '; padding-left: 10px; padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px; 
+                margin: 0px!important; text-align: center; 
+                font-size: 18px; color: white; font-wight: 900;" >' . $car . '%</p>';
+            });
+        $grid->column('num_reached_ben', 'Num reached ben')
+            ->display(function () {
+                return $this->num_reached;
+            });
 
-
-        $grid->column('num_target_ben', __('No. target'))->sortable();
-        $grid->column('num_reached', __('No. reached'));
-
-
-        $grid->column('budget', __('Budget'))
-            ->display(function ($x) {
-                return '<b>UGX ' . number_format($x) . '</b>';
-            })->totalRow(function ($x) {
-                return '<b>UGX ' . number_format($x) . '</b>';
-            })->hide()->sortable();
+        $grid->column('reached_ben_percentage', '% Carried Out')
+            ->display(function () {
+                $car = $this->get_benefitiaries_percentage(); 
+                $color = 'red';
+                if ($car < 50) {
+                    $color = 'red';
+                } elseif ($car < 75) {
+                    $color = '#f2bb18';
+                } else {
+                    $color = 'green';
+                } 
+                return '<p style="background-color: ' . $color . '; padding-left: 10px; padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px; 
+                margin: 0px!important; text-align: center; 
+                font-size: 18px; color: white; font-wight: 900;" >' . $car . '%</p>';
+            });  
 
         $grid->disableActions();
         $grid->disableCreateButton();

@@ -12,6 +12,14 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
+
+    $router->get('forms/form-1', 'FormController@form1');
+    $router->get('forms/form-2', 'FormController@form2');
+    $router->get('forms/form-3', 'FormController@form3');
+    $router->get('forms/form-4', 'FormController@form4');
+    $router->get('forms/settings', 'FormController@settings');
+    $router->get('forms/register', 'FormController@register');
+     
     $router->resource('districts', DistrictController::class);
 
 
@@ -44,7 +52,7 @@ Route::group([
     $router->resource('villages', VillageController::class);
     $router->resource('topics', ExtTopicController::class);
     $router->resource('system-configs', SystemCinfigController::class); 
-    $router->resource('directorates', DirectorateController::class);
+    $router->resource('directorates', DirectorateController::class); 
 
 
 

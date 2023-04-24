@@ -7,7 +7,7 @@ root
 omg!@thisOne
 
 
-ALTER TABLE `ext_activitys` 
+ALTER TABLE `ext_area_daily_activity` 
 CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`), 
 ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `id`,
 ADD `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`; 
