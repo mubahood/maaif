@@ -2,19 +2,20 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Directorate;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class ExampleController extends AdminController
+class DirectorateController extends AdminController
 {
     /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Example controller';
+    protected $title = 'Directorate';
 
     /**
      * Make a grid builder.
@@ -23,11 +24,10 @@ class ExampleController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new ExampleModel);
-
-        $grid->column('id', __('ID'))->sortable();
-        $grid->column('created_at', __('Created at'));
-        $grid->column('updated_at', __('Updated at'));
+        $grid = new Grid(new Directorate());
+        $grid->disableBatchActions();
+        $grid->column('id', __('Id'))->sortable(); 
+        $grid->column('directorate', __('Directorate'))->sortable();
 
         return $grid;
     }
@@ -35,14 +35,16 @@ class ExampleController extends AdminController
     /**
      * Make a show builder.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @return Show
      */
     protected function detail($id)
     {
-        $show = new Show(ExampleModel::findOrFail($id));
+        $show = new Show(Directorate::findOrFail($id));
 
-        $show->field('id', __('ID'));
+        $show->field('id', __('Id'));
+        $show->field('directorate', __('Directorate'));
+        $show->field('description', __('Description'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
 
@@ -56,11 +58,10 @@ class ExampleController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new ExampleModel);
+        $form = new Form(new Directorate());
 
-        $form->display('id', __('ID'));
-        $form->display('created_at', __('Created At'));
-        $form->display('updated_at', __('Updated At'));
+        $form->text('directorate', __('Directorate'))->required();
+        $form->textarea('description', __('Description'));
 
         return $form;
     }

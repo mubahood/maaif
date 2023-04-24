@@ -100,6 +100,6 @@ class Permission
      */
     public static function isAdministrator()
     {
-        return Admin::user()->isRole('administrator');
+        return Admin::user()->isRole('admin');
     }
 }

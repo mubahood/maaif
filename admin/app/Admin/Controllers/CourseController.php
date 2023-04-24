@@ -105,7 +105,7 @@ class CourseController extends AdminController
                     $users[$value->id] = $value->name . " - " . $value->id;
                 }
             }
-            if (Admin::user()->isRole('administrator')) {
+            if (Admin::user()->isRole('admin')) {
                 $form->select('administrator_id', __('Course instructor'))
                     ->options($users)
                     ->default(2)

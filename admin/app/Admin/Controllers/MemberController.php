@@ -28,7 +28,7 @@ class MemberController extends AdminController
         $grid = new Grid(new User());
 
         $u = Auth::user();
-        if($u->isRole('administrator')){
+        if($u->isRole('admin')){
             $grid->model()->where([
                 'id' => '1000'
             ]);

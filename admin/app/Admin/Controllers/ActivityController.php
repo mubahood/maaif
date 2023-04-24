@@ -38,6 +38,12 @@ class ActivityController extends AdminController
             }
             return $this->department->department;
         })->sortable();
+        $grid->column('role', __('Department'))->display(function ($x) {
+            if ($this->role == null) {
+                return '-';
+            }
+            return $this->role;
+        })->sortable();
 
         return $grid;
     }
@@ -77,11 +83,21 @@ class ActivityController extends AdminController
         $form->hidden('category', __('Category'))->default(1);
         $form->radio('type', 'Activity Name')->options([
             'General' => 'General activity',
-            'Departmental' => 'Departmental activity'
+            'Departmental' => 'Department based activity',
+            'Role' => 'Role based activity'
         ])
             ->when('Departmental', function ($f) {
                 $f->select('department_id', __('Select Department'))
                     ->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
+                    ->rules('required');
+            })
+            ->when('Role', function ($f) {
+                $f->select('role', __('Select role access level'))
+                    ->options([
+                        'Ministry' => 'Ministry',
+                        'District' => 'District',
+                        'Subcounty' => 'Subcounty',
+                    ])
                     ->rules('required');
             })
             ->rules('required');

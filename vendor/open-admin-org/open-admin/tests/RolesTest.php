@@ -16,7 +16,7 @@ class RolesTest extends TestCase
     {
         $this->visit('admin/auth/roles')
             ->see('Roles')
-            ->see('administrator');
+            ->see('admin');
     }
 
     public function testAddRole()

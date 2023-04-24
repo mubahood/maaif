@@ -7,7 +7,7 @@ root
 omg!@thisOne
 
 
-ALTER TABLE `ext_area_quaterly_activity` 
+ALTER TABLE `ext_activitys` 
 CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`), 
 ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `id`,
 ADD `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`; 
@@ -47,8 +47,10 @@ php artisan admin:make WorklplanCloneController --model=App\Models\WorklplanClon
 php artisan admin:make RegionController --model=App\Models\Region
 php artisan admin:make ExtTopicController --model=App\Models\Topic
 php artisan admin:make SystemCinfigController --model=App\Models\SystemCinfig
+php artisan admin:make DirectorateController --model=App\Models\Directorate
 
  
+php artisan make:model Directorate
 php artisan make:model AuaterlyOutput
 php artisan make:model QuaterlyOutput
 php artisan make:model DailyActivity

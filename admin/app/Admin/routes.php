@@ -34,6 +34,7 @@ Route::group([
     $router->resource('annual-workplans', AnnualWorkplanController::class);
     $router->resource('ext-topics', ExtTopicController::class);
     $router->resource('my-members', MyMemberController::class);
+    $router->resource('users', UserController::class);  
     $router->resource('financial-years', FinancialYearController::class);
     $router->resource('worklplan-clones', WorklplanCloneController::class);
     $router->resource('regions', RegionController::class);
@@ -43,6 +44,7 @@ Route::group([
     $router->resource('villages', VillageController::class);
     $router->resource('topics', ExtTopicController::class);
     $router->resource('system-configs', SystemCinfigController::class); 
+    $router->resource('directorates', DirectorateController::class);
 
 
 
