@@ -17,10 +17,16 @@ namespace Ramsey\Collection\Exception;
 use RuntimeException;
 
 /**
+<<<<<<<< HEAD:admin/vendor/ramsey/collection/src/Exception/InvalidPropertyOrMethod.php
  * Thrown when attempting to evaluate a property, method, or array key
  * that doesn't exist on an element or cannot otherwise be evaluated in the
  * current context.
  */
 class InvalidPropertyOrMethod extends RuntimeException implements CollectionException
+========
+ * Thrown to indicate that the requested operation is not supported.
+ */
+class UnsupportedOperationException extends RuntimeException implements CollectionException
+>>>>>>>> 97bc56319b7868edf4697b12621d4f8738eac0a6:vendor/ramsey/collection/src/Exception/UnsupportedOperationException.php
 {
 }

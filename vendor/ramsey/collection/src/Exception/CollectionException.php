@@ -16,6 +16,13 @@ namespace Ramsey\Collection\Exception;
 
 use Throwable;
 
+<<<<<<<< HEAD:admin/vendor/ramsey/collection/src/Exception/CollectionException.php
 interface CollectionException extends Throwable
+========
+/**
+ * Thrown when attempting to access an element that does not exist.
+ */
+class NoSuchElementException extends RuntimeException implements CollectionException
+>>>>>>>> 97bc56319b7868edf4697b12621d4f8738eac0a6:vendor/ramsey/collection/src/Exception/NoSuchElementException.php
 {
 }
