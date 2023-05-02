@@ -2,6 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\User\ActivityBatchSetDepartmental;
+use App\Admin\Actions\User\ActivityBatchSetGeneral;
+use App\Admin\Actions\User\ActivityBatchSetRoleBased;
 use App\Models\Activity;
 use App\Models\Department;
 use Encore\Admin\Controllers\AdminController;
@@ -26,10 +29,17 @@ class ActivityController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Activity());
-        $grid->disableBatchActions();
+        //$grid->disableBatchActions();
+        $grid->batchActions(function ($batch) {
+            $batch->add(new ActivityBatchSetGeneral());
+            $batch->add(new ActivityBatchSetDepartmental());
+            $batch->add(new ActivityBatchSetRoleBased());
+            $batch->disabledelete();
+        });
         $grid->quickSearch('name')->placeholder('Search by name...');
 
 
+        $grid->column('id', __('ID'))->sortable();
         $grid->column('name', __('Name'))->sortable();
         $grid->column('type', __('Type'))->label()->sortable();
         $grid->column('department_id', __('Department'))->display(function ($x) {
@@ -94,18 +104,13 @@ class ActivityController extends AdminController
             ->when('Role', function ($f) {
                 $f->select('role', __('Select role access level'))
                     ->options([
-                        'Ministry' => 'Ministry',
-                        'District' => 'District',
-                        'Subcounty' => 'Subcounty',
+                        'Ministry' => 'Ministry level',
+                        'District' => 'District level',
+                        'Subcounty' => 'Subcounty level',
                     ])
                     ->rules('required');
             })
             ->rules('required');
-        /* 
- `department_id` 
- ``;
-
-*/
         return $form;
     }
 }
