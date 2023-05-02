@@ -11,13 +11,16 @@
 
 namespace Symfony\Contracts\Service\Test;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Contracts\Service\ServiceLocatorTrait;
 
 abstract class ServiceLocatorTest extends TestCase
 {
-    protected function getServiceLocator(array $factories): ContainerInterface
+    /**
+     * @return ContainerInterface
+     */
+    protected function getServiceLocator(array $factories)
     {
         return new class($factories) implements ContainerInterface {
             use ServiceLocatorTrait;
