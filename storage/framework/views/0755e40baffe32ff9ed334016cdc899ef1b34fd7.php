@@ -8,9 +8,13 @@ use App\Models\Utils;
     <!-- Logo -->
     <a href="<?php echo e(admin_url('/'), false); ?>" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">MAAIF</span>
+        <span class="logo-mini">
+            <img class="img-fluid" src="<?php echo e(url('assets/imgs/logo-2.png'), false); ?>" alt="MAAIF">
+        </span>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg">MAAIF</span>
+        <span class="logo-lg">
+            <img class="img-fluid" src="<?php echo e(url('assets/imgs/logo-2.png'), false); ?>" alt="MAAIF">
+        </span>
     </a>
 
     <!-- Header Navbar -->

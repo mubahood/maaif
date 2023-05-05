@@ -207,7 +207,7 @@ class Utils extends Model
         }
         die();  */
 
-        $plans = AnnualWorkplan::where([])->get();
+  /*       $plans = AnnualWorkplan::where([])->get();
         foreach ($plans as $key => $plan) {
             AnnualWorkplan::generate_work_plan($plan);
         }
@@ -220,7 +220,7 @@ class Utils extends Model
             }
             $plan->financial_year_id = $plan->id;
             $plan->save();
-        }
+        } */
 
         $u = Admin::user();
 

@@ -208,6 +208,9 @@ class QuaterlyOutput extends Model
             return $_num_planned;
         }
 
+        if($_num_planned == 0){
+            return 0;
+        }
         $ans = ($_num_reached / $_num_planned) * 100;
 
         if($ans>100){

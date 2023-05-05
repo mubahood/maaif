@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\AnnualWorkplan;
 use App\Models\FinancialYear;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -24,6 +25,12 @@ class FinancialYearController extends AdminController
      */
     protected function grid()
     {
+
+        // $x = FinancialYear::find(7);
+        // FinancialYear::generate_plans($x); 
+        // dd($x);   
+        //AnnualWorkplan::generate_work_plan($plan);
+
         $grid = new Grid(new FinancialYear());
         $grid->disableExport();
 

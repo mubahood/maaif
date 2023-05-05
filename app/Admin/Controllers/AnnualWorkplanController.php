@@ -29,21 +29,26 @@ class AnnualWorkplanController extends AdminController
      */
     protected function grid()
     {
+  
         $u = Admin::user();
-
         $grid = new Grid(new AnnualWorkplan());
         $grid->disableBatchActions();
         $grid->model()->orderBy('id', 'desc');
 
-        if ($u->can('ministry')) {
+        $grid->disableFilter();
+        $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
+        $grid->disableActions();
 
+        if ($u->can('ministry')) {
         } else if ($u->can('district')) {
-            $grid->disableActions(); 
+            $grid->disableActions();
             $grid->model()->where('district_id', $u->district_id);
         } else if ($u->can('subcounty')) {
             $grid->model()->where('user_id', $u->user_id);
             $grid->disableExport();
-        }else{
+        } else {
             $grid->model()->where('department_id', $u->department_id);
         }
 
