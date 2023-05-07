@@ -36,21 +36,21 @@ class AnnualOutputController extends AdminController
 
         $u = Admin::user();
         if ($u->can('ministry')) {
-
         } else if ($u->can('district')) {
             $grid->disableActions();
-          //  $grid->disableCreateButton();
-            $grid->model()->where('district_id', $u->district_id);
+            //  $grid->disableCreateButton();
+            $grid->model()->where([
+                'district_id' => $u->district_id,
+                'department_id' => $u->department_id
+            ]);
         } else if ($u->can('subcounty')) {
-            $grid->model()->where('user_id', $u->user_id);
+            $grid->model()->where('user_id', $u->id);
             $grid->disableExport();
-        }else{
-            $grid->model()->where('department_id', $u->department_id);
         }
 
- 
 
-        
+
+
 
         $grid->filter(function ($filter) {
             // Remove the default id filter
@@ -93,9 +93,9 @@ class AnnualOutputController extends AdminController
             return $this->user->name;
         })->sortable();
         $grid->column('key_output', __('Key output'))
-        ->display(function ($x) {
-            return '<span title="' . $x . '">' . Str::limit($x, 50, '...') . '</span>';
-        })->sortable();
+            ->display(function ($x) {
+                return '<span title="' . $x . '">' . Str::limit($x, 50, '...') . '</span>';
+            })->sortable();
         $grid->column('activities_text', __('Activities'))
             ->display(function ($x) {
                 return '<span title="' . $x . '">' . Str::limit($x, 50, '...') . '</span>';
@@ -146,6 +146,7 @@ class AnnualOutputController extends AdminController
         $u = Auth::user();
         $form = new Form(new AnnualOutput());
         $year = Utils::data_entry_year();
+        $form->disableReset();
 
         if ($year == null) {
             die("data entry year not found.");
@@ -166,19 +167,43 @@ class AnnualOutputController extends AdminController
 
         //$form->select('year', __('Financial Year'))->options(YEARS)->rules('required');
 
+
+
         $ajax_url = url('/api/usersByDistrict?district_id=' . $u->district_id . "&department_id=" . $u->department_id);
-        $form->select('user_id', "Extension Officer")
-            ->options(function ($id) {
-                $v = User::find($id);
-                if ($v == null) {
-                    $v = Admin::user();
-                }
-                if ($v) {
-                    return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
-                }
-            })
-            ->required()
-            ->ajax($ajax_url)->rules('required');
+
+        $u = Auth::user();
+        if ($u->can('subcounty')) {
+            $form->select('user_id', "Extension Officer")
+                ->options(function ($id) {
+                    $v = User::find($id);
+                    if ($v == null) {
+                        $v = Admin::user();
+                    }
+                    if ($v) {
+                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
+                    }
+                })
+                ->default(Auth::user()->id)
+                ->required()
+                ->readOnly()
+                ->ajax($ajax_url)->rules('required');
+        } else {
+            $form->select('user_id', "Extension Officer")
+                ->options(function ($id) {
+                    $v = User::find($id);
+                    if ($v == null) {
+                        $v = Admin::user();
+                    }
+                    if ($v) {
+                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
+                    }
+                })
+                ->default(Auth::user()->id)
+                ->required()
+                ->ajax($ajax_url)->rules('required');
+        }
+
+
 
         $form->select('annual_workplan_id', __('Select Annual workplan'))->options(
             AnnualWorkplan::where([
@@ -191,20 +216,52 @@ class AnnualOutputController extends AdminController
             ->readOnly()
             ->rules('required');
 
-
         $form->textarea('key_output', __('Key output'))->rules('required');
 
 
+        $acts = [];
+        foreach (Activity::where([])
+            ->get() as $key => $value) {
+            if ($value->type == null) {
+                continue;
+            }
+            if ($value->type == 'General') {
+                $acts[$value->id] = $value->name_text;
+                continue;
+            }
+            if ($value->type == 'Departmental') {
+                if ($value->department_id == $u->department_id) {
+                    $acts[$value->id] = $value->name_text;
+                }
+                continue;
+            }
+            if ($value->type == 'District') {
+                if (
+                    ($value->department_id == 'Role') &&
+                    ($value->role == 'District') &&
+                    ($value->role == $u->can('district'))
+                ) {
+                    $acts[$value->id] = $value->name_text;
+                } else if (
+                    ($value->department_id == 'Role') &&
+                    ($value->role == 'Subcounty') &&
+                    ($value->role == $u->can('subcounty'))
+                ) {
+                    $acts[$value->id] = $value->name_text;
+                } else if (
+                    ($value->department_id == 'Role') &&
+                    ($value->role == 'Ministry') &&
+                    ($value->role == $u->can('ministry'))
+                ) {
+                    $acts[$value->id] = $value->name_text;
+                }
+                continue;
+            } 
+ 
+        }
 
         $form->listbox('output_activities', 'Select Activities')
-            ->options(Activity::where([
-                'type' => 'General'
-            ])
-                ->orWhere([ 
-                    'department_id' => $u->department_id,
-                ])
-                ->get()->pluck('name_text', 'id'))
-            ->help("Select offences involded in this case")
+            ->options($acts)
             ->rules('required');
 
 

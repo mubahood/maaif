@@ -148,6 +148,7 @@ class WorklplanCloneController extends AdminController
 
 
         $form->hidden('created_by', __('Created by'))->default(Auth::user()->id);
+        $form->hidden('processed', __('Created by'))->default(0);
         $form->radio('description', __('Are you sure you need to copy this year\'s work plan to selected officer?'))
             ->options(['Yes' => 'Yes'])->required();
         $form->disableCreatingCheck();

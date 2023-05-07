@@ -37,7 +37,7 @@ class FinancialYear extends Model
 
                 if ($plan != null) {
                     continue;
-                }
+                } 
 
                 $plan = new AnnualWorkplan();
                 $plan->district_id = $dis->id;

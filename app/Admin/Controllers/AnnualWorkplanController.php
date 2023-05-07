@@ -29,7 +29,7 @@ class AnnualWorkplanController extends AdminController
      */
     protected function grid()
     {
-  
+
         $u = Admin::user();
         $grid = new Grid(new AnnualWorkplan());
         $grid->disableBatchActions();
@@ -44,24 +44,30 @@ class AnnualWorkplanController extends AdminController
         if ($u->can('ministry')) {
         } else if ($u->can('district')) {
             $grid->disableActions();
-            $grid->model()->where('district_id', $u->district_id);
+            $grid->model()->where([
+                'district_id' => $u->district_id,
+                'department_id' => $u->department_id,
+            ]);
         } else if ($u->can('subcounty')) {
-            $grid->model()->where('user_id', $u->user_id);
+            $year_id = 0;
+            $year = Utils::data_entry_year();
+            if ($year != null) {
+                $year_id = $year->id;
+            }
+            $grid->model()->where([
+                'department_id' => $u->department_id,
+                'district_id' => $u->district_id,
+                'financial_year_id' => $year_id,
+            ]);
             $grid->disableExport();
         } else {
             $grid->model()->where('department_id', $u->department_id);
         }
 
 
-
-
         $grid->column('id', __('ID'))->sortable();
         $grid->column('year', __('Year'))->sortable();
-        $grid->column('department_id', __('Department'))
-            ->display(function () {
-                return $this->department->department;
-            })
-            ->sortable();
+
         $grid->column('district_id', __('District'))
             ->display(function () {
                 return $this->district->name;
@@ -73,6 +79,33 @@ class AnnualWorkplanController extends AdminController
             })
             ->sortable();
         $grid->column('description', __('Description'))->hide();
+
+        $grid->column('department_id', __('Department'))
+            ->display(function () {
+                return $this->department->department;
+            });
+
+
+        $grid->column('financial_year.data_entry', __('Year under planning'))
+            ->using([
+                1 => 'Active',
+                0 => 'Not active',
+            ])
+            ->label([
+                1 => 'success',
+                0 => 'danger',
+            ]);
+
+
+        $grid->column('financial_year.active', __('Implementation'))
+            ->using([
+                1 => 'Active',
+                0 => 'Not active',
+            ])
+            ->label([
+                1 => 'success',
+                0 => 'danger',
+            ]);
 
         return $grid;
     }

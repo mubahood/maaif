@@ -4,6 +4,7 @@ use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiResurceController;
 use App\Models\AnnualOutput;
 use App\Models\County;
+use App\Models\QuaterlyOutput;
 use App\Models\Subcounty;
 use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Http\Request;
@@ -43,8 +44,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 }
  */
 
-Route::get('Subcounty', function (Request $r) {
+Route::get('QuaterlyOutputTopics', function (Request $r) { 
 
+    $query = QuaterlyOutput::find($r->q);
+    $data = [];
+    if($query != null){
+        foreach ($query->topics as $key => $v) {
+            $data[] = [
+                'id' => $key,
+                'text' => $v
+            ];
+        }  
+    }
+   
+    return [
+        'data' => $data
+    ];
+});
+
+
+Route::get('Subcounty', function (Request $r) { 
     $district_id = 0;
     if (isset($_GET['district_id'])) {
         $district_id = ((int)($_GET['district_id']));

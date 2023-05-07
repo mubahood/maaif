@@ -39,7 +39,22 @@ class EvaluationController extends AdminController
 
 
         $grid = new Grid(new QuaterlyOutput());
- 
+
+        $u = Admin::user();
+        if ($u->can('ministry')) {
+        } else if ($u->can('district')) {
+            $grid->disableActions();
+            $grid->disableCreateButton();
+            $grid->model()->where('district_id', $u->district_id);
+        } else if ($u->can('subcounty')) {
+            $grid->model()->where('user_id', $u->id);
+            $grid->disableExport();
+        } else {
+            $grid->model()->where('department_id', $u->department_id);
+        }
+
+
+        
         $grid->filter(function ($filter) {
             // Remove the default id filter
             $filter->disableIdFilter();
@@ -94,10 +109,10 @@ class EvaluationController extends AdminController
 
         $grid->column('annual_id', __('Annual Output'))
             ->display(function ($x) {
-                if ($this->output == null) {
+                if ($this->work_plan == null) { 
                     return $x;
                 }
-                return '<p title="' . $this->output->name_text . '">' . Str::limit($this->output->name_text, 45) . '</p>';
+                return $this->work_plan->name;
             })->sortable(); 
 
 

@@ -46,7 +46,7 @@ class UserController extends AdminController
         } else if ($u->can('subcounty')) {
             $grid->disableCreateButton();
             $grid->disableActions();
-            $grid->model()->where('user_id', $u->user_id);
+            $grid->model()->where('user_id', $u->id);
             $grid->disableExport();
         } else {
             $grid->model()->where('department_id', $u->department_id);

@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\User\TopicBatchSetDepartment;
 use App\Models\Department;
 use App\Models\Topic;
 use Encore\Admin\Controllers\AdminController;
@@ -26,7 +27,12 @@ class ExtTopicController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Topic());
-        $grid->disableBatchActions();
+        $grid->batchActions(function ($batch) {
+
+            $batch->add(new TopicBatchSetDepartment());
+            $batch->disabledelete();
+        });
+
         $grid->model()->orderBy('name', 'asc');
         $grid->column('name', __('Topics'))->sortable();
         $grid->column('department_id', __('Department'))->display(function () {

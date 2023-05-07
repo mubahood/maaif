@@ -63,7 +63,7 @@ class QuaterlyOutputController extends AdminController
             $grid->disableCreateButton();
             $grid->model()->where('district_id', $u->district_id);
         } else if ($u->can('subcounty')) {
-            $grid->model()->where('user_id', $u->user_id);
+            $grid->model()->where('user_id', $u->id);
             $grid->disableExport();
         } else {
             $grid->model()->where('department_id', $u->department_id);
@@ -273,18 +273,17 @@ class QuaterlyOutputController extends AdminController
             ->ajax($ajax_url)
             ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
-
+/* 
         $form->select('annual_activity_id', "Select Activity From Annual Activitiy for this Quarter")
             ->required();
-
+ */
         $topics = Topic::where([
             'department_id' => Admin::user()->department_id
         ])->orderby('name', 'asc')->get()->pluck('name', 'id');
         $form->multipleSelect('topic', __('Topics'))
             ->options($topics)
             ->required(); 
-
-
+ 
         $entreprizes = Enterprise::all()->pluck('name', 'id');
         $form->multipleSelect('entreprizes', __('Enterprises'))
             ->options($entreprizes)

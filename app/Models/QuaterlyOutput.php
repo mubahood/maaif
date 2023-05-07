@@ -36,7 +36,7 @@ class QuaterlyOutput extends Model
         $texts = "";
         $isFirst = true;
         foreach ($arr as $key => $txt) {
-            $a =  AnnualOutput::find($txt);
+            $a =  Topic::find($txt);
             if ($a) {
                 if ($isFirst) {
                     $isFirst = false;
@@ -52,27 +52,42 @@ class QuaterlyOutput extends Model
         }
         return $texts;
     }
-    public function getTopicTextAttribute($vals)
+
+    public function getTopicsAttribute($vals)
+    {
+        $arr = [];
+        foreach ($this->topic as  $txt) {
+            $a =  Topic::find($txt);
+            if ($a) {
+                $arr[$a->id] = $a->name;
+            }
+        } 
+        return $arr;
+    }
+    public function getTopicTextAttribute()
     {
 
         $texts = "";
         $isFirst = true;
         $arr = $this->topic;
 
+        if (!is_array($arr)) {
+            return "";
+        }
         foreach ($arr as $key => $txt) {
-            $a =  AnnualOutput::find($txt);
+            $a =  Topic::find($txt);
             if ($a) {
                 if ($isFirst) {
                     $isFirst = false;
                 } else {
                     $texts .= ',';
                 }
-                $texts .= $a->key_output;
+                $texts .= $a->name;
             }
         }
 
         if (strlen($texts) < 2) {
-            $texts = $vals;
+            $texts = 'No topic';
         }
         return $texts;
     }
@@ -143,6 +158,16 @@ class QuaterlyOutput extends Model
         return $this->belongsTo(AnnualWorkplan::class, 'annual_id');
     }
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+
 
     public function output()
     {
@@ -181,15 +206,15 @@ class QuaterlyOutput extends Model
         $_num_planned = ((int)($this->num_planned));
 
         if ($_num_planned == 0) {
-            if($_daily_activities>0){
-                return 100;                
+            if ($_daily_activities > 0) {
+                return 100;
             }
             return 0;
         }
 
         $ans = ($_daily_activities / $_num_planned) * 100;
 
-        if($ans>100){
+        if ($ans > 100) {
             return 100;
         }
 
@@ -202,21 +227,21 @@ class QuaterlyOutput extends Model
         $_num_planned = $this->num_target_ben;
 
         if ($_num_reached == 0) {
-            if($_num_planned>0){
+            if ($_num_planned > 0) {
                 return 0;
             }
             return $_num_planned;
         }
 
-        if($_num_planned == 0){
+        if ($_num_planned == 0) {
             return 0;
         }
         $ans = ($_num_reached / $_num_planned) * 100;
 
-        if($ans>100){
+        if ($ans > 100) {
             return 100;
-        } 
-        return ceil($ans); 
+        }
+        return ceil($ans);
     }
 
     public function daily_actovities()
@@ -232,6 +257,17 @@ class QuaterlyOutput extends Model
         }
         return $tot;
     }
+    public function getNameAttribute()
+    {
+        $u = User::find($this->user_id);
+        $by_text = "";
+        if ($u != null) {
+            $by_text = " by " . $u->name;
+        }
+        $name = "";
+        $name = "#" . $this->id . " - " . $this->year . ", UGX {$this->budget} {$by_text} - Topics:  " . $this->topic_text;
+        return $name;
+    }
 
-    protected $appends = ['topic_text', 'num_reached'];
+    protected $appends = ['topic_text', 'num_reached', 'name','topics'];
 }

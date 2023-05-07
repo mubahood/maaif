@@ -209,7 +209,7 @@ class Utils extends Model
 
   /*       $plans = AnnualWorkplan::where([])->get();
         foreach ($plans as $key => $plan) {
-            AnnualWorkplan::generate_work_plan($plan);
+district_id
         }
 
         $plans = AnnualWorkplan::where('financial_year_id', NULL)->get();
@@ -242,6 +242,7 @@ class Utils extends Model
             $out->district_id = $out->annual_workplan->district_id;
             $out->save();
         }
+ 
         foreach (AnnualOutput::where([
             'district_id' => NULL
         ])->get() as $key => $out) {

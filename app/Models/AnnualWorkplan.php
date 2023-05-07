@@ -51,6 +51,12 @@ class AnnualWorkplan extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function financial_year()
+    {
+        return $this->belongsTo(FinancialYear::class);
+    } 
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');
