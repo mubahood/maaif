@@ -36,6 +36,7 @@ class AnnualOutputController extends AdminController
 
         $u = Admin::user();
         if ($u->can('ministry')) {
+            $grid->disableCreateButton(); 
         } else if ($u->can('district')) {
             $grid->disableActions();
             //  $grid->disableCreateButton();
@@ -151,9 +152,9 @@ class AnnualOutputController extends AdminController
         if ($year == null) {
             die("data entry year not found.");
         }
-
+ 
         $workPlan =  AnnualWorkplan::where([
-            'year' => $year->name,
+            'financial_year_id' => $year->id,
             'district_id' => $u->district_id,
             'department_id' => $u->department_id,
         ])->orderBy('id', 'desc')->first();
@@ -161,7 +162,7 @@ class AnnualOutputController extends AdminController
         if ($workPlan == null) {
             return admin_error(
                 'Workplan not found.',
-                "Workplan for {$u->district->name} district, {$u->department->department} department - {$year->name} financial was not found.  Navigate to workplan tab and create it first."
+                "Workplan for {$u->district->name} district, {$year->name} financial was not found.  Navigate to workplan tab and create it first."
             );
         }
 

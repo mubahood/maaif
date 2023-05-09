@@ -58,6 +58,7 @@ class QuaterlyOutputController extends AdminController
 
         $u = Admin::user();
         if ($u->can('ministry')) {
+            $grid->disableCreateButton();
         } else if ($u->can('district')) {
             $grid->disableActions();
             $grid->disableCreateButton();
@@ -235,7 +236,7 @@ class QuaterlyOutputController extends AdminController
                     $officer = User::find($u_id);
 
                     $v = User::find($u_id);
-                    return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
+                    return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name];
                 })
                 ->default($u_id)
                 ->readOnly()
@@ -250,7 +251,7 @@ class QuaterlyOutputController extends AdminController
                         $v = Auth::user();
                     }
                     if ($v) {
-                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name . ', ' . $v->department->department];
+                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name];
                     }
                 })
                 ->default(Auth::user()->id)
@@ -273,7 +274,7 @@ class QuaterlyOutputController extends AdminController
             ->ajax($ajax_url)
             ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
-/* 
+        /* 
         $form->select('annual_activity_id', "Select Activity From Annual Activitiy for this Quarter")
             ->required();
  */
@@ -282,8 +283,8 @@ class QuaterlyOutputController extends AdminController
         ])->orderby('name', 'asc')->get()->pluck('name', 'id');
         $form->multipleSelect('topic', __('Topics'))
             ->options($topics)
-            ->required(); 
- 
+            ->required();
+
         $entreprizes = Enterprise::all()->pluck('name', 'id');
         $form->multipleSelect('entreprizes', __('Enterprises'))
             ->options($entreprizes)
