@@ -17,12 +17,15 @@ php artisan migrate
 php artisan make:migration create_ext_area_annual_outputs_table 
 php artisan make:migration create_annual_output_has_activities_table 
 php artisan make:migration create_departments_table 
+php artisan make:migration create_ministry_departments_table 
+php artisan make:migration create_ministry_divisions_table 
 php artisan make:migration create_annual_workplans_table 
 php artisan make:migration create_quaterly_output_has_area_annual_outputs_table 
 php artisan make:migration create_financial_years_table 
 php artisan make:migration create_worklplan_clones_table 
 php artisan make:migration create_system_cinfigs_table 
   
+php artisan admin:make AnnualOutputController --model=App\Models\MinistryDepartment
 php artisan admin:make AnnualOutputController --model=App\Models\AnnualOutput
 php artisan admin:make QuaterlyOutputController --model=App\Models\QuaterlyOutput
 php artisan admin:make DailyActivityController --model=App\Models\DailyActivity
@@ -48,8 +51,12 @@ php artisan admin:make RegionController --model=App\Models\Region
 php artisan admin:make ExtTopicController --model=App\Models\Topic
 php artisan admin:make SystemCinfigController --model=App\Models\SystemCinfig
 php artisan admin:make DirectorateController --model=App\Models\Directorate
+php artisan admin:make MinistryDepartmentController --model=App\Models\MinistryDepartment
+php artisan admin:make MinistryDivisionController --model=App\Models\MinistryDivision
 
  
+php artisan make:model MinistryDivision
+php artisan make:model MinistryDepartment
 php artisan make:model Directorate
 php artisan make:model AuaterlyOutput
 php artisan make:model QuaterlyOutput

@@ -268,3 +268,40 @@ Route::get('ajax', function (Request $r) {
         'data' => $data
     ];
 });
+
+
+Route::get('ajax-by-id', function (Request $r) {
+
+    $_model = trim($r->get('model'));
+    $id = ((int)($r->q));
+ 
+
+    $model = "App\Models\\" . $_model;
+    $search_by_1 = trim($r->get('search_by_1'));
+    $search_by_2 = trim($r->get('search_by_2'));
+
+    $res_1 = $model::where([
+         $search_by_2 => $id
+    ])
+        ->limit(20)->get(); 
+
+
+    $data = [];
+    foreach ($res_1 as $key => $v) {
+        $name = "";
+        if (isset($v->name)) {
+            $name =  $v->name;
+        } else {
+            $name =  $v->$search_by_1;
+        }
+        $data[] = [
+            'id' => $v->id,
+            'text' => $name
+        ];
+    }
+ 
+
+    return [
+        'data' => $data
+    ];
+});

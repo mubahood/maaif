@@ -5,6 +5,8 @@ namespace App\Admin\Controllers;
 use App\Models\Department;
 use App\Models\Directorate;
 use App\Models\District;
+use App\Models\MinistryDepartment;
+use App\Models\MinistryDivision;
 use App\Models\Subcounty;
 use App\Models\User;
 use Directory;
@@ -99,28 +101,6 @@ class UserController extends AdminController
         $grid->column('education', __('Education'))->hide();
         $grid->column('year_working', __('Year working'))->hide();
 
-        /* 
-        $grid->column('actions', __('Actions'))->display(function () {
-
-
-            $addActivity  =   '<div class="dropdown show dropleft  h4  m-0">
-            <a class="px-0" href="#" role="button" id="dropdownMenuLink' . $this->id . '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-ellipsis-v"></i>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink' . $this->id . '">
-              <a class="dropdown-item py-2" href="quaterly-outputs/create?user=' . $this->id . '" >Add quarterly activity</a>
-              <a class="dropdown-item py-2"  href="quaterly-outputs/?user_id=' . $this->id . '" >View Workplan</a>
-              <a class="dropdown-item py-2"  href="evaluations/?user_id=' . $this->id . '" >View Evaluation</a>
-              <a class="dropdown-item py-2"  href="javascript:;" >Print Workplan</a>
-              <a class="dropdown-item py-2" href="worklplan-clones/create?user=' . $this->id . '" >Clone Workplan</a>
-              <a class="dropdown-item py-2" href="my-members/' . $this->id . '/edit" >Edit user profile</a>
-            </div>
-          </div>';
-
-            //$addActivity .= '<p class="p-0 m-0"><a href="quaterly-outputs/create?user=' . $this->id . '" >Generate report</a></p>';
-            return $addActivity;
-        }); */
-
 
 
         return $grid;
@@ -202,8 +182,8 @@ class UserController extends AdminController
 
         $form->text('job_title', __('Job title'));
         $form->text('education', __('Education'))->default('Primary');
-        $form->text('year_working', __('Year working'))->default('2018');
-        $form->text('year_maaif', __('Year maaif'))->default('2018');
+        $form->hidden('year_working', __('Year working'))->default('2018');
+        $form->text('year_maaif', __('Year joined MAAIF'))->default('2018');
         $form->text('device_assigned', __('Device assigned'));
         $form->text('device_serial', __('Device serial'));
 
@@ -231,6 +211,31 @@ class UserController extends AdminController
                     ->options(Directorate::where([])
                         ->orderBy('directorate', 'asc')
                         ->get()->pluck('directorate', 'id'))
+                    ->load('ministry_department_id', url('api/ajax-by-id?model=MinistryDepartment&search_by_1=name&search_by_2=directorate_id'))
+                    ->rules('required');
+
+
+                $form->select('ministry_department_id', __('Select Department'))->options(function ($id) {
+                    $t = MinistryDepartment::find($id);
+                    if ($t == null) {
+                        return [];
+                    }
+                    return [
+                        $t->id => $t->name
+                    ];
+                })
+                    ->load('ministry_division_id', url('api/ajax-by-id?model=MinistryDivision&search_by_2=name&search_by_2=ministry_department_id'))
+                    ->rules('required');
+
+                $form->select('ministry_division_id', __('Select Division'))->options(function ($id) {
+                    $t = MinistryDivision::find($id);
+                    if ($t == null) {
+                        return [];
+                    }
+                    return [
+                        $t->id => $t->name
+                    ];
+                })
                     ->rules('required');
 
                 $roleModel = config('admin.database.roles_model');

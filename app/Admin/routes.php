@@ -19,6 +19,7 @@ Route::group([
     $router->get('forms/form-4', 'FormController@form4');
     $router->get('forms/settings', 'FormController@settings');
     $router->get('forms/register', 'FormController@register');
+
      
     $router->resource('districts', DistrictController::class);
 
@@ -53,6 +54,8 @@ Route::group([
     $router->resource('topics', ExtTopicController::class);
     $router->resource('system-configs', SystemCinfigController::class); 
     $router->resource('directorates', DirectorateController::class); 
+    $router->resource('ministry-departments', MinistryDepartmentController::class);
+    $router->resource('ministry-divisions', MinistryDivisionController::class);   
 
 
 
