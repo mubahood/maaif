@@ -338,11 +338,8 @@ class UserController extends AdminController
         });
 
 
-        $form->radio('is_verified', __('Is verified?'))
-            ->options([
-                1 => 'Verified',
-                0 => 'NOT Verified',
-            ])->default(0)->required();
+        $form->hide('is_verified', __('Is verified?'))
+            ->default(1);
 
 
 
