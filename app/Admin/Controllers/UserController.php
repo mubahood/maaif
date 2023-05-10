@@ -346,7 +346,7 @@ class UserController extends AdminController
         }
 
 
-        $form->hide('is_verified', __('Is verified?'))
+        $form->hidden('is_verified', __('Is verified?'))
             ->default(1);
 
 
