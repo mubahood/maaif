@@ -327,15 +327,23 @@ class UserController extends AdminController
         $form->email('email', __('Email'))->rules('required');
 
 
-        $form->radio('want_password_changed', __('Want to change Password?'))->options([
-            1 => 'Yes'
-        ])->when(1, function ($form) {
+        if ($form->isCreating()) {
             $form->password('password', trans('admin.password'))->rules('confirmed|required');
             $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
                 ->default(function ($form) {
                     return $form->model()->password;
                 });
-        });
+        } else {
+            $form->radio('want_password_changed', __('Want to change Password?'))->options([
+                1 => 'Yes'
+            ])->when(1, function ($form) {
+                $form->password('password', trans('admin.password'))->rules('confirmed|required');
+                $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+                    ->default(function ($form) {
+                        return $form->model()->password;
+                    });
+            });
+        }
 
 
         $form->hide('is_verified', __('Is verified?'))
