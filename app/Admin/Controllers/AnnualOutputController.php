@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\Activity;
 use App\Models\AnnualOutput;
 use App\Models\AnnualWorkplan;
+use App\Models\Position;
 use App\Models\User;
 use App\Models\Utils;
 use Encore\Admin\Controllers\AdminController;
@@ -36,7 +37,7 @@ class AnnualOutputController extends AdminController
 
         $u = Admin::user();
         if ($u->can('ministry')) {
-            $grid->disableCreateButton(); 
+            $grid->disableCreateButton();
         } else if ($u->can('district')) {
             $grid->disableActions();
             //  $grid->disableCreateButton();
@@ -152,7 +153,7 @@ class AnnualOutputController extends AdminController
         if ($year == null) {
             die("data entry year not found.");
         }
- 
+
         $workPlan =  AnnualWorkplan::where([
             'financial_year_id' => $year->id,
             'district_id' => $u->district_id,
@@ -236,28 +237,14 @@ class AnnualOutputController extends AdminController
                 }
                 continue;
             }
-            if ($value->type == 'District') {
-                if (
-                    ($value->department_id == 'Role') &&
-                    ($value->role == 'District') &&
-                    ($value->role == $u->can('district'))
-                ) {
-                    $acts[$value->id] = $value->name_text;
-                } else if (
-                    ($value->department_id == 'Role') &&
-                    ($value->role == 'Subcounty') &&
-                    ($value->role == $u->can('subcounty'))
-                ) {
-                    $acts[$value->id] = $value->name_text;
-                } else if (
-                    ($value->department_id == 'Role') &&
-                    ($value->role == 'Ministry') &&
-                    ($value->role == $u->can('ministry'))
-                ) {
+
+            if ($value->type == 'Role') {
+                if ($value->role == $u->position_id) {
                     $acts[$value->id] = $value->name_text;
                 }
                 continue;
-            } 
+            }
+
  
         }
 
