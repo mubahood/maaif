@@ -241,9 +241,7 @@ class UserController extends AdminController
                     ];
                 })
                     ->rules('required');
-
-
-
+ 
                 $pos = [];
                 foreach (Position::where([
                     'category' => 'Ministry'
