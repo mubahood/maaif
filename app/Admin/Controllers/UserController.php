@@ -7,6 +7,7 @@ use App\Models\Directorate;
 use App\Models\District;
 use App\Models\MinistryDepartment;
 use App\Models\MinistryDivision;
+use App\Models\Position;
 use App\Models\Subcounty;
 use App\Models\User;
 use Directory;
@@ -39,6 +40,7 @@ class UserController extends AdminController
         $grid = new Grid(new Administrator());
         $grid->model()->orderBy('id', 'Desc');
         $grid->quickSearch('name');
+        $grid->disableBatchActions();
 
         $u = Admin::user();
         if ($u->can('ministry') || $u->can('admin')) {
@@ -227,6 +229,8 @@ class UserController extends AdminController
                     ->load('ministry_division_id', url('api/ajax-by-id?model=MinistryDivision&search_by_2=name&search_by_2=ministry_department_id'))
                     ->rules('required');
 
+
+
                 $form->select('ministry_division_id', __('Select Division'))->options(function ($id) {
                     $t = MinistryDivision::find($id);
                     if ($t == null) {
@@ -236,6 +240,18 @@ class UserController extends AdminController
                         $t->id => $t->name
                     ];
                 })
+                    ->rules('required');
+
+
+
+                $pos = [];
+                foreach (Position::where([
+                    'category' => 'Ministry'
+                ])->orderBy('name', 'asc')->get() as $key => $p) {
+                    $pos[$p->id] = $p->category . " - " . $p->name;
+                }
+
+                $form->select('position_id', __('Select Position'))->options($pos)
                     ->rules('required');
 
                 $roleModel = config('admin.database.roles_model');
@@ -264,6 +280,15 @@ class UserController extends AdminController
                         ->get()->pluck('department', 'id'))
                     ->rules('required');
 
+                $pos = [];
+                foreach (Position::where([
+                    'category' => 'District'
+                ])->orderBy('name', 'asc')->get() as $key => $p) {
+                    $pos[$p->id] = $p->category . " - " . $p->name;
+                }
+
+                $form->select('position_id', __('Select Position'))->options($pos)
+                    ->rules('required');
 
                 $roleModel = config('admin.database.roles_model');
                 $roles = [];
@@ -296,6 +321,16 @@ class UserController extends AdminController
                     ->rules('required');
 
 
+                $pos = [];
+                foreach (Position::where([
+                    'category' => 'Subcounty'
+                ])->orderBy('name', 'asc')->get() as $key => $p) {
+                    $pos[$p->id] = $p->category . " - " . $p->name;
+                }
+
+                $form->select('position_id', __('Select Position'))->options($pos)
+                    ->rules('required');
+
                 $roleModel = config('admin.database.roles_model');
                 $roles = [];
                 foreach ($roleModel::all() as $key => $role) {
@@ -310,13 +345,6 @@ class UserController extends AdminController
 
                 $form->multipleSelect('roles', trans('admin.roles'))->options($roles)->rules('required');
             })->required();
-
-
-
-
-
-
-
 
 
 

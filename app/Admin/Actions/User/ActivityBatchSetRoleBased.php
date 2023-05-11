@@ -3,6 +3,7 @@
 namespace App\Admin\Actions\User;
 
 use App\Models\Department;
+use App\Models\Position;
 use Encore\Admin\Actions\BatchAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -28,12 +29,12 @@ class ActivityBatchSetRoleBased extends BatchAction
 
     public function form()
     {
-        $this->select('role', __('Select Role'))
-            ->options([
-                'Ministry' => 'Ministry level',
-                'District' => 'District level',
-                'Subcounty' => 'Subcounty level',
-            ])
+        $pos = [];
+        foreach (Position::where([])->orderBy('name', 'asc')->get() as $key => $p) {
+            $pos[$p->id] = $p->category . " - " . $p->name;
+        }
+        $this->select('role', __('Select Position'))
+            ->options($pos)
             ->rules('required');
     }
 }

@@ -20,7 +20,7 @@ Route::group([
     $router->get('forms/settings', 'FormController@settings');
     $router->get('forms/register', 'FormController@register');
 
-     
+
     $router->resource('districts', DistrictController::class);
 
 
@@ -43,7 +43,7 @@ Route::group([
     $router->resource('annual-workplans', AnnualWorkplanController::class);
     $router->resource('ext-topics', ExtTopicController::class);
     $router->resource('my-members', MyMemberController::class);
-    $router->resource('users', UserController::class);  
+    $router->resource('users', UserController::class);
     $router->resource('financial-years', FinancialYearController::class);
     $router->resource('worklplan-clones', WorklplanCloneController::class);
     $router->resource('regions', RegionController::class);
@@ -52,12 +52,11 @@ Route::group([
     $router->resource('parishes', ParishController::class);
     $router->resource('villages', VillageController::class);
     $router->resource('topics', ExtTopicController::class);
-    $router->resource('system-configs', SystemCinfigController::class); 
-    $router->resource('directorates', DirectorateController::class); 
+    $router->resource('system-configs', SystemCinfigController::class);
+    $router->resource('directorates', DirectorateController::class);
     $router->resource('ministry-departments', MinistryDepartmentController::class);
-    $router->resource('ministry-divisions', MinistryDivisionController::class);   
-
-
+    $router->resource('ministry-divisions', MinistryDivisionController::class);
+    $router->resource('positions', PositionController::class);
 
     $router->resource('report-annual-workplans', ReportAnnualWorkplanController::class);
     $router->resource('report-departments', ReportDepartmentController::class);

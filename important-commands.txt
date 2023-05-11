@@ -24,6 +24,7 @@ php artisan make:migration create_quaterly_output_has_area_annual_outputs_table
 php artisan make:migration create_financial_years_table 
 php artisan make:migration create_worklplan_clones_table 
 php artisan make:migration create_system_cinfigs_table 
+php artisan make:migration create_positions_table
   
 php artisan admin:make AnnualOutputController --model=App\Models\MinistryDepartment
 php artisan admin:make AnnualOutputController --model=App\Models\AnnualOutput
@@ -53,8 +54,10 @@ php artisan admin:make SystemCinfigController --model=App\Models\SystemCinfig
 php artisan admin:make DirectorateController --model=App\Models\Directorate
 php artisan admin:make MinistryDepartmentController --model=App\Models\MinistryDepartment
 php artisan admin:make MinistryDivisionController --model=App\Models\MinistryDivision
+php artisan admin:make PositionController --model=App\Models\Position
 
  
+php artisan make:model Position
 php artisan make:model MinistryDivision
 php artisan make:model MinistryDepartment
 php artisan make:model Directorate
