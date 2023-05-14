@@ -25,6 +25,8 @@ php artisan make:migration create_financial_years_table
 php artisan make:migration create_worklplan_clones_table 
 php artisan make:migration create_system_cinfigs_table 
 php artisan make:migration create_positions_table
+php artisan make:migration create_report_generators_table
+php artisan make:migration create_reports_table
   
 php artisan admin:make AnnualOutputController --model=App\Models\MinistryDepartment
 php artisan admin:make AnnualOutputController --model=App\Models\AnnualOutput
@@ -55,8 +57,11 @@ php artisan admin:make DirectorateController --model=App\Models\Directorate
 php artisan admin:make MinistryDepartmentController --model=App\Models\MinistryDepartment
 php artisan admin:make MinistryDivisionController --model=App\Models\MinistryDivision
 php artisan admin:make PositionController --model=App\Models\Position
+php artisan admin:make ReportGeneratorController --model=App\Models\ReportGenerator
+php artisan admin:make OfficerReportController --model=App\Models\OfficerReport
 
  
+php artisan make:model ReportGenerator
 php artisan make:model Position
 php artisan make:model MinistryDivision
 php artisan make:model MinistryDepartment
@@ -86,6 +91,7 @@ php artisan make:model WorklplanClone
 php artisan make:model Village
 php artisan make:model Region
 php artisan make:model SystemCinfig
+php artisan make:model OfficerReport
 
 Php artisan admin:action User\CloneWorkPlan --name="Clone workplan" 
 Php artisan admin:action User\AddQuarterlyActivity --name="Add" 

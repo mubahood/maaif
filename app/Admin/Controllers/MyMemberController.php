@@ -47,7 +47,11 @@ class MyMemberController extends AdminController
             $grid->model()->where('user_id', $u->id);
             $grid->disableExport();
         } else {
-            $grid->model()->where('department_id', $u->department_id);
+            $grid->model()
+            ->where([
+                'department_id' => $u->department_id,
+                'district_id' => $u->district_id,
+            ]);
             $grid->disableCreateButton();
         }
 

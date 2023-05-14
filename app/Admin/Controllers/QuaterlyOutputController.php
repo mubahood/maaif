@@ -60,8 +60,8 @@ class QuaterlyOutputController extends AdminController
         if ($u->can('ministry')) {
             $grid->disableCreateButton();
         } else if ($u->can('district')) {
-            $grid->disableActions();
-            $grid->disableCreateButton();
+            //$grid->disableActions();
+            //$grid->disableCreateButton();
             $grid->model()->where('district_id', $u->district_id);
         } else if ($u->can('subcounty')) {
             $grid->model()->where('user_id', $u->id);
@@ -274,16 +274,31 @@ class QuaterlyOutputController extends AdminController
             ->ajax($ajax_url)
             ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
-        /* 
+   
         $form->select('annual_activity_id', "Select Activity From Annual Activitiy for this Quarter")
+            ->options(function($id){
+                $an = Activity::where([ 
+                    'id' => ((int)($id))
+                ])->first();
+                if($an == null){
+                    return [
+                         
+                    ];
+                }
+                return [
+                    $an->id => $an->name_text
+                ];
+
+            })
             ->required();
- */
-        $topics = Topic::where([
+ 
+      $topics = Topic::where([
             'department_id' => Admin::user()->department_id
         ])->orderby('name', 'asc')->get()->pluck('name', 'id');
+
         $form->multipleSelect('topic', __('Topics'))
             ->options($topics)
-            ->required();
+            ->required();  
 
         $entreprizes = Enterprise::all()->pluck('name', 'id');
         $form->multipleSelect('entreprizes', __('Enterprises'))

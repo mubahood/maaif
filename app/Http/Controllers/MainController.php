@@ -6,6 +6,7 @@ use App\Models\AnnualWorkplan;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\NewsPost;
+use App\Models\OfficerReport;
 use OpenAdmin\Admin\Auth\Database\Administrator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -292,11 +293,30 @@ status
             dd("Movement not found.");
         }
 
-
-
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(view('reports/report-annual-workplans-print', [
             'm' => $m
+        ]));
+        return $pdf->stream();
+
+        /*  */
+    }
+    public function report_officer_print()
+    {
+        $id = (int)(trim($_GET['id']));
+        $m =  OfficerReport::find($id);
+        if ($m == null) {
+            dd("Movement not found.");
+        }
+
+        $items = $m->get_all_items();
+
+       
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(view('reports/report-officer-print', [
+            'm' => $m,
+            'items' => $items
         ]));
         return $pdf->stream();
 

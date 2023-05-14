@@ -199,6 +199,15 @@ class Utils extends Model
     }
     public static function system_boot()
     {
+        $gens = ReportGenerator::where('generated','!=','Yes')
+        ->orWhere('generated',null)
+        ->get();
+
+        foreach ($gens as $key => $gen) {
+            $gen->doGen();
+     
+        }
+ 
         /*  set_time_limit(-1);
         foreach (QuaterlyOutput::all() as $key => $v) {
             $v->created_by = $v->user_id;

@@ -19,6 +19,7 @@ Route::group([
     $router->get('forms/form-4', 'FormController@form4');
     $router->get('forms/settings', 'FormController@settings');
     $router->get('forms/register', 'FormController@register');
+    
 
 
     $router->resource('districts', DistrictController::class);
@@ -61,7 +62,8 @@ Route::group([
     $router->resource('report-annual-workplans', ReportAnnualWorkplanController::class);
     $router->resource('report-departments', ReportDepartmentController::class);
     $router->resource('report-districts', ReportDistrictController::class);
-    $router->resource('report-members', ReportMemberController::class);
+    $router->resource('report-generators', ReportGeneratorController::class);
+    $router->resource('report-members', OfficerReportController::class);  
 
     /* =============NEW=============== */
     $router->resource('service-providers', ServiceProviderController::class);
@@ -85,4 +87,5 @@ Route::group([
     $router->resource('event-bookings', EventBookingController::class);
     $router->resource('products', ProductController::class);
     $router->resource('product-orders', ProductOrderController::class);
+
 });

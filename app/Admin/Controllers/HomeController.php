@@ -3,11 +3,14 @@
 namespace App\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\AnnualOutput;
+use App\Models\AnnualWorkplan;
 use App\Models\Association;
 use App\Models\DailyActivity;
 use App\Models\Group;
 use App\Models\Location;
 use App\Models\Person;
+use App\Models\QuaterlyOutput;
 use App\Models\User;
 use App\Models\Utils;
 use Carbon\Carbon;
@@ -78,31 +81,56 @@ class HomeController extends Controller
 
         $content->row(function (Row $row) {
             $row->column(3, function (Column $column) {
+                $u = Admin::user();
+                $females = User::where([
+                    'department_id' => $u->department_id,
+                    'district_id' => $u->district_id,
+                ])
+                    ->where('gender', 'like', '%f%')
+                    ->count();
+                $all = number_format(User::where([
+                    'department_id' => $u->department_id,
+                    'district_id' => $u->district_id,
+                ])->count());
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'My members',
-                    'sub_title' =>
-                    number_format(User::where('gender', 'like', '%m%')->count()) . ' Males, ' .
-                        number_format(User::where('gender', 'like', '%f%')->count()) . ' Females.',
-                    'number' => number_format(User::where([])->count()),
+                    'title' => 'My Members',
+                    'sub_title' => ($all - $females) . ' Males, ' .
+                        $females . ' Females.',
+                    'number' => number_format($all),
                     'link' => 'my-members'
                 ]));
             });
             $row->column(3, function (Column $column) {
+
+                
+                $u = Admin::user(); 
+                $annuals = AnnualOutput::where([ 
+                    'district_id' => $u->district_id,
+                    'department_id' => $u->department_id,
+                ])->orderBy('id', 'desc')->count();
+
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'Annual outputs',
+                    'title' => 'Annual Activities',
                     'sub_title' => 'For this financial year.',
-                    'number' => number_format(rand(50, 150)),
+                    'number' => number_format($annuals),
                     'link' => 'annual-outputs'
                 ]));
             });
             $row->column(3, function (Column $column) {
+
+                $u = Admin::user(); 
+                $annuals = QuaterlyOutput::where([ 
+                    'district_id' => $u->district_id,
+                    'department_id' => $u->department_id,
+                ])->orderBy('id', 'desc')->count();
+                
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'My quarterly ',
-                    'sub_title' => rand(100, 400) . ' new activies posted 7 days ago.',
-                    'number' => number_format(rand(1000, 6000)),
+                    'title' => 'My Outputs',
+                    'sub_title' =>  'All time.',
+                    'number' => number_format($annuals),
                     'link' => 'quaterly-outputs'
                 ]));
             });

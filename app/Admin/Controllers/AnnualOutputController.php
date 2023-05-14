@@ -39,12 +39,12 @@ class AnnualOutputController extends AdminController
         if ($u->can('ministry')) {
             $grid->disableCreateButton();
         } else if ($u->can('district')) {
-            $grid->disableActions();
+            //$grid->disableActions();
             //  $grid->disableCreateButton();
             $grid->model()->where([
                 'district_id' => $u->district_id,
                 'department_id' => $u->department_id
-            ]);
+            ]); 
         } else if ($u->can('subcounty')) {
             $grid->model()->where('user_id', $u->id);
             $grid->disableExport();

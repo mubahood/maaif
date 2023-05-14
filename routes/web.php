@@ -46,3 +46,4 @@ Route::post('/account-details', [AccountController::class, 'account_details_post
 
 Route::get('/logout', [AccountController::class, 'logout']);
 Route::get('report-annual-workplans-print', [MainController::class,'report_annual_workplans_print']);
+Route::get('report-officer-print', [MainController::class,'report_officer_print']);
