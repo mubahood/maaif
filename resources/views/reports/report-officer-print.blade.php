@@ -71,6 +71,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
         </p>
 
         <br>
+        <br>
     <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
     <table class="w-100">
