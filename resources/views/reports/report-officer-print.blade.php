@@ -38,7 +38,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
             <td style="width: 25%;" class="">
             </td>
             <td class="text-center" style="width: 20%;">
-                <img style="width: 100px" src="<?php echo e(public_path('assets/images/coat_of_arms-min.png'), false); ?>">
+                <img style="width: 100px" src="<?= public_path('assets/images/coat_of_arms-min.png') ?>">
             </td>
             <td style="width: 25%;" class="">
             </td>
@@ -57,29 +57,39 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
             </td>
         </tr>
     </table>
-    <hr>
+    <hr style="background-color: black; height: 3px; margin-bottom: 0px;">
+    <hr style="background-color: yellow; height: 3px; margin: 0px; padding: 0px;">
+    <hr style="background-color: red; height: 3px; margin: 0px; padding: 0px;">
 
-    <p class="text-center mt-4 mb-4" style="font-size: 20px"><b><u>ANNUAL WORKPLAN REPORT FOR THE YEAR -
-                {{ $m->name }}</u></b></p>
+    <p class="text-center mt-4 mb-4" style="font-size: 20px"><b><u>EXTENSION OFFICER'S ANNUAL WORKPLAN REPORT FOR THE
+                YEAR -
+                {{ $m->year->name }}</u></b></p>
 
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos deserunt architecto amet doloribus quas
-        perspiciatis inventore adipisci quasi voluptatum quisquam. Repellat delectus saepe blanditiis, aut iure
-        exercitationem laudantium? Maxime, fuga.</p>
+    <p class="text-left mt-4 mb-1" style="font-size: 16px">EXTENSION OFFICER: <b>
+            <u>{{ strtoupper($m->officer->name) }}</u></b></p>
+            {{ $m->comment }}
+        </p>
+
+        <br>
+    <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
     <table class="w-100">
         <tr>
             <td>
                 <p class="mt-3" style="font-size: 16px">FINANCIAL YEAR</p>
-                <p><span class=" ">{{ $m->year }}</span></p>
+                <p><span class=" ">{{ $m->year->name }}</span></p>
             </td>
-            <td>
-                <p class="mt-3" style="font-size: 16px">ANNUAL OUTPUTS</p>
-                <p><span class=" ">{{ number_format(11) }} Outputs</span></p>
-            </td>
+
             <td>
                 <p class="mt-3" style="font-size: 16px">QUARTERLY ACTIVITIES</p>
                 <p><span class=" ">{{ number_format(22) }} Activities</span></p>
             </td>
+
+            <td>
+                <p class="mt-3" style="font-size: 16px">ANNUAL OUTPUTS</p>
+                <p><span class=" ">{{ number_format(11) }} Outputs</span></p>
+            </td>
+
             <td>
                 <p class="mt-3 " style="font-size: 16px">TOTAL BUDGET</p>
                 <p><span class="h5">UGX {{ number_format(120) }}</span></p>
@@ -142,14 +152,14 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
             $name = '4<sup>th</sup>';
         }
         ?>
-        <h4 class="h3 py-1 text-center"><?= $name ?> Quarter - <?= $m->year ?></h4>
+        <h4 class="h3 py-1 text-center"><?= $name ?> Quarter - <?= $m->year->name ?></h4>
         <table class="table table-striped table-sm table-bordered w-100">
             <thead class="table-dark">
                 <tr class="h6 py-1">
                     <th>S/n</th>
                     <th>Topic</th>
                     <th>No. Planned</th>
-                    <th>No. Reached</th> 
+                    <th>No. Reached</th>
                     <th class="text-center">Budget (UGX)</th>
                 </tr>
             </thead>
@@ -160,7 +170,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
                     @php
                         
                         $metrix = $item->metrix[$i];
-                        $j++; 
+                        $j++;
                     @endphp
                     <tr>
                         <td><?= $j ?>.</td>
@@ -170,7 +180,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
                         </td>
                         <td>
                             <h2 class="text-center"><?= (int) $metrix['num_target_ben'] ?></h2>
-                        </td> 
+                        </td>
                         <td class="text-right"> <?= '<b>' . number_format($metrix['budget']) . '</b>' ?></td>
                     </tr>
                 @endforeach

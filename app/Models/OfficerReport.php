@@ -62,6 +62,20 @@ class OfficerReport extends Model
    
         return  $activities;
     }
+
+
+    public function year(){
+        return $this->belongsTo(FinancialYear::class,'year_id');
+    }
+    public function officer(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+    public function district(){
+        return $this->belongsTo(Location::class,'district_id');
+    }
+    public function department(){
+        return $this->belongsTo(Location::class,'department_id');
+    }
     /* 
 
 
