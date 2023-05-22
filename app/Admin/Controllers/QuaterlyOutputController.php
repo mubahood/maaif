@@ -223,46 +223,34 @@ class QuaterlyOutputController extends AdminController
         if (isset($_GET['user'])) {
             $u_id = ((int)($_GET['user']));
             $officer = User::find($u_id);
-            if ($officer != null) {
-                $hasUser = true;
-            }
+            $hasUser = true;
+        }else{
+            $u_id = Auth::user()->id;
+            $hasUser = false;
         }
 
 
-        if ($hasUser) {
-            $form->select('user_id', "Extension Officer")
-                ->options(function ($id) {
+        $form->select('user_id', "Extension Officer")
+            ->options(function ($id) {
+                $u_id = Auth::user()->id;
+                if (isset($_GET['user'])) {
                     $u_id = ((int)($_GET['user']));
-                    $officer = User::find($u_id);
+                }
+                $officer = User::find($u_id);
 
-                    $v = User::find($u_id);
-                    return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name];
-                })
-                ->default($u_id)
-                ->readOnly()
-                ->ajax($ajax_url)->rules('required');
-        } else {
-
-
-            $form->select('user_id', "Extension Officer")
-                ->options(function ($id) {
-                    $v = User::find($id);
-                    if ($v == null) {
-                        $v = Auth::user();
-                    }
-                    if ($v) {
-                        return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name];
-                    }
-                })
-                ->default(Auth::user()->id)
-                ->ajax($ajax_url)->rules('required');
-        }
+                $v = User::find($u_id);
+                return [$v->id => '#' . $v->id . " - " . $v->name . ", " . $v->district->name];
+            })
+            ->default($u_id)
+            ->readOnly()
+            ->ajax($ajax_url)->rules('required');
 
 
         $ajax_url = url(
             '/api/AnnualOutputController?district_id=' . $u->district_id .
                 "&department_id=" . $u->department_id .
-                "&year=" . $year->name
+                "&year=" . $year->name.
+                "&user_id=" . $u_id
         );
         $form->select('key_output_id', __('Select Annual Output'))
             ->options(function ($id) {
@@ -274,31 +262,28 @@ class QuaterlyOutputController extends AdminController
             ->ajax($ajax_url)
             ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
-   
+
         $form->select('annual_activity_id', "Select Activity From Annual Activitiy for this Quarter")
-            ->options(function($id){
-                $an = Activity::where([ 
+            ->options(function ($id) {
+                $an = Activity::where([
                     'id' => ((int)($id))
                 ])->first();
-                if($an == null){
-                    return [
-                         
-                    ];
+                if ($an == null) {
+                    return [];
                 }
                 return [
                     $an->id => $an->name_text
                 ];
-
             })
             ->required();
- 
-      $topics = Topic::where([
+
+        $topics = Topic::where([
             'department_id' => Admin::user()->department_id
         ])->orderby('name', 'asc')->get()->pluck('name', 'id');
 
         $form->multipleSelect('topic', __('Topics'))
             ->options($topics)
-            ->required();  
+            ->required();
 
         $entreprizes = Enterprise::all()->pluck('name', 'id');
         $form->multipleSelect('entreprizes', __('Enterprises'))
@@ -343,6 +328,7 @@ class QuaterlyOutputController extends AdminController
             "No" => 'No',
         ])->required();
 
+        $form->disableEditingCheck();
         return $form;
     }
 }

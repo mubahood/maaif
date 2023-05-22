@@ -153,6 +153,7 @@ Route::get('AnnualOutputController', function (Request $r) {
             'district_id' => $_GET['district_id'],
             'department_id' => $_GET['department_id'],
             'year' => $_GET['year'],
+            'user_id' => $_GET['user_id'],
         ])
         ->orderBy('id', 'Desc')
         ->limit(30)
@@ -167,6 +168,28 @@ Route::get('AnnualOutputController', function (Request $r) {
         $data[] = [
             'id' => $v->id,
             'text' => $v->id . " - " . $v->annual_workplan->name . " - " . str_replace(['\n', '\r'], '', $v->key_output)
+        ];
+    }
+    return [
+        'data' => $data
+    ];
+});
+
+Route::get('AnnualOutput', function (Request $r) {
+
+    $data = [];
+    $an = AnnualOutput::where([
+        'user_id' => ((int)($r->q))
+    ])->first();
+
+    if ($an == null) {
+        return [];
+    }
+
+    foreach ($an as $v) {
+        $data[] = [
+            'id' => $v->id,
+            'text' => $v->name_text
         ];
     }
     return [
@@ -195,6 +218,8 @@ Route::get('AnnualOutputHasActivity', function (Request $r) {
         'data' => $data
     ];
 });
+
+
 Route::get('ajax', function (Request $r) {
 
     $_model = trim($r->get('model'));
