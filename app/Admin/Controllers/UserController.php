@@ -241,7 +241,7 @@ class UserController extends AdminController
                     ];
                 })
                     ->rules('required');
- 
+
                 $pos = [];
                 foreach (Position::where([
                     'category' => 'Ministry'
@@ -249,8 +249,7 @@ class UserController extends AdminController
                     $pos[$p->id] = $p->category . " - " . $p->name;
                 }
 
-                $form->select('position_id', __('Select Position'))->options($pos)
-                    ->rules('required');
+
 
                 $roleModel = config('admin.database.roles_model');
                 $roles = [];
@@ -263,6 +262,10 @@ class UserController extends AdminController
                     $roles[$role->id] = $role->name;
                 }
                 $form->multipleSelect('roles', trans('admin.roles'))->options($roles)->rules('required');
+
+
+                $form->select('position_id', __('Select Position'))->options($pos)
+                    ->rules('required');
             })
 
             ->when('District', function ($form) {
@@ -285,8 +288,6 @@ class UserController extends AdminController
                     $pos[$p->id] = $p->category . " - " . $p->name;
                 }
 
-                $form->select('position_id', __('Select Position'))->options($pos)
-                    ->rules('required');
 
                 $roleModel = config('admin.database.roles_model');
                 $roles = [];
@@ -299,6 +300,10 @@ class UserController extends AdminController
                     $roles[$role->id] = $role->name;
                 }
                 $form->multipleSelect('roles', trans('admin.roles'))->options($roles)->rules('required');
+
+
+                $form->select('position_id', __('Select Position'))->options($pos)
+                    ->rules('required');
             })
             ->when('Subcounty', function ($form) {
 
@@ -349,7 +354,7 @@ class UserController extends AdminController
 
         $form->divider();
         $form->image('avatar', __('Photo'))->default('user.png');
-        $form->text('username', __('Username'));
+        $form->text('username', __('Username'))->required();
         $form->email('email', __('Email'))->rules('required');
 
 

@@ -3,6 +3,8 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Department;
+use App\Models\District;
+use App\Models\Position;
 use App\Models\Subcounty;
 use App\Models\User;
 use Encore\Admin\Actions\RowAction;
@@ -38,6 +40,12 @@ class MyMemberController extends AdminController
 
         $u = Admin::user();
         if ($u->can('ministry') || $u->can('administrator')) {
+        } else if (
+            $u->isRole('cao') ||
+            $u->isRole('dpmo') ||
+            $u->isRole('it')
+        ) {
+            $grid->model()->where('district_id', $u->district_id);
         } else if ($u->can('district')) {
             $grid->model()->where('district_id', $u->district_id);
             $grid->model()->where('department_id', $u->department_id);
@@ -48,10 +56,10 @@ class MyMemberController extends AdminController
             $grid->disableExport();
         } else {
             $grid->model()
-            ->where([
-                'department_id' => $u->department_id,
-                'district_id' => $u->district_id,
-            ]);
+                ->where([
+                    'department_id' => $u->department_id,
+                    'district_id' => $u->district_id,
+                ]);
             $grid->disableCreateButton();
         }
 
@@ -216,93 +224,144 @@ class MyMemberController extends AdminController
 
         $form->text('job_title', __('Job title'));
         $form->text('education', __('Education'))->default('Primary');
-        $form->text('year_working', __('Year working'))->default('2018');
+        $form->hidden('year_working', __('Year working'))->default('2018');
         $form->text('year_maaif', __('Year maaif'))->default('2018');
         $form->text('device_assigned', __('Device assigned'));
         $form->text('device_serial', __('Device serial'));
 
         $form->divider('Roles');
 
-        $ajax_link = '/api/Subcounty?district_id=' . $u->district_id;
+
         if (
-            $u->can('ministry') ||
-            $u->can('administrator')
+            $u->isRole('cao') ||
+            $u->isRole('dpmo') ||
+            $u->isRole('it')
         ) {
-            $ajax_link = '/api/Subcounty';
-        }
 
-        $form->select('subcounty_id', __('Subcounty'))
-            ->options(function ($id) {
-                $a = Subcounty::find($id);
-                if ($a != null) {
-                    return [$a->id => $a->name_text];
-                }
-            })
-            ->rules('required')
-            ->help('Work station sub-county')
-            ->ajax(url(
-                $ajax_link
-            ));
-
-
-        if ($u->can('ministry') || $u->can('administrator')) {
-            $form->select('department_id', __('Department'))->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
-                ->rules('required')
-                ->required();
-        } else {
-            $form->select('department_id', __('Department'))->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
-                ->rules('required')
-                ->default($u->department_id)
+            $form->select('district_id', __('District'))
+                ->options(District::where([])
+                    ->orderBy('name', 'asc')
+                    ->get()->pluck('name', 'id'))
+                ->default($u->district_id)
                 ->readOnly()
-                ->required();
-        }
+                ->rules('required');
 
-        $roles = [];
-        foreach ($roleModel::all() as $key => $role) {
-            if (
-                !$u->can('administrator') &&
-                !$u->can('ministry')
+            $form->select('department_id', __('Department'))
+                ->options(Department::where([])
+                    ->orderBy('department', 'asc')
+                    ->get()->pluck('department', 'id'))
+                ->rules('required');
 
-            ) {
+            $pos = [];
+            foreach (Position::where([
+                'category' => 'District'
+            ])->orderBy('name', 'asc')->get() as $key => $p) {
+                $pos[$p->id] = $p->category . " - " . $p->name;
+            }
+
+
+            $roleModel = config('admin.database.roles_model');
+            $roles = [];
+            foreach ($roleModel::all() as $key => $role) {
                 if (
-                    $role->can('administrator') ||
-                    $role->can('district') ||
-                    $role->can('ministry')
+                    !$role->can('district')
                 ) {
                     continue;
                 }
+                $roles[$role->id] = $role->name;
             }
-            $roles[$role->id] = $role->name;
+            $form->multipleSelect('roles', trans('admin.roles'))->options($roles)->rules('required');
+
+
+            $form->select('position_id', __('Select Position'))->options($pos)
+                ->rules('required');
+        } else {
+            $ajax_link = '/api/Subcounty?district_id=' . $u->district_id;
+            if (
+                $u->can('ministry') ||
+                $u->can('administrator')
+            ) {
+                $ajax_link = '/api/Subcounty';
+            }
+
+            $form->select('subcounty_id', __('Subcounty'))
+                ->options(function ($id) {
+                    $a = Subcounty::find($id);
+                    if ($a != null) {
+                        return [$a->id => $a->name_text];
+                    }
+                })
+                ->rules('required')
+                ->help('Work station sub-county')
+                ->ajax(url(
+                    $ajax_link
+                ));
+
+
+            if ($u->can('ministry') || $u->can('administrator')) {
+                $form->select('department_id', __('Department'))->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
+                    ->rules('required')
+                    ->required();
+            } else {
+                $form->select('department_id', __('Department'))->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
+                    ->rules('required')
+                    ->default($u->department_id)
+                    ->readOnly()
+                    ->required();
+            }
+
+            $roles = [];
+            foreach ($roleModel::all() as $key => $role) {
+                if (
+                    !$u->can('administrator') &&
+                    !$u->can('ministry')
+
+                ) {
+                    if (
+                        $role->can('administrator') ||
+                        $role->can('district') ||
+                        $role->can('ministry')
+                    ) {
+                        continue;
+                    }
+                }
+                $roles[$role->id] = $role->name;
+            }
+
+            $form->multipleSelect('roles', trans('admin.roles'))->options($roles);
         }
 
 
-        $form->multipleSelect('roles', trans('admin.roles'))->options($roles);
-
-        $form->radio('is_verified', __('Is verified?'))
-            ->options([
-                1 => 'Verified',
-                0 => 'NOT Verified',
-            ])->default(0)->required();
 
 
-
-
+        $form->hidden('is_verified', __('Is verified?'))->default(0)->required();
         $form->divider();
         $form->image('avatar', __('Photo'))->default('user.png');
-        $form->text('username', __('Username'));
+        $form->text('username', __('Username'))->rules('required');
         $form->email('email', __('Email'))->rules('required');
 
 
-        $form->radio('want_password_changed', __('Want to change Password?'))->options([
-            1 => 'Yes'
-        ])->when(1, function ($form) {
+        if(!$form->isCreating()){
+            $form->radio('want_password_changed', __('Want to change Password?'))->options([
+                1 => 'Yes'
+            ])->when(1, function ($form) {
+                $form->password('password', trans('admin.password'))->rules('confirmed|required');
+                $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+                    ->default(function ($form) {
+                        return $form->model()->password;
+                    });
+            });
+        }else{
+
             $form->password('password', trans('admin.password'))->rules('confirmed|required');
             $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
                 ->default(function ($form) {
                     return $form->model()->password;
                 });
-        });
 
+            $form->hidden('want_password_changed')->default('1');
+    
+        }
 
 
 
