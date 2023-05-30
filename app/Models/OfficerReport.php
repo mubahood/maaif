@@ -59,11 +59,10 @@ class OfficerReport extends Model
             $activities[] = $activity;
         } 
 
+        dd($activities);
    
         return  $activities;
-    }
-
-
+    }  
     public function year(){
         return $this->belongsTo(FinancialYear::class,'year_id');
     }
@@ -76,29 +75,5 @@ class OfficerReport extends Model
     public function department(){
         return $this->belongsTo(Location::class,'department_id');
     }
-    /* 
-
-
-
-    "num_planned" => 3
-    "num_target_ben" => 10
-    "num_carried_out" => null
-    "num_reached_ben" => null
-    "remarks" => null
-    "lessons" => null
-    "recommendations" => null
-    "budget" => 254000
-    "annual_id" => 1
-    "quarter" => 1
-    "user_id" => 160
-    "key_output_id" => "22"
-    "created_by" => 160
-    "department_id" => 1
-    "district_id" => 0
-    "year" => "2017/2018"
-    "annual_activity_id" => null
-    "add_another" => null
-    "clone_id" => null
-    
-    */
+ 
 }

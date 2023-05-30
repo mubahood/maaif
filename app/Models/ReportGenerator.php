@@ -15,14 +15,12 @@ class ReportGenerator extends Model
 
 
         self::created(function ($m) {
-            $m->doGen(); 
+            $m->doGen();
         });
 
         self::updated(function ($m) {
-            if($m->generated == 'Yes'){
-                return; 
-            }
-            $m->doGen();  
+            
+            $m->doGen();
         });
     }
 
@@ -41,10 +39,10 @@ class ReportGenerator extends Model
     {
         if ($this->type == 'Extension officers') {
             $this->doGenForUsers();
-        } 
+        }
 
         $this->generated = "Yes";
-        $this->save(); 
+        $this->save();
     }
     public function doGenForUsers()
     {
@@ -68,24 +66,28 @@ class ReportGenerator extends Model
             }
         }
         foreach ($users as $key => $u) {
-            
+
             $r = OfficerReport::where([
                 'user_id' => $u->id,
                 'year_id' => $this->year_id,
             ])->first();
             if ($r == null) {
                 $r = new OfficerReport();
-                $r->user_id = $u->id;
-                $r->district_id = $u->district_id;
-                $r->department_id = $u->department_id;
-                $r->year_id = $this->year_id;
-                $r->report_generator_id = $this->id;
-                $r->generated_by = $this->user_id;
-                $r->comment = null;
-                $r->submited = 'No';
-                $r->total_budget = null;
-                $r->save();
             }
-        } 
+            if ($r == null) {
+                continue;
+            }
+
+            $r->user_id = $u->id;
+            $r->district_id = $u->district_id;
+            $r->department_id = $u->department_id;
+            $r->year_id = $this->year_id;
+            $r->report_generator_id = $this->id;
+            $r->generated_by = $this->user_id;
+            $r->comment = null;
+            $r->submited = 'No';
+            $r->total_budget = null;
+            $r->save();
+        }
     }
 }

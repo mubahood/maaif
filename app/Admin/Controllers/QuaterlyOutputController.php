@@ -252,14 +252,32 @@ class QuaterlyOutputController extends AdminController
                 "&year=" . $year->name.
                 "&user_id=" . $u_id
         );
+
+
+
+        /* ========= start annual workplans =========== */
+        $data = [];
+        $ans = AnnualOutput::where([ 
+                'year' => $year->name,
+                'user_id' => $u_id,
+            ])
+            ->orderBy('id', 'Desc')
+            ->limit(30)
+            ->get();
+    
+        if ($ans == null) {
+            return [];
+        }
+    
+    
+        foreach ($ans as $v) {
+            $data[$v->id] = $v->id . " - " . $v->annual_workplan->name . " - " . str_replace(['\n', '\r'], '', $v->key_output);
+        }
+       
+        /* ========= end annual workplans =========== */
+
         $form->select('key_output_id', __('Select Annual Output'))
-            ->options(function ($id) {
-                $a = AnnualOutput::find($id);
-                if ($a) {
-                    return [$a->id => "#" . $a->id . " - " . $a->key_output];
-                }
-            })
-            ->ajax($ajax_url)
+            ->options($data) 
             ->load('annual_activity_id', url('api/AnnualOutputHasActivity'))
             ->rules('required');
 
