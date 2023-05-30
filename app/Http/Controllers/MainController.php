@@ -311,8 +311,6 @@ status
 
         $items = $m->get_all_items();
 
-       
-
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(view('reports/report-officer-print', [
             'm' => $m,

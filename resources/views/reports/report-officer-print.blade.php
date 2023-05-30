@@ -4,17 +4,20 @@ $q1 = 0;
 $q2 = 0;
 $q3 = 0;
 $q4 = 0;
-foreach ($items as $key => $item) {
-    $q1 += $item->metrix[1]['budget'];
-    $q2 += $item->metrix[2]['budget'];
-    $q3 += $item->metrix[3]['budget'];
-    $q4 += $item->metrix[4]['budget'];
-}
 
-$p1 = $q1 / 1;
-$p2 = $q2 / 1;
-$p3 = $q3 / 1;
-$p4 = $q4 / 1;
+$activities = $items['activities'];
+$metrix = $items['metrix'];
+$q1 += $metrix[1]['budget'];
+$q2 += $metrix[2]['budget'];
+$q3 += $metrix[3]['budget'];
+$q4 += $metrix[4]['budget'];
+
+$data = $items['data'];
+
+$p1 = ((int) ($q1 / 1000));
+$p2 = ((int) ($q2 / 1000));
+$p3 = ((int) ($q3 / 1000));
+$p4 = ((int) ($q4 / 1000));
 
 $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4th&chd=t:$p1,$p2,$p3,$p4&chco=FF0000,00FF00,0000FF,FFFF00";
 ?>
@@ -37,7 +40,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
         <tr>
             <td style="width: 25%;" class="">
             </td>
-            <td class="text-center" style="width: 20%;">
+            <td class="text-center mb-3" style="width: 24%;">
                 <img style="width: 100px" src="<?= public_path('assets/images/coat_of_arms-min.png') ?>">
             </td>
             <td style="width: 25%;" class="">
@@ -65,16 +68,19 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
                 YEAR -
                 {{ $m->year->name }}</u></b></p>
 
+
+
     <p class="text-left mt-4 mb-1" style="font-size: 16px">EXTENSION OFFICER: <b>
             <u>{{ strtoupper($m->officer->name) }}</u></b></p>
-            {{ $m->comment }}
-        </p>
+    <br>
+    {{ $m->comment }}
+    </p>
 
-        <br>
-        <br>
+    <br>
+    <br>
     <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
-    <table class="w-100">
+    <table class="w-100 table">
         <tr>
             <td>
                 <p class="mt-3" style="font-size: 16px">FINANCIAL YEAR</p>
@@ -82,18 +88,15 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
             </td>
 
             <td>
-                <p class="mt-3" style="font-size: 16px">QUARTERLY ACTIVITIES</p>
+                <p class="mt-3" style="font-size: 16px">TOTAL ACTIVITIES</p>
                 <p><span class=" ">{{ number_format(22) }} Activities</span></p>
             </td>
 
-            <td>
-                <p class="mt-3" style="font-size: 16px">ANNUAL OUTPUTS</p>
-                <p><span class=" ">{{ number_format(11) }} Outputs</span></p>
-            </td>
+
 
             <td>
                 <p class="mt-3 " style="font-size: 16px">TOTAL BUDGET</p>
-                <p><span class="h5">UGX {{ number_format(120) }}</span></p>
+                <p><span class="h5">UGX {{ number_format($data['total_budget']) }}</span></p>
             </td>
         </tr>
     </table>
@@ -130,65 +133,75 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
                     </tbody>
                 </table>
             </td>
-            {{--  <td class="">
+            {{--             <td class="">
                 <img style="width: 400px" class="imf-fluid" src="<?= $url ?>" alt="My Daily Activities Pie Chart" />
-            </td> --}}
+            </td>  --}}
         </tr>
     </table>
 
-    <p class="text-center mt-3 mb-3 " style="font-size: 24px"><b><u>Quaterly Output</u></b></p>
+    <p class="text-center mt-3 mb-3 " style="font-size: 24px"><b><u>ACTIVITIES</u></b></p>
 
 
+    {{-- 
+        /*      
+dd($activities);
+"id" => 11
+      "created_at" => "2023-04-23 23:49:49"
+      "updated_at" => "2023-05-09 09:50:27"
+      
+      "name" => "Farmer field days"
+      "budget" => 1950000
+      "num_target_ben" => 103
+      "num_planned" => 90 */
+        
+        --}}
 
-    @for ($i = 1; $i < 5; $i++)
-        <?php
-        $name = "$i";
-        if ($i == 1) {
-            $name = '1<sup>st</sup>';
-        } elseif ($i == 2) {
-            $name = '2<sup>nd</sup>';
-        } elseif ($i == 3) {
-            $name = '3<sup>rd</sup>';
-        } elseif ($i == 4) {
-            $name = '4<sup>th</sup>';
-        }
-        ?>
-        <h4 class="h3 py-1 text-center"><?= $name ?> Quarter - <?= $m->year->name ?></h4>
-        <table class="table table-striped table-sm table-bordered w-100">
-            <thead class="table-dark">
-                <tr class="h6 py-1">
-                    <th>S/n</th>
-                    <th>Topic</th>
-                    <th>No. Planned</th>
-                    <th>No. Reached</th>
-                    <th class="text-center">Budget (UGX)</th>
+    <table class="table table-striped table-sm table-bordered w-100">
+        <thead class="table-dark">
+            <tr class="h6 py-1">
+                <th>S/n</th>
+                <th>Activity</th>
+                <th>Target</th>
+                <th>Planned</th>
+                <th class="text-center">Budget (UGX)</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <?php
+            $j = 0;
+            $tot = 0;
+            $num_target_ben = 0;
+            $num_planned = 0;
+            ?>
+            @foreach ($activities as $item)
+                @php
+                    $j++;
+                    $tot += $item->budget;
+                    $num_target_ben += $item->num_target_ben;
+                    $num_planned += $item->num_planned;
+                @endphp
+                <tr>
+                    <td><?= $j ?>.</td>
+                    <td> <?= $item->name ?></td>
+                    <td>
+                        <h2 class="text-center"><?= $item->num_target_ben ?></h2>
+                    </td>
+                    <td>
+                        <h2 class="text-center"><?= $item->num_planned ?></h2>
+                    </td>
+                    <td class="text-right"> <?= '<b>' . number_format($item->budget) . '</b>' ?></td>
                 </tr>
-            </thead>
-            <tbody>
+            @endforeach
+            <tr>
+                <th colspan="2">TOTAL</th>
+                <td class="text-center">{{ $num_target_ben }}</td>
+                <td class="text-center">{{ $num_planned }}</td>
+                <th class="text-right">{{ number_format($tot) }}</th>
+            </tr>
 
-                <?php $j = 0; ?>
-                @foreach ($items as $item)
-                    @php
-                        
-                        $metrix = $item->metrix[$i];
-                        $j++;
-                    @endphp
-                    <tr>
-                        <td><?= $j ?>.</td>
-                        <td> <?= $item->name ?></td>
-                        <td>
-                            <h2 class="text-center"><?= $metrix['num_planned'] ?></h2>
-                        </td>
-                        <td>
-                            <h2 class="text-center"><?= (int) $metrix['num_target_ben'] ?></h2>
-                        </td>
-                        <td class="text-right"> <?= '<b>' . number_format($metrix['budget']) . '</b>' ?></td>
-                    </tr>
-                @endforeach
-
-            </tbody>
-        </table>
-    @endfor
+        </tbody>
+    </table>
 
 </body>
 
