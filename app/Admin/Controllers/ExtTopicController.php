@@ -77,7 +77,7 @@ class ExtTopicController extends AdminController
         $form->hidden('category', __('Category'))->default(1);
         $form->select('department_id', __('Select Department'))
             ->options(Department::where([])->orderBy('department', 'asc')->get()->pluck('department', 'id'))
-            ->rules('required');
+            ;
 
         return $form;
     }
