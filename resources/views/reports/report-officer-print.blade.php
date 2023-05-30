@@ -40,8 +40,8 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
         <tr>
             <td style="width: 25%;" class="">
             </td>
-            <td class="text-center mb-3" style="width: 24%;">
-                <img style="width: 100px" src="<?= public_path('assets/images/coat_of_arms-min.png') ?>">
+            <td class="text-center pb-2" style="width: 24%;">
+                <img style="width: 110px" src="<?= public_path('assets/images/coat_of_arms-min.png') ?>">
             </td>
             <td style="width: 25%;" class="">
             </td>
