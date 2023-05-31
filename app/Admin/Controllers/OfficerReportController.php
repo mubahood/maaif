@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\FinancialYear;
 use App\Models\OfficerReport;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -15,7 +16,7 @@ class OfficerReportController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Extension Officers Reports';
+    protected $title = 'Reports & Workplans';
 
     /**
      * Make a grid builder.
@@ -26,29 +27,54 @@ class OfficerReportController extends AdminController
     {
         $grid = new Grid(new OfficerReport());
 
-        $grid->column('id', __('Id'));
-        $grid->column('created_at', __('Generated'));
-        $grid->column('user_id', __('Officer'))
-        ->display(function($x){
-            if($this->officer == null){
-                return $x;
-            }
-            return $this->officer->name;
+        $grid->filter(function ($filter) {
+            $filter->disableIdFilter();
+            $filter->equal('year_id', 'Filter by Year')
+                ->select(FinancialYear::where([])->orderBy('id', 'desc')->get()->pluck('name', 'id'));
         });
+
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['SERVER_NAME'];
+        $url = $_SERVER['REQUEST_URI'];
+        $path = parse_url($url, PHP_URL_PATH);
+        $segments = explode('/', rtrim($path, '/'));
+
+        $lastSegment = end($segments);
+        $slug = "";
+        if ($lastSegment == 'report-members') {
+            $slug = 'officer';
+        } else {
+            $slug = 'department';
+        }
+
+        $grid->model()
+            ->orderBy('id', 'desc')
+            ->where('type', $slug);
+        $grid->disableActions();
+        $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->disableColumnSelector();
+
+        $grid->disableBatchActions();
+        $grid->column('id', __('Id'))->hide();
+        $grid->column('user_id', __('Officer'))
+            ->display(function ($x) {
+                if ($this->officer == null) {
+                    return $x;
+                }
+                return $this->officer->name;
+            })->sortable();
         $grid->column('year_id', __('Year id'))
-        ->display(function($x){
-            if($this->year == null){
-                return $x;
-            }
-            return $this->year->name;
-        });  
-        $grid->column('total_budget', __('Total budget'));
+            ->display(function ($x) {
+                if ($this->year == null) {
+                    return $x;
+                }
+                return $this->year->name;
+            });
         $grid->column('comment', __('Comment'))->editable();
-        $grid->column('submited', __('Submited'));
         $grid->column('print', __('Print'))->display(function () {
             return '<a target="_blank" href="' . url('report-officer-print?id=' . $this->id) . '" >PRINT REPORT</a>';
         });
-
         return $grid;
     }
 

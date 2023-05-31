@@ -15,12 +15,11 @@ class ReportGenerator extends Model
 
 
         self::created(function ($m) {
-            $m->doGen();
+            //$m->doGen();
         });
 
         self::updated(function ($m) {
-            
-            $m->doGen();
+            //$m->doGen();
         });
     }
 
@@ -39,13 +38,45 @@ class ReportGenerator extends Model
     {
         if ($this->type == 'Extension officers') {
             $this->doGenForUsers();
+        } elseif ($this->type == 'Departmental') {
+            $this->doGenForDepartments();
         }
-
         $this->generated = "Yes";
         $this->save();
     }
+    public function doGenForDepartments()
+    {
+        $dep = Department::find($this->departments);
+        if ($dep == null) {
+            return;
+        }
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '-1');
+        $u = User::find($this->user_id);
+        $r = OfficerReport::where([
+            'district_id' => $u->district_id,
+            'type' => 'department',
+            'year_id' => $this->year_id,
+        ])->first();
+        if ($r == null) {
+            $r = new OfficerReport();
+        }
+        $r->type = 'department';
+        $r->user_id = $u->id;
+        $r->district_id = $u->district_id;
+        $r->year_id = $this->year_id;
+        $r->report_generator_id = $this->id;
+        $r->generated_by = $this->user_id;
+        $r->comment = null;
+        $r->submited = 'No';
+        $r->department_id = $dep->id;
+        $r->total_budget = null;
+        $r->save();
+    }
     public function doGenForUsers()
     {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '-1');
         $users = [];
         if ($this->for_all_members == 'Specific') {
             if (is_array($this->users)) {

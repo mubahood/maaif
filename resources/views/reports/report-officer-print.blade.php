@@ -28,7 +28,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <link rel="shortcut icon" href="{{ url('/assets/images/coat_of_arms-min.png') }}">
     <link rel="stylesheet" href="<?php echo e(public_path('css/bootstrap-print.css'), false); ?>">
     <link type="text/css" href="<?php echo e(public_path('css/print.css'), false); ?>" rel="stylesheet" />
 
@@ -64,20 +64,21 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
     <hr style="background-color: yellow; height: 3px; margin: 0px; padding: 0px;">
     <hr style="background-color: red; height: 3px; margin: 0px; padding: 0px;">
 
-    <p class="text-center mt-4 mb-4" style="font-size: 20px"><b><u>EXTENSION OFFICER'S ANNUAL WORKPLAN REPORT FOR THE
-                YEAR -
-                {{ $m->year->name }}</u></b></p>
+    <p class="text-center mt-4 mb-4" style="font-size: 20px"><b><u>{{ $m->title }}</u></b></p>
 
 
 
-    <p class="text-left mt-4 mb-1" style="font-size: 16px">EXTENSION OFFICER: <b>
-            <u>{{ strtoupper($m->officer->name) }}</u></b></p>
-    <br>
+    @if ($m->type == 'officer')
+        <p class="text-left mt-4 mb-1" style="font-size: 16px">EXTENSION OFFICER: <b>
+                <u>{{ strtoupper($m->officer->name) }}</u></b></p>
+        </p>
+        <br> 
+        <br>
+    @endif
     {{ $m->comment }}
-    </p>
 
-    <br>
-    <br>
+
+
     <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
     <table class="w-100 table">
@@ -141,28 +142,17 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
 
     <p class="text-center mt-3 mb-3 " style="font-size: 24px"><b><u>ACTIVITIES</u></b></p>
 
-
-    {{-- 
-        /*      
-dd($activities);
-"id" => 11
-      "created_at" => "2023-04-23 23:49:49"
-      "updated_at" => "2023-05-09 09:50:27"
-      
-      "name" => "Farmer field days"
-      "budget" => 1950000
-      "num_target_ben" => 103
-      "num_planned" => 90 */
-        
-        --}}
-
     <table class="table table-striped table-sm table-bordered w-100">
         <thead class="table-dark">
             <tr class="h6 py-1">
                 <th>S/n</th>
                 <th>Activity</th>
                 <th>Target</th>
-                <th>Planned</th>
+                @if ($m->is_entry_year)
+                    <th>Planned</th>
+                @else
+                    <th>Reached</th>
+                @endif
                 <th class="text-center">Budget (UGX)</th>
             </tr>
         </thead>

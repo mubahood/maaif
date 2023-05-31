@@ -61,7 +61,7 @@ Route::group([
 
     $router->resource('report-annual-workplans', ReportAnnualWorkplanController::class);
     $router->resource('report-departments', ReportDepartmentController::class);
-    $router->resource('report-districts', ReportDistrictController::class);
+    $router->resource('report-districts', OfficerReportController::class);
     $router->resource('report-generators', ReportGeneratorController::class);
     $router->resource('report-members', OfficerReportController::class);  
 
