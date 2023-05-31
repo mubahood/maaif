@@ -72,12 +72,11 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
         <p class="text-left mt-4 mb-1" style="font-size: 16px">EXTENSION OFFICER: <b>
                 <u>{{ strtoupper($m->officer->name) }}</u></b></p>
         </p>
-        <br> 
         <br>
     @endif
     {{ $m->comment }}
 
-
+        <br> 
 
     <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
