@@ -51,12 +51,14 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
             <td colspan="3" class="text-center">
                 <p class="text-center mt-12" style="font-size: 20px"><b>MINISTRY OF AGRICULTURE, ANIMAL INDUSTRY AND
                         FISHERIES</b></p>
-                <p class="mb-0" class="text-center" style="font-size: 12px"><b>P.O. Box 513, ENTEBBE, UGANDA</b>.
+                <p class="mb-0" class="text-center" style="font-size: 12px"><b>P.O Box 102, Entebbe Plot 16-18,
+                        Lugard Avenue, Entebbe Uganda.</b>.
                     <span class="mb-0" class="text-center" style="font-size: 12px"><b>E-MAIL:</b>
-                        animalhealth@agriculture.co.ug</span>
+                        info@agriculture.go.ug</span>
                 </p>
-                <p class="mb-0" class="text-center" style="font-size: 12px;"><b>TELEPHONE:</b> +256 0414 320 627,
-                    320166, 320376</p>
+                <p class="mb-0" class="text-center" style="font-size: 12px;"><b>TELEPHONE:</b>
+                    041 4320004
+                </p>
             </td>
         </tr>
     </table>
@@ -76,7 +78,7 @@ $url = "https://chart.googleapis.com/chart?cht=p3&chs=400x200&chl=1st|2nd|3rd|4t
     @endif
     {{ $m->comment }}
 
-        <br> 
+    <br>
 
     <hr style="background-color: black; height: 1px; margin: 0px; padding: 0px;">
 
